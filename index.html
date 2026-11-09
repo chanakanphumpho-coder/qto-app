@@ -26,9 +26,13 @@
         <h1 class="text-2xl font-bold">Structural QTO & BOQ Pro</h1>
         <p class="text-slate-300 text-sm">ระบบถอดปริมาณและประมาณราคางานโครงสร้าง ค.ส.ล. (รองรับฐานราก พื้น คาน เสา)</p>
       </div>
-      <div class="flex gap-2 no-print">
-        <button onclick="exportExcel()" class="bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded-xl text-sm font-medium">Export Excel</button>
-        <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl text-sm font-medium">พิมพ์ / บันทึก PDF</button>
+      <div class="flex gap-2 no-print flex-wrap">
+        <label class="bg-violet-600 hover:bg-violet-700 px-4 py-2 rounded-xl text-sm font-medium cursor-pointer inline-flex items-center">
+          📥 นำเข้า Excel
+          <input type="file" id="importFile" accept=".xlsx, .xls" class="hidden" onchange="importExcel(event)">
+        </label>
+        <button onclick="exportExcel()" class="bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded-xl text-sm font-medium">📤 Export Excel</button>
+        <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl text-sm font-medium">🖨️ พิมพ์ / PDF</button>
       </div>
     </div>
 
@@ -659,21 +663,21 @@ function exportExcel() {
 
   const t=calcTotals();
   const summary=[
-    {รายการ:"ปริมาตรคอนกรีตโครงสร้างรวม (m3)",จำนวน:t.concrete},
-    {รายการ:"ปริมาตรคอนกรีตหยาบรวม (m3)",จำนวน:t.leanConc},
-    {รายการ:"พื้นที่ไม้แบบรวม (m2)",จำนวน:t.form},
-    {รายการ:"ปริมาตรขุดดินรวม (m3)",จำนวน:t.exc},
-    {รายการ:"ปริมาตรถมรวม (m3)",จำนวน:t.fill},
-    {รายการ:"เหล็กรวม (kg)",จำนวน:t.rebar},
-    {รายการ:"ค่าวัสดุ (บาท)",จำนวน:t.material},
-    {รายการ:"ค่าแรง (บาท)",จำนวน:t.labor},
-    {รายการ:"ต้นทุนตรง (บาท)",จำนวน:t.direct},
-    {รายการ:"Overhead (บาท)",จำนวน:t.overhead},
-    {รายการ:"กำไร (บาท)",จำนวน:t.profit},
-    {รายการ:"ก่อน VAT (บาท)",จำนวน:t.preVat},
-    {รายการ:"VAT (บาท)",จำนวน:t.vat},
-    {รายการ:"หัก ณ ที่จ่าย (บาท)",จำนวน:t.wht},
-    {รายการ:"ยอดรับสุทธิประมาณ (บาท)",จำนวน:t.net}
+    {รายการ:"ปริมาตรคอนกรีตโครงสร้างรวม (m3)",จำนวน:t.concrete,หน่วย:"m3"},
+    {รายการ:"ปริมาตรคอนกรีตหยาบรวม (m3)",จำนวน:t.leanConc,หน่วย:"m3"},
+    {รายการ:"พื้นที่ไม้แบบรวม (m2)",จำนวน:t.form,หน่วย:"m2"},
+    {รายการ:"ปริมาตรขุดดินรวม (m3)",จำนวน:t.exc,หน่วย:"m3"},
+    {รายการ:"ปริมาตรถมรวม (m3)",จำนวน:t.fill,หน่วย:"m3"},
+    {รายการ:"เหล็กรวม (kg)",จำนวน:t.rebar,หน่วย:"kg"},
+    {รายการ:"ค่าวัสดุ (บาท)",จำนวน:t.material,หน่วย:"บาท"},
+    {รายการ:"ค่าแรง (บาท)",จำนวน:t.labor,หน่วย:"บาท"},
+    {รายการ:"ต้นทุนตรง (บาท)",จำนวน:t.direct,หน่วย:"บาท"},
+    {รายการ:"Overhead (บาท)",จำนวน:t.overhead,หน่วย:"บาท"},
+    {รายการ:"กำไร (บาท)",จำนวน:t.profit,หน่วย:"บาท"},
+    {รายการ:"ก่อน VAT (บาท)",จำนวน:t.preVat,หน่วย:"บาท"},
+    {รายการ:"VAT (บาท)",จำนวน:t.vat,หน่วย:"บาท"},
+    {รายการ:"หัก ณ ที่จ่าย (บาท)",จำนวน:t.wht,หน่วย:"บาท"},
+    {รายการ:"ยอดรับสุทธิประมาณ (บาท)",จำนวน:t.net,หน่วย:"บาท"}
   ];
   XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(summary),"Summary");
 
@@ -681,7 +685,71 @@ function exportExcel() {
     รายการ:d.label, ราคา:rates[key]||0
   }));
   XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rateData),"Rates");
-  XLSX.writeFile(wb,"Structural_QTO_BOQ.xlsx");
+
+  const pr4 = [
+    { ลำดับ: 1, รายการ: "ค่างานต้นทุนโครงสร้าง (คอนกรีต ไม้แบบ ดิน เหล็ก)", ค่าวัสดุ: t.material, ค่าแรง: t.labor, รวมทั้งสิ้น: t.direct },
+    { ลำดับ: 2, รายการ: "ค่าดำเนินการ (Overhead " + val("overhead") + "%)", ค่าวัสดุ: 0, ค่าแรง: 0, รวมทั้งสิ้น: t.overhead },
+    { ลำดับ: 3, รายการ: "กำไร (Profit " + val("profit") + "%)", ค่าวัสดุ: 0, ค่าแรง: 0, รวมทั้งสิ้น: t.profit }
+  ];
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(pr4), "แบบฟอร์ม ปร.4");
+
+  const rawProjName = $("projectName").value.trim() || "Project";
+  XLSX.writeFile(wb, `BOQ_${rawProjName.replace(/[/\\?%*:|"<>]/g, "_")}.xlsx`);
+}
+
+function importExcel(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: 'array' });
+
+      if (!workbook.Sheets["BOQ"]) {
+        return alert("ไฟล์ Excel นี้ไม่ตรงรูปแบบโครงสร้างของโปรแกรม (ไม่พบชีต BOQ)");
+      }
+
+      const boqJson = XLSX.utils.sheet_to_json(workbook.Sheets["BOQ"]);
+      items = boqJson.map((row, idx) => ({
+        id: Date.now() + idx,
+        name: row["ชื่อ"] || "Unnamed",
+        type: row["ประเภท"] || "Footing",
+        qty: Number(row["จำนวน"]) || 1,
+        grade: row["เกรดเหล็ก"] || "SD40",
+        concrete: Number(row["คอนกรีตโครงสร้าง (m3)"]) || 0,
+        leanConc: Number(row["คอนกรีตหยาบ (m3)"]) || 0,
+        form: Number(row["ไม้แบบ (m2)"]) || 0,
+        excavation: Number(row["ขุดดิน (m3)"]) || 0,
+        backfill: Number(row["ถมดิน (m3)"]) || 0,
+        mainSize: row["เหล็กหลัก/ตะแกรง"] || "DB12",
+        stirrupSize: row["เหล็กปลอก"] || "NONE",
+        mainKg: Number(row["น้ำหนักเหล็กหลัก/ตะแกรง (kg)"]) || 0,
+        stirrupKg: Number(row["น้ำหนักเหล็กปลอก (kg)"]) || 0,
+        rebar: Number(row["เหล็กรวมเผื่อเศษ (kg)"]) || 0,
+        wastePct: Number(row["เผื่อเศษ (%)"]) || 5
+      }));
+
+      if (workbook.Sheets["Project"]) {
+        const projJson = XLSX.utils.sheet_to_json(workbook.Sheets["Project"]);
+        if (projJson.length > 0) {
+          $("projectName").value = projJson[0]["ชื่อโครงการ"] || "";
+          $("ownerName").value = projJson[0]["เจ้าของงาน"] || "";
+          $("estimatorName").value = projJson[0]["ผู้ถอดแบบ"] || "";
+          $("reportDate").value = projJson[0]["วันที่"] || todayLocal();
+        }
+      }
+
+      render();
+      alert("นำเข้าข้อมูลจาก Excel สำเร็จแล้ว!");
+    } catch (err) {
+      console.error(err);
+      alert("เกิดข้อผิดพลาดในการอ่านไฟล์ Excel กรุณาตรวจสอบรูปแบบไฟล์");
+    }
+  };
+  reader.readAsArrayBuffer(file);
+  event.target.value = "";
 }
 
 renderRates();
