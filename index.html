@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบถอดแบบโครงสร้าง ค.ส.ล. (Auto QTO Tool)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style> body { font-family: 'Prompt', sans-serif; } </style>
+</head>
+<body class="bg-slate-100 text-slate-800 pb-12">
+    <div class="max-w-7xl mx-auto px-4 py-6">
+        <header class="mb-6 bg-slate-900 text-white p-6 rounded-2xl shadow-lg flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold">Structural QTO Calculator</h1>
+                <p class="text-slate-400 text-sm">ระบบถอดแบบและคำนวณปริมาณวัสดุโครงสร้าง ค.ส.ล. อัตโนมัติ</p>
+            </div>
+            <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-4 py-2 rounded-xl text-sm transition">
+                Export Excel (.xlsx)
+            </button>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Form Input Section -->
+            <div class="lg:col-span-1 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-lg font-semibold mb-4 text-slate-700">เพิ่มองค์อาคาร</h2>
+                <form id="qtoForm" onsubmit="addItem(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">หมวดองค์อาคาร</label>
+                        <select id="elemType" class="w-full border rounded-xl p-2.5 bg-slate-50 border-slate-300">
+                            <option value="Footing">ฐานราก (Footing)</option>
+                            <option value="Column">เสา (Column)</option>
+                            <option value="Beam">คาน (Beam)</option>
+                            <option value="Slab">พื้น (Slab)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">ชื่อองค์อาคาร (เช่น F1, C1, B1)</label>
+                        <input type="text" id="elemName" required placeholder="เช่น B1" class="w-full border rounded-xl p-2.5 border-slate-300">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">จำนวน (ชุด/ต้น)</label>
+                        <input type="number" id="elemQty" required value="1" min="1" class="w-full border rounded-xl p-2.5 border-slate-300">
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="block text-xs font-medium mb-1">กว้าง (m)</label>
+                            <input type="number" id="width" step="0.01" required placeholder="0.20" class="w-full border rounded-xl p-2 text-sm border-slate-300">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium mb-1">ยาว/สูง (m)</label>
+                            <input type="number" id="length" step="0.01" required placeholder="4.00" class="w-full border rounded-xl p-2 text-sm border-slate-300">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium mb-1">หนา/ลึก (m)</label>
+                            <input type="number" id="depth" step="0.01" required placeholder="0.40" class="w-full border rounded-xl p-2 text-sm border-slate-300">
+                        </div>
+                    </div>
+
+                    <hr class="my-2 border-slate-200">
+                    <h3 class="text-sm font-semibold text-slate-700">สเปกเหล็กเสริม</h3>
+                    <div>
+                        <label class="block text-xs font-medium mb-1">เหล็กแกนหลัก</label>
+                        <select id="rebarSize" class="w-full border rounded-xl p-2.5 bg-slate-50 border-slate-300">
+                            <option value="RB6">RB6 (0.222 kg/m)</option>
+                            <option value="RB9">RB9 (0.499 kg/m)</option>
+                            <option value="DB12" selected>DB12 (0.888 kg/m)</option>
+                            <option value="DB16">DB16 (1.580 kg/m)</option>
+                            <option value="DB20">DB20 (2.470 kg/m)</option>
+                            <option value="DB25">DB25 (3.850 kg/m)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium mb-1">จำนวนเหล็กแกน (เส้น)</label>
+                        <input type="number" id="rebarCount" value="4" min="0" class="w-full border rounded-xl p-2.5 border-slate-300">
+                    </div>
+
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl shadow-sm transition mt-2">
+                        + คำนวณและเพิ่มรายการ
+                    </button>
+                </form>
+            </div>
+
+            <!-- Table & Summary Section -->
+            <div class="lg:col-span-2 space-y-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h2 class="text-lg font-semibold text-slate-700 mb-4">ตารางคำนวณถอดแบบ (BOQ Summary)</h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm" id="qtoTable">
+                            <thead class="bg-slate-100 border-b border-slate-200 text-slate-600">
+                                <tr>
+                                    <th class="p-3">ชื่อ</th>
+                                    <th class="p-3">หมวด</th>
+                                    <th class="p-3">จำนวน</th>
+                                    <th class="p-3">คอนกรีต (m³)</th>
+                                    <th class="p-3">ไม้แบบ (m²)</th>
+                                    <th class="p-3">เหล็กเสริม (kg)</th>
+                                    <th class="p-3">ลบ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody" class="divide-y divide-slate-100">
+                                <!-- Data appended dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Totals Display -->
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm text-center">
+                        <p class="text-xs text-slate-500 mb-1">คอนกรีตรวม</p>
+                        <p class="text-2xl font-bold text-blue-600"><span id="totalConcrete">0.00</span> <span class="text-xs font-normal">m³</span></p>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm text-center">
+                        <p class="text-xs text-slate-500 mb-1">พื้นที่ไม้แบบรวม</p>
+                        <p class="text-2xl font-bold text-amber-600"><span id="totalFormwork">0.00</span> <span class="text-xs font-normal">m²</span></p>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm text-center">
+                        <p class="text-xs text-slate-500 mb-1">น้ำหนักเหล็กรวม</p>
+                        <p class="text-2xl font-bold text-emerald-600"><span id="totalRebar">0.00</span> <span class="text-xs font-normal">kg</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const rebarWeights = { 'RB6': 0.222, 'RB9': 0.499, 'DB12': 0.888, 'DB16': 1.58, 'DB20': 2.47, 'DB25': 3.85 };
+        let items = [];
+
+        function addItem(e) {
+            e.preventDefault();
+            const type = document.getElementById('elemType').value;
+            const name = document.getElementById('elemName').value;
+            const qty = parseFloat(document.getElementById('elemQty').value);
+            const w = parseFloat(document.getElementById('width').value);
+            const l = parseFloat(document.getElementById('length').value);
+            const d = parseFloat(document.getElementById('depth').value);
+            const rebarSize = document.getElementById('rebarSize').value;
+            const rebarCount = parseFloat(document.getElementById('rebarCount').value);
+
+            // Auto Engine Logic
+            const concrete = w * l * d * qty;
+            let formworkArea = 0;
+            if (type === 'Footing') formworkArea = 2 * (w + l) * d * qty;
+            else if (type === 'Column') formworkArea = 2 * (w + l) * l * qty;
+            else if (type === 'Beam') formworkArea = (2 * d + w) * l * qty;
+            else if (type === 'Slab') formworkArea = w * l * qty;
+
+            const rebarWeightTotal = rebarCount * l * rebarWeights[rebarSize] * qty;
+
+            items.push({ id: Date.now(), name, type, qty, concrete, formworkArea, rebarWeightTotal, rebarSize });
+            updateUI();
+            document.getElementById('qtoForm').reset();
+        }
+
+        function deleteItem(id) {
+            items = items.filter(i => i.id !== id);
+            updateUI();
+        }
+
+        function updateUI() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            let totConcrete = 0, totForm = 0, totRebar = 0;
+
+            items.forEach(item => {
+                totConcrete += item.concrete;
+                totForm += item.formworkArea;
+                totRebar += item.rebarWeightTotal;
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50">
+                        <td class="p-3 font-semibold text-slate-800">${item.name}</td>
+                        <td class="p-3"><span class="bg-slate-100 text-slate-600 px-2 py-1 rounded text-xs">${item.type}</span></td>
+                        <td class="p-3">${item.qty}</td>
+                        <td class="p-3 font-mono">${item.concrete.toFixed(2)}</td>
+                        <td class="p-3 font-mono">${item.formworkArea.toFixed(2)}</td>
+                        <td class="p-3 font-mono">${item.rebarWeightTotal.toFixed(2)} <span class="text-xs text-slate-400">(${item.rebarSize})</span></td>
+                        <td class="p-3"><button onclick="deleteItem(${item.id})" class="text-red-500 hover:text-red-700 font-bold">✕</button></td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('totalConcrete').innerText = totConcrete.toFixed(2);
+            document.getElementById('totalFormwork').innerText = totForm.toFixed(2);
+            document.getElementById('totalRebar').innerText = totRebar.toFixed(2);
+        }
+
+        function exportToExcel() {
+            if(items.length === 0) return alert('กรุณาเพิ่มรายการอย่างน้อย 1 รายการก่อน Export');
+            const data = items.map(i => ({
+                'ชื่อองค์อาคาร': i.name,
+                'หมวดหมู่': i.type,
+                'จำนวน': i.qty,
+                'ปริมาตรคอนกรีต (m3)': i.concrete.toFixed(2),
+                'พื้นที่ไม้แบบ (m2)': i.formworkArea.toFixed(2),
+                'ขนาดเหล็ก': i.rebarSize,
+                'น้ำหนักเหล็ก (kg)': i.rebarWeightTotal.toFixed(2)
+            }));
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "QTO_Summary");
+            XLSX.writeFile(wb, "QTO_Structural_Report.xlsx");
+        }
+    </script>
+</body>
+</html>
