@@ -1,253 +1,447 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบถอดแบบโครงสร้าง ค.ส.ล. (Auto QTO Tool)</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style> body { font-family: 'Prompt', sans-serif; } </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Structural QTO & BOQ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Prompt', sans-serif; }
+    @media print {
+      .no-print { display: none !important; }
+      body { background: white !important; }
+      .print-card { box-shadow: none !important; border: 1px solid #ddd !important; }
+    }
+  </style>
 </head>
-<body class="bg-slate-100 text-slate-800 pb-12">
-    <div class="max-w-7xl mx-auto px-4 py-6">
-        <header class="mb-6 bg-slate-900 text-white p-6 rounded-2xl shadow-lg flex justify-between items-center">
-            <div>
-                <h1 class="text-2xl font-bold">Structural QTO Calculator</h1>
-                <p class="text-slate-400 text-sm">ระบบถอดแบบและคำนวณปริมาณวัสดุโครงสร้าง ค.ส.ล. อัตโนมัติ</p>
-            </div>
-            <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-4 py-2 rounded-xl text-sm transition">
-                Export Excel (.xlsx)
-            </button>
-        </header>
+<body class="bg-slate-100 text-slate-800 pb-10">
+<div class="max-w-7xl mx-auto px-4 py-6">
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Form Input Section -->
-            <div class="lg:col-span-1 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                <h2 class="text-lg font-semibold mb-4 text-slate-700">เพิ่มองค์อาคาร</h2>
-                <form id="qtoForm" onsubmit="addItem(event)" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium mb-1">หมวดองค์อาคาร</label>
-                        <select id="elemType" class="w-full border rounded-xl p-2.5 bg-slate-50 border-slate-300">
-                            <option value="Footing">ฐานราก (Footing)</option>
-                            <option value="Column">เสา (Column)</option>
-                            <option value="Beam">คาน (Beam)</option>
-                            <option value="Slab">พื้น (Slab)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium mb-1">ชื่อองค์อาคาร (เช่น F1, C1, B1)</label>
-                        <input type="text" id="elemName" required placeholder="เช่น B1" class="w-full border rounded-xl p-2.5 border-slate-300">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium mb-1">จำนวน (ชุด/ต้น)</label>
-                        <input type="number" id="elemQty" required value="1" min="1" class="w-full border rounded-xl p-2.5 border-slate-300">
-                    </div>
-                    <div class="grid grid-cols-3 gap-2">
-                        <div>
-                            <label class="block text-xs font-medium mb-1">กว้าง (m)</label>
-                            <input type="number" id="width" step="0.01" required placeholder="0.20" class="w-full border rounded-xl p-2 text-sm border-slate-300">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium mb-1">ยาว/สูง (m)</label>
-                            <input type="number" id="length" step="0.01" required placeholder="4.00" class="w-full border rounded-xl p-2 text-sm border-slate-300">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium mb-1">หนา/ลึก (m)</label>
-                            <input type="number" id="depth" step="0.01" required placeholder="0.40" class="w-full border rounded-xl p-2 text-sm border-slate-300">
-                        </div>
-                    </div>
-
-                    <hr class="my-2 border-slate-200">
-                    <h3 class="text-sm font-semibold text-slate-700">สเปกเหล็กเสริม</h3>
-                    <div>
-                        <label class="block text-xs font-medium mb-1">เหล็กแกนหลัก</label>
-                        <select id="rebarSize" class="w-full border rounded-xl p-2.5 bg-slate-50 border-slate-300">
-                            <option value="RB6">RB6 (0.222 kg/m)</option>
-                            <option value="RB9">RB9 (0.499 kg/m)</option>
-                            <option value="DB12" selected>DB12 (0.888 kg/m)</option>
-                            <option value="DB16">DB16 (1.580 kg/m)</option>
-                            <option value="DB20">DB20 (2.470 kg/m)</option>
-                            <option value="DB25">DB25 (3.850 kg/m)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium mb-1">จำนวนเหล็กแกน (เส้น)</label>
-                        <input type="number" id="rebarCount" value="4" min="0" class="w-full border rounded-xl p-2.5 border-slate-300">
-                    </div>
-
-                    <!-- ส่วนเหล็กปลอก (Stirrups) ที่เพิ่มเข้ามา -->
-                    <div class="mt-3 pt-3 border-t border-slate-200">
-                        <label class="block text-xs font-medium mb-1">เหล็กปลอก (Stirrups)</label>
-                        <select id="stirrupSize" class="w-full border rounded-xl p-2.5 bg-slate-50 border-slate-300 mb-2">
-                            <option value="NONE">ไม่มีเหล็กปลอก</option>
-                            <option value="RB6" selected>RB6 (0.222 kg/m)</option>
-                            <option value="RB9">RB9 (0.499 kg/m)</option>
-                        </select>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block text-[10px] font-medium mb-1">ระยะเรียง @ (m เช่น 0.15)</label>
-                                <input type="number" id="stirrupSpacing" step="0.01" value="0.15" class="w-full border rounded-xl p-2 text-sm border-slate-300">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] font-medium mb-1">จำนวนขาเหล็กปลอก</label>
-                                <input type="number" id="stirrupLegs" value="2" min="2" class="w-full border rounded-xl p-2 text-sm border-slate-300">
-                            </div>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl shadow-sm transition mt-2">
-                        + คำนวณและเพิ่มรายการ
-                    </button>
-                </form>
-            </div>
-
-            <!-- Table & Summary Section -->
-            <div class="lg:col-span-2 space-y-6">
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                    <h2 class="text-lg font-semibold text-slate-700 mb-4">ตารางคำนวณถอดแบบ (BOQ Summary)</h2>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-sm" id="qtoTable">
-                            <thead class="bg-slate-100 border-b border-slate-200 text-slate-600">
-                                <tr>
-                                    <th class="p-3">ชื่อ</th>
-                                    <th class="p-3">หมวด</th>
-                                    <th class="p-3">จำนวน</th>
-                                    <th class="p-3">คอนกรีต (m³)</th>
-                                    <th class="p-3">ไม้แบบ (m²)</th>
-                                    <th class="p-3">เหล็กเสริม (kg)</th>
-                                    <th class="p-3">ลบ</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tableBody" class="divide-y divide-slate-100">
-                                <!-- Data appended dynamically -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Totals Display -->
-                <div class="grid grid-cols-3 gap-4">
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm text-center">
-                        <p class="text-xs text-slate-500 mb-1">คอนกรีตรวม</p>
-                        <p class="text-2xl font-bold text-blue-600"><span id="totalConcrete">0.00</span> <span class="text-xs font-normal">m³</span></p>
-                    </div>
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm text-center">
-                        <p class="text-xs text-slate-500 mb-1">พื้นที่ไม้แบบรวม</p>
-                        <p class="text-2xl font-bold text-amber-600"><span id="totalFormwork">0.00</span> <span class="text-xs font-normal">m²</span></p>
-                    </div>
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm text-center">
-                        <p class="text-xs text-slate-500 mb-1">น้ำหนักเหล็กรวม</p>
-                        <p class="text-2xl font-bold text-emerald-600"><span id="totalRebar">0.00</span> <span class="text-xs font-normal">kg</span></p>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <header class="bg-slate-900 text-white p-6 rounded-2xl shadow-lg flex flex-wrap justify-between gap-4 items-center mb-6">
+    <div>
+      <h1 class="text-2xl font-bold">Structural QTO & BOQ</h1>
+      <p class="text-slate-300 text-sm">ระบบถอดปริมาณและประมาณราคางานโครงสร้าง ค.ส.ล.</p>
     </div>
+    <div class="flex gap-2 no-print">
+      <button onclick="exportExcel()" class="bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded-xl text-sm">Export Excel</button>
+      <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl text-sm">พิมพ์ / บันทึก PDF</button>
+    </div>
+  </header>
 
-    <script>
-        const rebarWeights = { 'RB6': 0.222, 'RB9': 0.499, 'DB12': 0.888, 'DB16': 1.58, 'DB20': 2.47, 'DB25': 3.85 };
-        let items = [];
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <section class="bg-white p-5 rounded-2xl shadow-sm border print-card">
+      <h2 class="text-lg font-semibold mb-4">เพิ่มองค์อาคาร</h2>
+      <form id="qtoForm" class="space-y-3">
+        <label class="block text-sm font-medium">ประเภทองค์อาคาร
+          <select id="type" class="mt-1 w-full border rounded-lg p-2">
+            <optgroup label="โครงสร้างใต้ดินและชั้นล่าง">
+              <option value="Footing">ฐานราก (Footing)</option>
+              <option value="Ground Beam">คานคอดิน (Ground Beam)</option>
+              <option value="Stub Column">เสาตอม่อ (Stub Column)</option>
+              <option value="Slab on Ground">พื้น On Ground</option>
+              <option value="Ground Stair">บันไดคอดิน (ประมาณการ)</option>
+            </optgroup>
+            <optgroup label="โครงสร้างส่วนบน">
+              <option value="Column">เสาชั้นบน</option>
+              <option value="Beam">คานรับพื้น</option>
+              <option value="Elevated Slab">พื้นหล่อในที่ / พื้นยก</option>
+              <option value="Precast Slab">พื้นสำเร็จรูป (ปริมาณคอนกรีตตามความหนาที่กรอก)</option>
+              <option value="Roof Truss">โครงหลังคา / ทรัสส์เหล็ก</option>
+            </optgroup>
+          </select>
+        </label>
 
-        function addItem(e) {
-            e.preventDefault();
-            const type = document.getElementById('elemType').value;
-            const name = document.getElementById('elemName').value;
-            const qty = parseFloat(document.getElementById('elemQty').value);
-            const w = parseFloat(document.getElementById('width').value);
-            const l = parseFloat(document.getElementById('length').value);
-            const d = parseFloat(document.getElementById('depth').value);
-            const rebarSize = document.getElementById('rebarSize').value;
-            const rebarCount = parseFloat(document.getElementById('rebarCount').value);
+        <div class="grid grid-cols-2 gap-3">
+          <label class="text-sm">ชื่อองค์อาคาร
+            <input id="name" required placeholder="เช่น GB1, C1" class="mt-1 w-full border rounded-lg p-2">
+          </label>
+          <label class="text-sm">จำนวน
+            <input id="qty" type="number" min="1" value="1" step="1" class="mt-1 w-full border rounded-lg p-2">
+          </label>
+        </div>
 
-            // Auto Engine Logic (คอนกรีต และ ไม้แบบ)
-            const concrete = w * l * d * qty;
-            let formworkArea = 0;
-            if (type === 'Footing') formworkArea = 2 * (w + l) * d * qty;
-            else if (type === 'Column') formworkArea = 2 * (w + l) * l * qty;
-            else if (type === 'Beam') formworkArea = (2 * d + w) * l * qty;
-            else if (type === 'Slab') formworkArea = w * l * qty;
+        <div class="grid grid-cols-3 gap-2">
+          <label class="text-xs">กว้าง (m)
+            <input id="width" type="number" min="0" step="0.01" value="0.20" class="mt-1 w-full border rounded-lg p-2">
+          </label>
+          <label class="text-xs">ยาว / สูง (m)
+            <input id="length" type="number" min="0" step="0.01" value="4.00" class="mt-1 w-full border rounded-lg p-2">
+          </label>
+          <label class="text-xs">ลึก / หนา (m)
+            <input id="depth" type="number" min="0" step="0.01" value="0.40" class="mt-1 w-full border rounded-lg p-2">
+          </label>
+        </div>
 
-            // คำนวณเหล็กแกนหลัก
-            const rebarWeightTotal = rebarCount * l * rebarWeights[rebarSize] * qty;
-            
-            // คำนวณเหล็กปลอก
-            const stirrupSize = document.getElementById('stirrupSize').value;
-            let stirrupWeightTotal = 0;
-            let stirrupDetailStr = "ไม่มีเหล็กปลอก";
+        <label class="block text-xs">ระยะยกบันไดรวม (m) — ใช้กับบันไดคอดิน
+          <input id="rise" type="number" min="0" step="0.01" value="0" class="mt-1 w-full border rounded-lg p-2">
+        </label>
 
-            if (stirrupSize !== 'NONE' && rebarWeights[stirrupSize]) {
-                const spacing = parseFloat(document.getElementById('stirrupSpacing').value) || 0.15;
-                const legs = parseFloat(document.getElementById('stirrupLegs').value) || 2;
-                
-                const numStirrups = Math.ceil(l / spacing) * qty;
-                const perimStirrup = (2 * (w + d)) + 0.10; // รอบรูป + ระยะทาบงอขอ
-                
-                stirrupWeightTotal = numStirrups * (perimStirrup * legs) * rebarWeights[stirrupSize];
-                stirrupDetailStr = `${stirrupSize} @${spacing}m (${legs} ขา)`;
-            }
+        <hr>
+        <h3 class="font-semibold text-sm">เหล็กเสริมโดยประมาณ</h3>
+        <div class="grid grid-cols-2 gap-3">
+          <label class="text-xs">เกรดเหล็ก
+            <select id="grade" class="mt-1 w-full border rounded-lg p-2">
+              <option>SR24</option><option>SD30</option><option selected>SD40</option><option>SD50</option>
+            </select>
+          </label>
+          <label class="text-xs">เหล็กหลัก
+            <select id="barSize" class="mt-1 w-full border rounded-lg p-2">
+              <option value="RB6">RB6</option><option value="RB9">RB9</option>
+              <option value="DB12" selected>DB12</option><option value="DB16">DB16</option>
+              <option value="DB20">DB20</option><option value="DB25">DB25</option><option value="DB28">DB28</option>
+            </select>
+          </label>
+          <label class="text-xs">จำนวนเหล็กหลัก (เส้น/ชิ้น)
+            <input id="barCount" type="number" min="0" value="4" class="mt-1 w-full border rounded-lg p-2">
+          </label>
+          <label class="text-xs">ความยาวเหล็กมาตรฐาน (m)
+            <input id="stockLength" type="number" min="1" step="0.1" value="10" class="mt-1 w-full border rounded-lg p-2">
+          </label>
+          <label class="text-xs">ระยะทาบ (เท่าของ d)
+            <select id="lapRatio" class="mt-1 w-full border rounded-lg p-2">
+              <option value="40">40d</option><option value="50">50d</option><option value="60" selected>60d</option>
+            </select>
+          </label>
+          <label class="text-xs">เผื่อเศษเหล็ก (%)
+            <input id="waste" type="number" min="0" max="100" value="5" class="mt-1 w-full border rounded-lg p-2">
+          </label>
+        </div>
 
-            const totalCombinedRebar = rebarWeightTotal + stirrupWeightTotal;
+        <div class="grid grid-cols-2 gap-3">
+          <label class="text-xs">เหล็กปลอก
+            <select id="stirrupSize" class="mt-1 w-full border rounded-lg p-2">
+              <option value="NONE">ไม่มี</option><option value="RB6" selected>RB6</option><option value="RB9">RB9</option>
+            </select>
+          </label>
+          <label class="text-xs">ระยะเรียงปลอก (m)
+            <input id="spacing" type="number" min="0.01" step="0.01" value="0.15" class="mt-1 w-full border rounded-lg p-2">
+          </label>
+          <label class="text-xs">ระยะหุ้มคอนกรีต (m)
+            <input id="cover" type="number" min="0" step="0.005" value="0.04" class="mt-1 w-full border rounded-lg p-2">
+          </label>
+          <label class="text-xs">ขอปลอก (เท่าของ d/ข้าง)
+            <input id="hookRatio" type="number" min="0" value="10" class="mt-1 w-full border rounded-lg p-2">
+          </label>
+        </div>
 
-            items.push({ 
-                id: Date.now(), name, type, qty, 
-                concrete, formworkArea, 
-                rebarWeightTotal: totalCombinedRebar, 
-                rebarSize: `${rebarSize}(แกน) + ${stirrupDetailStr}` 
-            });
+        <hr>
+        <h3 class="font-semibold text-sm">งานดิน — ใช้กับฐานราก/คานคอดิน/ตอม่อ</h3>
+        <div class="grid grid-cols-2 gap-3">
+          <label class="text-xs">ระยะเผื่อขุดต่อข้าง (m)
+            <input id="excClear" type="number" min="0" step="0.05" value="0.30" class="mt-1 w-full border rounded-lg p-2">
+          </label>
+          <label class="text-xs">ความลึกขุด (m)
+            <input id="excDepth" type="number" min="0" step="0.05" value="0.80" class="mt-1 w-full border rounded-lg p-2">
+          </label>
+          <label class="text-xs">ทรายรองพื้น (m)
+            <input id="sandBed" type="number" min="0" step="0.01" value="0.05" class="mt-1 w-full border rounded-lg p-2">
+          </label>
+          <label class="text-xs">น้ำหนักโครงหลังคา (kg/ชิ้น)
+            <input id="manualSteel" type="number" min="0" step="0.1" value="0" class="mt-1 w-full border rounded-lg p-2">
+          </label>
+        </div>
+        <button class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-medium">
+          + คำนวณและเพิ่มรายการ
+        </button>
+      </form>
+    </section>
 
-            updateUI();
-            document.getElementById('qtoForm').reset();
-        }
+    <main class="lg:col-span-2 space-y-6">
+      <section class="bg-white p-5 rounded-2xl shadow-sm border print-card">
+        <h2 class="text-lg font-semibold mb-3">รายการถอดแบบ / BOQ</h2>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm min-w-[1000px]">
+            <thead class="bg-slate-100 text-left">
+              <tr>
+                <th class="p-2">ชื่อ / ประเภท</th><th class="p-2">จำนวน</th>
+                <th class="p-2">คอนกรีต m³</th><th class="p-2">แบบ m²</th>
+                <th class="p-2">ขุด m³</th><th class="p-2">ถม m³</th>
+                <th class="p-2">เหล็ก kg</th><th class="p-2">ต้นทุนตรง</th>
+                <th class="p-2 no-print">ลบ</th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+      </section>
 
-        function deleteItem(id) {
-            items = items.filter(i => i.id !== id);
-            updateUI();
-        }
+      <section class="bg-white p-5 rounded-2xl shadow-sm border print-card">
+        <h2 class="text-lg font-semibold mb-3">ราคาวัสดุและค่าแรง — แก้ไขได้</h2>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3" id="rateInputs"></div>
+      </section>
 
-        function updateUI() {
-            const tbody = document.getElementById('tableBody');
-            tbody.innerHTML = '';
-            let totConcrete = 0, totForm = 0, totRebar = 0;
+      <section class="bg-white p-5 rounded-2xl shadow-sm border print-card">
+        <h2 class="text-lg font-semibold mb-3">ค่าดำเนินการและสรุปราคา</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+          <label class="text-sm">Overhead (%)
+            <input id="overhead" type="number" min="0" value="10" class="mt-1 w-full border rounded-lg p-2">
+          </label>
+          <label class="text-sm">กำไร (%)
+            <input id="profit" type="number" min="0" value="10" class="mt-1 w-full border rounded-lg p-2">
+          </label>
+          <label class="text-sm">VAT (%)
+            <input id="vat" type="number" min="0" value="7" class="mt-1 w-full border rounded-lg p-2">
+          </label>
+          <label class="text-sm">หัก ณ ที่จ่าย (%)
+            <input id="wht" type="number" min="0" value="3" class="mt-1 w-full border rounded-lg p-2">
+          </label>
+        </div>
+        <div id="summary" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
+        <p class="text-xs text-slate-500 mt-3">
+          หมายเหตุ: หัก ณ ที่จ่ายแสดงเป็นยอดหักจากยอดก่อน VAT เพื่อประมาณการกระแสเงินรับ
+          อัตราและฐานภาษีจริงให้ตรวจสอบตามประเภทงานและข้อกำหนดที่เกี่ยวข้อง
+        </p>
+      </section>
 
-            items.forEach(item => {
-                totConcrete += item.concrete;
-                totForm += item.formworkArea;
-                totRebar += item.rebarWeightTotal;
-                tbody.innerHTML += `
-                    <tr class="hover:bg-slate-50">
-                        <td class="p-3 font-semibold text-slate-800">${item.name}</td>
-                        <td class="p-3"><span class="bg-slate-100 text-slate-600 px-2 py-1 rounded text-xs">${item.type}</span></td>
-                        <td class="p-3">${item.qty}</td>
-                        <td class="p-3 font-mono">${item.concrete.toFixed(2)}</td>
-                        <td class="p-3 font-mono">${item.formworkArea.toFixed(2)}</td>
-                        <td class="p-3 font-mono">${item.rebarWeightTotal.toFixed(2)} <span class="text-xs text-slate-400">(${item.rebarSize})</span></td>
-                        <td class="p-3"><button onclick="deleteItem(${item.id})" class="text-red-500 hover:text-red-700 font-bold">✕</button></td>
-                    </tr>
-                `;
-            });
+      <section class="bg-white p-5 rounded-2xl shadow-sm border print-card">
+        <h2 class="text-lg font-semibold mb-3">สรุปเหล็กแยกเกรดและขนาด</h2>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="bg-slate-100 text-left"><tr><th class="p-2">เกรด</th><th class="p-2">ขนาด</th><th class="p-2">น้ำหนัก (kg)</th><th class="p-2">น้ำหนัก (ton)</th></tr></thead>
+            <tbody id="rebarRows"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+  <p class="text-xs text-slate-500 mt-6">
+    สูตรเป็นค่าประมาณ: เหล็กหลักคิดระยะทาบจากความยาวเหล็กและความยาวมาตรฐาน;
+    เหล็กปลอกคิดจำนวนจากระยะเรียงและเพิ่มความยาวขอโดยประมาณ
+    โปรดตรวจแบบและข้อกำหนดโครงการก่อนสั่งวัสดุหรือก่อสร้าง
+  </p>
+</div>
 
-            document.getElementById('totalConcrete').innerText = totConcrete.toFixed(2);
-            document.getElementById('totalFormwork').innerText = totForm.toFixed(2);
-            document.getElementById('totalRebar').innerText = totRebar.toFixed(2);
-        }
+<script>
+const unitWeight = { RB6:0.222, RB9:0.499, DB12:0.888, DB16:1.58, DB20:2.47, DB25:3.85, DB28:4.83 };
+const rateDefaults = {
+  concrete: { label:"คอนกรีต (บาท/m³)", value:2500 },
+  rebar: { label:"เหล็กเสริม (บาท/kg)", value:30 },
+  formwork: { label:"ไม้แบบ (บาท/m²)", value:350 },
+  excavation: { label:"ขุดดิน (บาท/m³)", value:150 },
+  backfill: { label:"ถมดิน/ทราย (บาท/m³)", value:200 },
+  laborConc: { label:"ค่าแรงคอนกรีต (บาท/m³)", value:500 },
+  laborRebar: { label:"ค่าแรงผูกเหล็ก (บาท/kg)", value:5 },
+  laborForm: { label:"ค่าแรงไม้แบบ (บาท/m²)", value:150 },
+  laborExc: { label:"ค่าแรงขุด (บาท/m³)", value:0 },
+  laborFill: { label:"ค่าแรงถม (บาท/m³)", value:0 }
+};
+let items = [];
+let rates = JSON.parse(localStorage.getItem("qtoRates") || "null") || Object.fromEntries(
+  Object.entries(rateDefaults).map(([k,v]) => [k,v.value])
+);
 
-        function exportToExcel() {
-            if(items.length === 0) return alert('กรุณาเพิ่มรายการอย่างน้อย 1 รายการก่อน Export');
-            const data = items.map(i => ({
-                'ชื่อองค์อาคาร': i.name,
-                'หมวดหมู่': i.type,
-                'จำนวน': i.qty,
-                'ปริมาตรคอนกรีต (m3)': i.concrete.toFixed(2),
-                'พื้นที่ไม้แบบ (m2)': i.formworkArea.toFixed(2),
-                'ขนาดเหล็ก': i.rebarSize,
-                'น้ำหนักเหล็ก (kg)': i.rebarWeightTotal.toFixed(2)
-            }));
-            const ws = XLSX.utils.json_to_sheet(data);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "QTO_Summary");
-            XLSX.writeFile(wb, "QTO_Structural_Report.xlsx");
-        }
-    </script>
+const $ = id => document.getElementById(id);
+const val = id => Number($(id).value) || 0;
+const money = n => (Number(n)||0).toLocaleString("th-TH",{minimumFractionDigits:2,maximumFractionDigits:2});
+const safe = s => String(s).replace(/[&<>"']/g, c => ({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+}[c]));
+
+function renderRates() {
+  $("rateInputs").innerHTML = Object.entries(rateDefaults).map(([key,def]) => `
+    <label class="text-xs">${def.label}
+      <input type="number" min="0" step="0.01" value="${rates[key] ?? def.value}"
+        data-rate="${key}" class="rate-input mt-1 w-full border rounded-lg p-2">
+    </label>`).join("");
+  document.querySelectorAll(".rate-input").forEach(el => el.addEventListener("input", () => {
+    rates[el.dataset.rate] = Number(el.value) || 0;
+    localStorage.setItem("qtoRates", JSON.stringify(rates));
+    render();
+  }));
+}
+renderRates();
+
+$("qtoForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const type = $("type").value, qty = Math.max(1,val("qty"));
+  const name = $("name").value.trim();
+  const w = val("width"), L = val("length"), d = val("depth"), rise = val("rise");
+  if (!name || w < 0 || L < 0 || d < 0) return alert("กรุณาตรวจสอบชื่อและขนาดองค์อาคาร");
+
+  let concrete = 0, form = 0, excavation = 0, backfill = 0;
+  if (type === "Footing") {
+    concrete = w*L*d*qty;
+    form = 2*(w+L)*d*qty;
+    excavation = (w+2*val("excClear"))*(L+2*val("excClear"))*val("excDepth")*qty;
+  } else if (type === "Ground Beam") {
+    concrete = w*L*d*qty;
+    form = (2*d+w)*L*qty;
+    excavation = (w+2*val("excClear"))*L*val("excDepth")*qty;
+  } else if (type === "Stub Column" || type === "Column") {
+    concrete = w*d*L*qty;
+    form = 2*(w+d)*L*qty;
+    if (type === "Stub Column") {
+      excavation = (w+2*val("excClear"))*(d+2*val("excClear"))*val("excDepth")*qty;
+    }
+  } else if (type === "Beam") {
+    concrete = w*d*L*qty;
+    form = (2*d+w)*L*qty;
+  } else if (type === "Slab on Ground") {
+    concrete = w*L*d*qty;
+    form = 2*(w+L)*d*qty;
+  } else if (type === "Elevated Slab" || type === "Precast Slab") {
+    concrete = w*L*d*qty;
+    form = (w*L + 2*(w+L)*d)*qty;
+  } else if (type === "Ground Stair") {
+    const slope = Math.sqrt(L*L + rise*rise);
+    concrete = (w*slope*d + 0.5*w*L*rise)*qty;
+    form = (w*slope + rise*slope)*qty;
+  }
+
+  const grade = $("grade").value;
+  const mainSize = $("barSize").value;
+  const diaM = parseInt(mainSize.replace(/\D/g,""),10)/1000;
+  const stock = Math.max(1,val("stockLength"));
+  const laps = Math.max(0,Math.ceil(L/stock)-1);
+  const lapLength = (val("lapRatio")*diaM);
+  const mainLength = L + laps*lapLength;
+  let rebarBase = val("barCount") * mainLength * (unitWeight[mainSize] || 0) * qty;
+  let stirrupKg = 0;
+  const stirrupSize = $("stirrupSize").value;
+  const spacing = Math.max(0.01,val("spacing"));
+  if (stirrupSize !== "NONE" && unitWeight[stirrupSize]) {
+    const stirrupDia = parseInt(stirrupSize.replace(/\D/g,""),10)/1000;
+    const n = (Math.ceil(L/spacing)+1)*qty;
+    const innerW = Math.max(0,w-2*val("cover"));
+    const innerD = Math.max(0,d-2*val("cover"));
+    const hookLength = 2*val("hookRatio")*stirrupDia;
+    const stirrupLength = 2*(innerW+innerD)+hookLength;
+    stirrupKg = n*stirrupLength*unitWeight[stirrupSize];
+  }
+
+  // โครงหลังคารับน้ำหนักเหล็กที่ผู้ใช้กรอกโดยตรง
+  if (type === "Roof Truss") {
+    concrete = 0; form = 0; excavation = 0; backfill = 0;
+    rebarBase = val("manualSteel")*qty;
+    stirrupKg = 0;
+  }
+
+  const wastePct = Math.max(0,val("waste"))/100;
+  const rebarNoWaste = rebarBase + stirrupKg;
+  const rebarTotal = rebarNoWaste*(1+wastePct);
+
+  // ประมาณปริมาตรถม: ปริมาตรขุด - คอนกรีต - ทรายรองพื้น
+  if (excavation > 0) {
+    const sand = Math.min(excavation, val("sandBed") * excavation / Math.max(val("excDepth"),0.01));
+    backfill = Math.max(0, excavation - concrete - sand);
+  }
+
+  items.push({
+    id: Date.now()+Math.random(), name, type, qty, grade, mainSize, stirrupSize,
+    concrete, form, excavation, backfill, rebar:rebarTotal,
+    rebarNoWaste, wastePct, lapLength, laps
+  });
+  $("qtoForm").reset();
+  $("qty").value=1; $("width").value="0.20"; $("length").value="4.00"; $("depth").value="0.40";
+  $("barCount").value=4; $("stockLength").value=10; $("lapRatio").value=60; $("waste").value=5;
+  $("spacing").value=0.15; $("cover").value=0.04; $("hookRatio").value=10;
+  $("excClear").value=0.30; $("excDepth").value=0.80; $("sandBed").value=0.05; $("rise").value=0;
+  render();
+});
+
+function calcTotals() {
+  const t = items.reduce((a,i) => {
+    a.concrete += i.concrete; a.form += i.form; a.exc += i.excavation;
+    a.fill += i.backfill; a.rebar += i.rebar; return a;
+  }, {concrete:0,form:0,exc:0,fill:0,rebar:0});
+
+  const material = t.concrete*(rates.concrete||0) + t.rebar*(rates.rebar||0) +
+    t.form*(rates.formwork||0) + t.exc*(rates.excavation||0) + t.fill*(rates.backfill||0);
+  const labor = t.concrete*(rates.laborConc||0) + t.rebar*(rates.laborRebar||0) +
+    t.form*(rates.laborForm||0) + t.exc*(rates.laborExc||0) + t.fill*(rates.laborFill||0);
+  const direct = material+labor;
+  const overhead = direct*val("overhead")/100;
+  const profit = (direct+overhead)*val("profit")/100;
+  const preVat = direct+overhead+profit;
+  const vat = preVat*val("vat")/100;
+  const wht = preVat*val("wht")/100;
+  return {...t,material,labor,direct,overhead,profit,preVat,vat,wht,net:preVat+vat-wht};
+}
+
+function render() {
+  const tbody = $("rows");
+  tbody.innerHTML = items.map(i => {
+    const direct = i.concrete*(rates.concrete||0)+i.rebar*(rates.rebar||0)+i.form*(rates.formwork||0)+
+      i.excavation*(rates.excavation||0)+i.backfill*(rates.backfill||0)+
+      i.concrete*(rates.laborConc||0)+i.rebar*(rates.laborRebar||0)+i.form*(rates.laborForm||0)+
+      i.excavation*(rates.laborExc||0)+i.backfill*(rates.laborFill||0);
+    return `<tr class="border-b">
+      <td class="p-2"><b>${safe(i.name)}</b><div class="text-xs text-slate-500">${safe(i.type)} · ${i.grade}</div></td>
+      <td class="p-2">${i.qty}</td><td class="p-2">${i.concrete.toFixed(2)}</td>
+      <td class="p-2">${i.form.toFixed(2)}</td><td class="p-2">${i.excavation.toFixed(2)}</td>
+      <td class="p-2">${i.backfill.toFixed(2)}</td><td class="p-2">${i.rebar.toFixed(2)}</td>
+      <td class="p-2">${money(direct)}</td>
+      <td class="p-2 no-print"><button onclick="removeItem('${i.id}')" class="text-red-600">ลบ</button></td>
+    </tr>`;
+  }).join("");
+
+  const t = calcTotals();
+  $("summary").innerHTML = [
+    ["ค่าวัสดุ",t.material],["ค่าแรง",t.labor],["ต้นทุนตรง",t.direct],
+    ["Overhead",t.overhead],["กำไร",t.profit],["ก่อน VAT",t.preVat],
+    ["VAT",t.vat],["หัก ณ ที่จ่าย",t.wht],["ยอดรับสุทธิประมาณ",t.net]
+  ].map(([label,value]) => `<div class="bg-slate-50 p-3 rounded-xl">
+      <div class="text-xs text-slate-500">${label}</div><div class="font-semibold">${money(value)} บาท</div>
+    </div>`).join("");
+
+  const groups = {};
+  items.forEach(i => {
+    const mainKey = `${i.grade}|${i.mainSize}`;
+    groups[mainKey] = (groups[mainKey]||0)+i.rebar*(i.rebarNoWaste ? (i.rebarNoWaste/(i.rebarNoWaste*(1+i.wastePct/100))) : 1);
+    if (i.stirrupSize !== "NONE") {
+      // น้ำหนักเหล็กรวมของปลอกแสดงรวมในรายการขนาดปลอกโดยประมาณ
+      const stirrupKey = `${i.grade}|${i.stirrupSize}`;
+      groups[stirrupKey] = (groups[stirrupKey]||0);
+    }
+  });
+  $("rebarRows").innerHTML = Object.entries(groups).map(([key,kg]) => {
+    const [g,s] = key.split("|");
+    return `<tr class="border-b"><td class="p-2">${g}</td><td class="p-2">${s}</td><td class="p-2">${kg.toFixed(2)}</td><td class="p-2">${(kg/1000).toFixed(3)}</td></tr>`;
+  }).join("") || `<tr><td colspan="4" class="p-3 text-slate-500">ยังไม่มีรายการ</td></tr>`;
+}
+window.removeItem = id => { items = items.filter(i => String(i.id)!==String(id)); render(); };
+["overhead","profit","vat","wht"].forEach(id => $(id).addEventListener("input",render));
+
+function exportExcel() {
+  if (!items.length) return alert("กรุณาเพิ่มรายการก่อน Export");
+  if (!window.XLSX) return alert("โหลดไลบรารี Excel ไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เน็ต");
+  const wb = XLSX.utils.book_new();
+  const boq = items.map(i => ({
+    "ชื่อ":i.name,"ประเภท":i.type,"จำนวน":i.qty,"เกรดเหล็ก":i.grade,
+    "คอนกรีต (m3)":Number(i.concrete.toFixed(3)),"ไม้แบบ (m2)":Number(i.form.toFixed(3)),
+    "ขุดดิน (m3)":Number(i.excavation.toFixed(3)),"ถมดิน (m3)":Number(i.backfill.toFixed(3)),
+    "เหล็กหลัก":i.mainSize,"เหล็กปลอก":i.stirrupSize,
+    "เหล็กรวมรวมเผื่อเศษ (kg)":Number(i.rebar.toFixed(2)),
+    "เผื่อเศษ (%)":i.wastePct,"ระยะทาบต่อจุด (m)":Number(i.lapLength.toFixed(3)),
+    "จำนวนจุดทาบโดยประมาณ":i.laps
+  }));
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(boq),"BOQ");
+  const t = calcTotals();
+  const summary = [
+    {รายการ:"ปริมาตรคอนกรีตรวม (m3)",จำนวน:t.concrete},
+    {รายการ:"พื้นที่ไม้แบบรวม (m2)",จำนวน:t.form},
+    {รายการ:"ปริมาตรขุดดินรวม (m3)",จำนวน:t.exc},
+    {รายการ:"ปริมาตรถมรวม (m3)",จำนวน:t.fill},
+    {รายการ:"เหล็กรวม (kg)",จำนวน:t.rebar},
+    {รายการ:"เหล็กรวม (ton)",จำนวน:t.rebar/1000},
+    {รายการ:"ค่าวัสดุ (บาท)",จำนวน:t.material},
+    {รายการ:"ค่าแรง (บาท)",จำนวน:t.labor},
+    {รายการ:"ต้นทุนตรง (บาท)",จำนวน:t.direct},
+    {รายการ:"Overhead (บาท)",จำนวน:t.overhead},
+    {รายการ:"กำไร (บาท)",จำนวน:t.profit},
+    {รายการ:"ก่อน VAT (บาท)",จำนวน:t.preVat},
+    {รายการ:"VAT (บาท)",จำนวน:t.vat},
+    {รายการ:"หัก ณ ที่จ่าย (บาท)",จำนวน:t.wht},
+    {รายการ:"ยอดรับสุทธิประมาณ (บาท)",จำนวน:t.net}
+  ];
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(summary),"Summary");
+  const rateData = Object.entries(rateDefaults).map(([key,d])=>({รายการ:d.label,ราคา:rates[key]||0}));
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rateData),"Rates");
+  XLSX.writeFile(wb,"Structural_QTO_BOQ.xlsx");
+}
+render();
+</script>
 </body>
 </html>
