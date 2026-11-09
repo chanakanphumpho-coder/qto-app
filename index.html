@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Structural QTO & BOQ Pro - Ultimate Professional Edition v14</title>
+  <title>Structural QTO & BOQ Pro - Ultimate Professional Edition v22</title>
   <script>
     tailwind = { config: { darkMode: 'class' } }
   </script>
@@ -42,9 +42,9 @@
       <div>
         <h1 class="text-2xl font-bold flex items-center gap-2">
           🏗️ Structural QTO & BOQ Pro 
-          <span class="text-xs bg-blue-600 text-white px-2.5 py-1 rounded-md font-normal no-print">Ultimate Pro v14</span>
+          <span class="text-xs bg-emerald-600 text-white px-2.5 py-1 rounded-md font-normal no-print">Ultimate Pro v22</span>
         </h1>
-        <p class="text-slate-300 text-sm no-print">ระบบถอดปริมาณและประมาณราคางานโครงสร้าง ค.ส.ล. (มาตรฐานวิศวกรรมการประเมินราคา)</p>
+        <p class="text-slate-300 text-sm no-print">ระบบถอดปริมาณและประมาณราคางานโครงสร้าง ค.ส.ล. — <span class="text-amber-400">⚠️ เป็นการประมาณการเบื้องต้น (Preliminary Estimate) ไม่ใช่รายการตัดเหล็ก (Cutting List) กรุณาตรวจเทียบ Shop Drawing ทุกครั้งก่อนใช้งานจริง</span></p>
       </div>
       <div class="flex gap-2 no-print flex-wrap items-center">
         <button onclick="toggleDarkMode()" class="bg-slate-800 hover:bg-slate-700 text-amber-400 p-2.5 rounded-xl text-sm border border-slate-700 transition" title="สลับโหมดมืด/สว่าง">
@@ -117,7 +117,7 @@
           <button type="button" onclick="applyPreset('Ground Beam', 0.2, 4.0, 0.4, 'GB-Std')" class="bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 text-blue-600 dark:text-blue-300 p-2 rounded-lg border border-blue-200 dark:border-blue-800 text-left font-medium">
             คานคอดิน 0.2x0.4m (ยาว 4ม.)
           </button>
-          <button type="button" onclick="applyPreset('Stub Column', 0.2, 0.8, 0.2, 'SC-Std')" class="bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 text-blue-600 dark:text-blue-300 p-2 rounded-lg border border-blue-200 dark:border-blue-800 text-left font-medium" title="กว้าง 0.2, สูง 0.8, ลึกฐาน 0.2">
+          <button type="button" onclick="applyPreset('Stub Column', 0.2, 0.8, 0.2, 'SC-Std')" class="bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 text-blue-600 dark:text-blue-300 p-2 rounded-lg border border-blue-200 dark:border-blue-800 text-left font-medium">
             เสาตอม่อ 0.2x0.2x0.8m
           </button>
           <button type="button" onclick="applyPreset('Slab on Ground', 4.0, 4.0, 0.10, 'SOG-Std')" class="bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 text-blue-600 dark:text-blue-300 p-2 rounded-lg border border-blue-200 dark:border-blue-800 text-left font-medium">
@@ -154,29 +154,30 @@
           <label class="text-sm">ชื่อองค์อาคาร
             <input id="name" required placeholder="เช่น GB1, C1" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
-          <label class="text-sm">จำนวน (qty) — จำนวนเต็มบวก
-            <input id="qty" type="number" min="1" step="1" value="1" required class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+          <label class="text-sm">จำนวน (qty) — (1 ถึง 100,000)
+            <input id="qty" type="number" min="1" max="100000" step="1" value="1" required class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
         </div>
 
         <div class="grid grid-cols-3 gap-2">
           <label class="text-xs">กว้าง (m) *
-            <input id="width" type="number" min="0.001" step="0.01" value="0.20" required class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+            <input id="width" type="number" min="0.001" max="100" step="0.01" value="0.20" required class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
           <label class="text-xs">ยาว / ช่วง (m) *
-            <input id="length" type="number" min="0.001" step="0.01" value="4.00" required class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+            <input id="length" type="number" min="0.001" max="1000" step="0.01" value="4.00" required class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
-          <label class="text-xs">ลึก / หนา (m) *
-            <input id="depth" type="number" min="0.001" step="0.01" value="0.40" required class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+          <label class="text-xs" id="depthLabel"><span id="depthLabelText">ลึก / หนา (m) *</span>
+            <input id="depth" type="number" min="0.001" max="10" step="0.01" value="0.40" required class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
         </div>
+        <p id="depthHint" class="text-[11px] text-slate-400 hidden">ℹ️ สำหรับพื้นสำเร็จรูป: ความหนานี้คือ <b>ความหนา Topping</b> (เหล็กเสริมที่คำนวณคือเหล็กตะแกรง/Topping ไม่รวมตัวแผ่นสำเร็จรูป)</p>
 
-        <label class="block text-xs">ระยะยกบันไดรวม (m) — ใช้กับบันไดคอดิน (Ground Stair)
-          <input id="rise" type="number" min="0" step="0.01" value="0" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+        <label class="block text-xs" id="riseContainer">ระยะยกบันไดรวม (m) — บันไดคอดินอิงโมเดลสูตรลาด (เทียบแบบจริง)
+          <input id="rise" type="number" min="0" max="50" step="0.01" value="0" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
         </label>
 
         <label class="block text-xs">ต้นทุนเพิ่มเติมต่อชิ้น (บาท) — โปรแกรมจะคูณจำนวนให้ (Extra Cost / Unit)
-          <input id="extraCost" type="number" min="0" step="0.01" value="0" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+          <input id="extraCost" type="number" min="0" max="1000000000" step="0.01" value="0" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
         </label>
 
         <label class="block text-xs">หมายเหตุ / บันทึกย่อหน้างาน
@@ -187,15 +188,15 @@
         <div id="rebarSectionContainer">
           <h3 id="rebarSectionTitle" class="font-semibold text-sm flex justify-between items-center mb-2">
             <span>เหล็กเสริมโดยประมาณ</span>
-            <span class="text-[10px] text-amber-500 font-normal">⚠️ ค่าประมาณเบื้องต้น (ไม่ใช่ Bar Bending Schedule)</span>
+            <span class="text-[10px] text-amber-500 font-normal">⚠️ คำนวณหักระยะหุ้มคอนกรีต (ไม่รวมฝังยึด/งอปลาย)</span>
           </h3>
           <div class="grid grid-cols-2 gap-3" id="rcRebarFields">
-            <label class="text-xs">เกรดเหล็ก
+            <label class="text-xs">เกรดเหล็กหลัก
               <select id="grade" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
                 <option selected>SR24</option><option>SD30</option><option>SD40</option><option>SD50</option>
               </select>
             </label>
-            <label class="text-xs">ขนาดเหล็ก
+            <label class="text-xs">ขนาดเหล็กหลัก
               <select id="barSize" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
                 <option value="RB6">RB6</option><option value="RB9">RB9</option>
                 <option value="RB12" selected>RB12</option><option value="RB15">RB15</option>
@@ -206,26 +207,26 @@
             </label>
 
             <div id="longitudinalFields" class="col-span-2 grid grid-cols-2 gap-3">
-              <label class="text-xs">จำนวนเหล็กหลัก (เส้น/ชิ้น) — จำนวนเต็มไม่ติดลบ (ยอมรับ 0 ได้)
-                <input id="barCount" type="number" min="0" step="1" value="4" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+              <label class="text-xs">จำนวนเหล็กหลัก (เส้น/ชิ้น) — (0 ถึง 100)
+                <input id="barCount" type="number" min="0" max="100" step="1" value="4" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
               </label>
             </div>
 
             <div id="matFields" class="col-span-2 grid grid-cols-2 gap-3 hidden">
-              <label class="text-xs">ระยะเรียง X (m) (>0)
-                <input id="matSpacingX" type="number" min="0.001" step="0.01" value="0.20" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+              <label class="text-xs">ระยะเรียง X (m) (0.001 - 10)
+                <input id="matSpacingX" type="number" min="0.001" max="10" step="0.01" value="0.20" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
               </label>
-              <label class="text-xs">ระยะเรียง Y (m) (>0)
-                <input id="matSpacingY" type="number" min="0.001" step="0.01" value="0.20" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+              <label class="text-xs">ระยะเรียง Y (m) (0.001 - 10)
+                <input id="matSpacingY" type="number" min="0.001" max="10" step="0.01" value="0.20" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
               </label>
               <div class="col-span-2 flex gap-4 text-xs pt-1">
                 <label><input type="checkbox" id="matBottom" checked> ตะแกรงล่าง</label>
-                <label><input type="checkbox" id="matTop" checked> ตะแกรงบน</label>
+                <label><input type="checkbox" id="matTop"> ตะแกรงบน (แนะนำเลือกเฉพาะฐานราก/พื้นรับโมเมนต์ดัดสองทาง)</label>
               </div>
             </div>
 
-            <label class="text-xs">ความยาวเหล็กมาตรฐาน (m) (>0)
-              <input id="stockLength" type="number" min="1" step="0.1" value="10" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+            <label class="text-xs">ความยาวเหล็กสต็อก (m) — (1 ถึง 50)
+              <input id="stockLength" type="number" min="1" max="50" step="0.1" value="10" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
             </label>
             <label class="text-xs">ระยะทาบ (เท่าของ d)
               <select id="lapRatio" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
@@ -237,12 +238,12 @@
           <!-- Roof Truss Manual Weight Field -->
           <div id="roofTrussFields" class="hidden pt-1">
             <label class="text-xs block">น้ำหนักโครงหลังคา/ทรัสส์รวม (kg/ชิ้น)
-              <input id="manualSteel" type="number" min="0" step="0.1" value="0" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+              <input id="manualSteel" type="number" min="0" max="1000000" step="0.1" value="0" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
             </label>
           </div>
 
           <div class="grid grid-cols-2 gap-3 pt-2 mt-2 border-t dark:border-slate-800">
-            <label class="text-xs">เผื่อเศษเหล็ก (%) — 0-100% (รองรับ 0%)
+            <label class="text-xs">เผื่อเศษเหล็ก (%) — 0-100%
               <input id="waste" type="number" min="0" max="100" value="5" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
             </label>
           </div>
@@ -251,31 +252,36 @@
         <div id="stirrupFields" class="grid grid-cols-2 gap-3 pt-2 border-t dark:border-slate-800">
           <label class="text-xs">เหล็กปลอก
             <select id="stirrupSize" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
-              <option value="NONE">ไม่มี</option><option value="RB6" selected>RB6</option><option value="RB9">RB9</option>
+              <option value="NONE">ไม่มี (NONE)</option><option value="RB6" selected>RB6</option><option value="RB9">RB9</option>
+            </select>
+          </label>
+          <label class="text-xs">เกรดเหล็กปลอก
+            <select id="stirrupGrade" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+              <option selected>SR24</option><option>SD30</option><option>SD40</option><option>SD50</option>
             </select>
           </label>
           <label class="text-xs">ระยะเรียงปลอก (m) (>0)
-            <input id="spacing" type="number" min="0.001" step="0.01" value="0.15" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+            <input id="spacing" type="number" min="0.001" max="10" step="0.01" value="0.15" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
-          <label class="text-xs">ระยะหุ้มคอนกรีต (m) (รองรับ 0)
-            <input id="cover" type="number" min="0" step="0.005" value="0.04" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+          <label class="text-xs">ระยะหุ้มคอนกรีต (m)
+            <input id="cover" type="number" min="0" max="1" step="0.005" value="0.04" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
-          <label class="text-xs">ขอปลอก (เท่าของ d/ข้าง)
-            <input id="hookRatio" type="number" min="0" value="10" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+          <label class="text-xs col-span-2">ขอปลอก (เท่าของ d/ข้าง)
+            <input id="hookRatio" type="number" min="0" max="100" value="10" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
         </div>
 
         <hr class="dark:border-slate-800">
         <h3 class="font-semibold text-sm">งานดิน & คอนกรีตหยาบ</h3>
         <div class="grid grid-cols-2 gap-3">
-          <label class="text-xs">ระยะเผื่อขุดต่อข้าง (m) (รองรับ 0)
-            <input id="excClear" type="number" min="0" step="0.05" value="0.30" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+          <label class="text-xs">ระยะเผื่อขุดต่อข้าง (m)
+            <input id="excClear" type="number" min="0" max="10" step="0.05" value="0.30" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
           <label class="text-xs">ความลึกขุด (m)
-            <input id="excDepth" type="number" min="0" step="0.05" value="0.80" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+            <input id="excDepth" type="number" min="0" max="50" step="0.05" value="0.80" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
-          <label class="text-xs">ทรายรองพื้น (m) (รองรับ 0)
-            <input id="sandBed" type="number" min="0" step="0.01" value="0.05" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+          <label class="text-xs">ทรายรองพื้น (m)
+            <input id="sandBed" type="number" min="0" max="5" step="0.01" value="0.05" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
           <div class="text-xs flex items-center pt-4">
             <label class="flex items-center gap-2 cursor-pointer">
@@ -292,10 +298,13 @@
     </section>
 
     <!-- Results & Summary Section -->
-    <main class="lg:col-span-2 space-y-6">
+    <section class="lg:col-span-2 space-y-6">
       <section class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border dark:border-slate-800 print-card">
         <div class="flex flex-wrap justify-between items-center gap-3 mb-3">
-          <h2 class="text-lg font-semibold">รายการถอดแบบ / BOQ</h2>
+          <div>
+            <h2 class="text-lg font-semibold">รายการถอดแบบ / BOQ</h2>
+            <p class="text-[11px] text-amber-600 dark:text-amber-400">⚠️ เอกสารและรายการคำนวณนี้เป็น <b>"ประมาณการเบื้องต้น (Preliminary Estimate)"</b> ไม่ใช่รายการตัดเหล็ก (Cutting List) กรุณาตรวจเทียบแบบ Shop Drawing ทุกครั้ง</p>
+          </div>
           <div class="flex gap-2 no-print">
             <input id="searchQuery" oninput="render()" placeholder="🔍 ค้นหารายการ..." class="text-xs bg-slate-50 dark:bg-slate-800 border dark:border-slate-700 rounded-lg px-3 py-1.5 w-36 md:w-48">
             <select id="filterType" onchange="render()" class="text-xs bg-slate-50 dark:bg-slate-800 border dark:border-slate-700 rounded-lg px-2 py-1.5">
@@ -323,9 +332,9 @@
                 <th class="p-2">คอนกรีต m³ (หยาบ)</th>
                 <th class="p-2">แบบ m² / แผ่นพื้น m²</th>
                 <th class="p-2">ขุด m³</th>
-                <th class="p-2">ถม m³ / ทราย m³</th>
-                <th class="p-2" title="เหล็กสุทธิ+ทาบ (ยังไม่รวมเผื่อเศษ)">เหล็กติดตั้ง/สุทธิ (kg)</th>
-                <th class="p-2" title="เหล็กสุทธิ+ทาบ+เผื่อเศษ">เหล็กจัดซื้อ/รวม (kg)</th>
+                <th class="p-2">ถมประมาณ m³ / ทราย m³</th>
+                <th class="p-2">เหล็กติดตั้ง/สุทธิ (kg)</th>
+                <th class="p-2">เหล็กจัดซื้อ/รวม (kg)</th>
                 <th class="p-2">ต้นทุนรวม</th>
                 <th class="p-2 no-print">จัดการ</th>
               </tr>
@@ -343,7 +352,7 @@
 
       <!-- Rates Configuration -->
       <section class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border dark:border-slate-800 print-card no-print">
-        <h2 class="text-lg font-semibold mb-3">ราคาวัสดุและค่าแรง — <span class="text-xs font-normal text-amber-500">(ราคาเริ่มต้น: ตัวอย่างสำหรับอ้างอิงและปรับแก้ตามพื้นที่/ช่วงเวลา - อัตราราคาเหล็กใช้ราคาเดียวต่อกิโลกรัม)</span></h2>
+        <h2 class="text-lg font-semibold mb-3">ราคาวัสดุและค่าแรง — <span class="text-xs font-normal text-amber-500">(แยกเรทราคาเหล็กตามเกรด SR24/SD30/SD40/SD50 อิสระ)</span></h2>
         <div class="grid grid-cols-2 md:grid-cols-3 gap-3" id="rateInputs"></div>
       </section>
 
@@ -360,7 +369,7 @@
           <label class="text-sm">VAT (%) [0-100]
             <input id="vat" type="number" min="0" max="100" value="7" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
-          <label class="text-sm">หัก ณ ที่จ่าย (%) [0-100] — คำนวณจากยอดก่อน VAT
+          <label class="text-sm">หัก ณ ที่จ่าย (%) [0-100]
             <input id="wht" type="number" min="0" max="100" value="3" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
         </div>
@@ -369,7 +378,7 @@
 
       <!-- Rebar Summary Table -->
       <section class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border dark:border-slate-800 print-card">
-        <h2 class="text-lg font-semibold mb-3">สรุปเหล็กเสริม ค.ส.ล. และเหล็กโครงหลังคาแยกประเภท</h2>
+        <h2 class="text-lg font-semibold mb-3">สรุปเหล็กเสริม ค.ส.ล. และเหล็กโครงหลังคาแยกประเภทตามเกรด</h2>
         <div class="overflow-x-auto">
           <table class="w-full text-sm">
             <thead class="bg-slate-100 dark:bg-slate-800 text-left text-xs">
@@ -384,8 +393,13 @@
             <tbody id="rebarRows"></tbody>
           </table>
         </div>
-        <p class="text-[11px] text-slate-400 mt-3">
-          ⚠️ <b>ข้อจำกัดสำคัญทางวิศวกรรม (Engineering Disclaimer & BBS Notice):</b> ปริมาณเหล็กเสริมในรายงานนี้เป็นการถอดประมาณการเบื้องต้น (QTO Estimation) ซึ่งคำนวณจากความยาวสุทธิรวมระยะทาบตามสูตรมาตรฐานสมมติฐานทางวิศวกรรม <b>ไม่ใช่ Bar Bending Schedule (BBS)</b> และยังไม่ครอบคลุมระยะฝังยึด (Development Length) ขอตะขอ (Hooks) งอปลายตาม พรบ./วสท., การจัดการเศษตัด (Cut Waste Optimization), หรือการใช้เหล็กคงเหลือร่วมกัน <b>ห้ามนำไปใช้เป็นใบสั่งซื้อวัสดุก่อสร้าง (Purchase Order) ขั้นสุดท้ายโดยเด็ดขาด</b> จนกว่าจะผ่านการตรวจสอบรายละเอียดแบบก่อสร้างและจัดทำรายการตัดเหล็ก (BBS) โดยวิศวกรผู้เชี่ยวชาญ ปริมาตรงานถมดินอ้างอิงสมมติฐานหยาบ (Excavation - Concrete - Lean - Sand) หากหน้างานจริงมีรูปร่างหลุมขุดหรือระดับต่างจากสมมติฐาน ควรปรับแก้พารามิเตอร์ให้สอดคล้อง
+        <p class="text-[11px] text-slate-400 mt-3 leading-relaxed">
+          ⚠️ <b>ข้อจำกัดสำคัญและหมายเหตุวิศวกรรม (Engineering & Modeling Disclaimers - Preliminary Estimate):</b><br>
+          1. <b>เหล็กเสริมและรอยต่อทาบ:</b> คำนวณความยาวสุทธิรวมรอยต่อทาบและหักระยะหุ้มคอนกรีตเรียบร้อยแล้ว โดยการหักระยะหุ้ม ($2 \times \text{cover}$) และสูตรทาบเป็นเพียงสมมติฐานการประมาณการเบื้องต้น (Preliminary Modeling) ยังไม่ได้แทนที่รายละเอียดระยะฝังยึด (Development Length) และงอปลายตามมาตรฐาน วสท. เอกสารนี้ห้ามนำไปใช้เป็นรายการตัดเหล็ก (Cutting List)<br>
+          2. <b>พื้นสำเร็จรูป:</b> คำนวณเฉพาะ <b>Topping (ชั้นทับหน้า)</b> และเหล็กเสริม Topping ไม่รวมตัวแผ่นสำเร็จรูป เพื่อป้องกันการคำนวณปริมาตรและเหล็กซ้ำซ้อน<br>
+          3. <b>บันไดคอดิน & แบบหล่อ:</b> อิงตามโมเดลสูตรทางเรขาคณิตมาตรฐาน ควรเทียบเทียบรายละเอียดกับแบบ Shop Drawing จริง<br>
+          4. <b>งานดินถม:</b> แสดงเป็น <b>"ถมประมาณ"</b> จากหลุมขุดลบโครงสร้าง หากหน้างานจริงมีการบดอัดควรปรับแก้ตามสภาพจริง<br>
+          5. <b>ภาษีหัก ณ ที่จ่าย (WHT):</b> การหักภาษี ณ ที่จ่ายคำนวณจากยอดก่อน VAT เป็นเพียงสมมติฐานเริ่มต้น ควรถอดปรับเปลี่ยนตามเงื่อนไขสัญญาจริงของผู้รับจ้าง
         </p>
       </section>
     </main>
@@ -405,7 +419,10 @@ const supportedTypes = ["Footing", "Ground Beam", "Stub Column", "Slab on Ground
 const rateDefaults = {
   concrete:{label:"คอนกรีตโครงสร้าง (บาท/m³)",value:2500},
   leanConc:{label:"คอนกรีตหยาบ (บาท/m³)",value:1800},
-  rebar:{label:"เหล็กเสริม ค.ส.ล. (บาท/kg)",value:30},
+  rebarSR24:{label:"เหล็กเกรด SR24 (บาท/kg)",value:28},
+  rebarSD30:{label:"เหล็กเกรด SD30 (บาท/kg)",value:29},
+  rebarSD40:{label:"เหล็กเกรด SD40 (บาท/kg)",value:30},
+  rebarSD50:{label:"เหล็กเกรด SD50 (บาท/kg)",value:32},
   roofTrussSteel:{label:"เหล็กโครงหลังคา/ทรัสส์ (บาท/kg)",value:45},
   formwork:{label:"ไม้แบบ (บาท/m²)",value:350},
   precastSlab:{label:"แผ่นพื้นสำเร็จรูป (บาท/m²)",value:240},
@@ -430,11 +447,44 @@ const safe = s => String(s ?? "").replace(/[&<>"']/g, c => ({
   "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
 }[c]));
 
-function sanitizeNumber(value, min = 0, max = Infinity, fallback = 0) {
-  if (value === "" || value === null || value === undefined) return fallback;
+function sanitizeNumber(value, min = 0, max = Infinity, fallback = 0, strict = false, fieldName = "ค่าข้อมูล") {
+  if (value === "" || value === null || value === undefined) {
+    if (strict) throw new Error(`กรุณาระบุช่อง "${fieldName}"`);
+    return fallback;
+  }
   const n = Number(value);
-  if (!Number.isFinite(n) || n < min || n > max) return fallback;
+  if (!Number.isFinite(n) || n < min || n > max) {
+    if (strict) throw new Error(`ช่อง "${fieldName}" มีค่าไม่ถูกต้อง (ต้องอยู่ระหว่าง ${min} ถึง ${max}, พบค่า: ${value})`);
+    return fallback;
+  }
   return n;
+}
+
+// ตรวจสอบวันที่ปฏิทินจริงหลังแปลง (ป้องกันวันที่ไม่มีอยู่จริง เช่น 2025-99-99)
+function excelDateToISO(serial) {
+  if (typeof serial === 'number' && !isNaN(serial)) {
+    const utc_days = Math.floor(serial - 25569);
+    const utc_value = utc_days * 86400;
+    const date_info = new Date(utc_value * 1000);
+    if (!isNaN(date_info.getTime())) {
+      const y = date_info.getUTCFullYear();
+      const m = String(date_info.getUTCMonth() + 1).padStart(2, '0');
+      const d = String(date_info.getUTCDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+  }
+  const str = String(serial || "").trim();
+  const match = str.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (match) {
+    const y = parseInt(match[1], 10);
+    const m = parseInt(match[2], 10);
+    const d = parseInt(match[3], 10);
+    const dateObj = new Date(y, m - 1, d);
+    if (dateObj.getFullYear() === y && dateObj.getMonth() === m - 1 && dateObj.getDate() === d) {
+      return str;
+    }
+  }
+  return todayLocal();
 }
 
 let items = [];
@@ -443,8 +493,13 @@ let rates = (() => {
   try {
     const saved = JSON.parse(localStorage.getItem("qtoRates"));
     if (saved && typeof saved === 'object') {
+      const legacyRebar = sanitizeNumber(saved.rebar, 0, 1000000, 30);
       return Object.fromEntries(Object.entries(rateDefaults).map(([k,v]) => {
-        const valNum = sanitizeNumber(saved[k], 0, 1000000, v.value);
+        let defVal = v.value;
+        if (k.startsWith("rebar") && saved[k] === undefined && saved.rebar !== undefined) {
+          defVal = legacyRebar;
+        }
+        const valNum = sanitizeNumber(saved[k], 0, 1000000, defVal);
         return [k, valNum];
       }));
     }
@@ -482,9 +537,12 @@ function isMatType(type) {
 function isStirrupType(type) {
   return ["Ground Beam","Beam","Stub Column","Column"].includes(type);
 }
+
 function updateRebarFields() {
   const type = $("type").value;
   const isTruss = type === "Roof Truss";
+  const isPrecast = type === "Precast Slab";
+  const isStair = type === "Ground Stair";
   const mat = isMatType(type);
   
   $("rcRebarFields").classList.toggle("hidden", isTruss);
@@ -492,6 +550,20 @@ function updateRebarFields() {
   $("matFields").classList.toggle("hidden", !mat || isTruss);
   $("stirrupFields").classList.toggle("hidden", !isStirrupType(type) || isTruss);
   $("longitudinalFields").classList.toggle("hidden", mat || isTruss);
+
+  if (isPrecast) {
+    $("depthLabelText").textContent = "ความหนา Topping (m) *";
+    $("depthHint").classList.remove("hidden");
+  } else {
+    $("depthLabelText").textContent = "ลึก / หนา (m) *";
+    $("depthHint").classList.add("hidden");
+  }
+
+  if (isStair) {
+    $("riseContainer").classList.remove("hidden");
+  } else {
+    $("riseContainer").classList.add("hidden");
+  }
 }
 $("type").addEventListener("change", updateRebarFields);
 updateRebarFields();
@@ -528,35 +600,64 @@ function persistCurrent() {
 }
 
 function loadState(state) {
-  if (!state) return;
+  if (!state || typeof state !== 'object') throw new Error("สถานะข้อมูลไม่ถูกต้อง");
   const p = state.projectInfo || {};
-  $("projectName").value = typeof p.projectName === 'string' ? p.projectName : "";
-  $("ownerName").value = typeof p.ownerName === 'string' ? p.ownerName : "";
-  $("estimatorName").value = typeof p.estimatorName === 'string' ? p.estimatorName : "";
-  $("reportDate").value = typeof p.reportDate === 'string' && p.reportDate ? p.reportDate : todayLocal();
+  const tempItems = [];
 
   if (Array.isArray(state.items)) {
-    items = state.items.map((i, idx) => {
-      const type = (i && typeof i.type === 'string' && supportedTypes.includes(i.type)) ? i.type : "Footing";
-      const qty = Math.max(1, Math.floor(sanitizeNumber(i?.qty, 1, 100000, 1)));
-      const grade = (i && typeof i.grade === 'string' && (supportedGrades.includes(i.grade) || i.grade === "-")) ? i.grade : "SR24";
-      const width = sanitizeNumber(i?.width, 0.001, 100, 0.2);
-      const length = sanitizeNumber(i?.length, 0.001, 1000, 4.0);
-      const depth = sanitizeNumber(i?.depth, 0.001, 10, 0.4);
-      const rise = sanitizeNumber(i?.rise, 0, 100, 0);
+    state.items.forEach((i, idx) => {
+      const type = i && typeof i.type === 'string' ? i.type : "";
+      if (!supportedTypes.includes(type)) {
+        throw new Error(`รายการที่ ${idx+1} (${i?.name || ''}): ประเภทองค์อาคาร "${type}" ไม่รองรับในระบบ`);
+      }
+      const rawQty = Number(i?.qty);
+      if (!Number.isSafeInteger(rawQty) || rawQty <= 0 || rawQty > 100000) {
+        throw new Error(`รายการที่ ${idx+1} (${i?.name || ''}): จำนวน (qty) ไม่ถูกต้องหรือเกินเพดาน 100,000`);
+      }
+      const qty = rawQty;
 
-      // ป้องกัน NaN: บังคับให้ประเภทที่ไม่ใช่ Roof Truss ต้องมีขนาดเหล็กหลักใน unitWeight เท่านั้น
+      let grade = i && typeof i.grade === 'string' ? i.grade.trim() : "SR24";
+      if (type === "Roof Truss") {
+        grade = "-";
+      } else {
+        if (!supportedGrades.includes(grade)) {
+          throw new Error(`รายการที่ ${idx+1} (${i?.name || ''}): เกรดเหล็กหลัก "${grade}" ไม่ถูกต้อง`);
+        }
+      }
+
+      let stirrupGrade = i && typeof i.stirrupGrade === 'string' ? i.stirrupGrade.trim() : grade;
+      if (type === "Roof Truss") {
+        stirrupGrade = "-";
+      } else if (stirrupGrade && stirrupGrade !== "-") {
+        if (!supportedGrades.includes(stirrupGrade)) {
+          throw new Error(`รายการที่ ${idx+1} (${i?.name || ''}): เกรดเหล็กปลอก "${stirrupGrade}" ไม่ถูกต้อง`);
+        }
+      }
+      
+      const width = sanitizeNumber(i?.width, 0.001, 100, 0.2, true, `รายการที่ ${idx+1} กว้าง`);
+      const length = sanitizeNumber(i?.length, 0.001, 1000, 4.0, true, `รายการที่ ${idx+1} ยาว`);
+      const depth = sanitizeNumber(i?.depth, 0.001, 10, 0.4, true, `รายการที่ ${idx+1} ลึก/หนา`);
+      const rise = sanitizeNumber(i?.rise, 0, 50, 0);
+
       let mainSize = "RB12";
       if (type === "Roof Truss") {
         mainSize = "-";
       } else if (i && typeof i.mainSize === 'string' && Object.prototype.hasOwnProperty.call(unitWeight, i.mainSize)) {
         mainSize = i.mainSize;
+      } else {
+        throw new Error(`รายการที่ ${idx+1}: ขนาดเหล็กหลักไม่ถูกต้อง`);
       }
 
       let stirrupSize = "NONE";
       if (type !== "Roof Truss" && i && typeof i.stirrupSize === 'string' && (i.stirrupSize === "NONE" || Object.prototype.hasOwnProperty.call(unitWeight, i.stirrupSize))) {
         stirrupSize = i.stirrupSize;
       }
+
+      const needsMatSpacing = isMatType(type);
+      const matSpacingX = needsMatSpacing ? sanitizeNumber(i?.matSpacingX, 0.001, 10, 0.20, true, `รายการที่ ${idx+1} ระยะเรียง X`) : sanitizeNumber(i?.matSpacingX, 0.001, 10, 0.20);
+      const matSpacingY = needsMatSpacing ? sanitizeNumber(i?.matSpacingY, 0.001, 10, 0.20, true, `รายการที่ ${idx+1} ระยะเรียง Y`) : sanitizeNumber(i?.matSpacingY, 0.001, 10, 0.20);
+
+      const defaultStock = type === "Roof Truss" ? 10 : sanitizeNumber(i?.stockLength, 1, 50, 10, true, `รายการที่ ${idx+1} ความยาวสต็อก`);
 
       const itemParams = {
         type, qty, width, length, depth, rise,
@@ -565,45 +666,50 @@ function loadState(state) {
         sandBed: sanitizeNumber(i?.sandBed, 0, 5, 0.05),
         addLean: i?.addLean !== false,
         grade,
+        stirrupGrade,
         mainSize,
         stirrupSize,
         barCount: Math.max(0, Math.floor(sanitizeNumber(i?.barCount, 0, 100, 4))),
-        matSpacingX: sanitizeNumber(i?.matSpacingX, 0.001, 10, 0.20),
-        matSpacingY: sanitizeNumber(i?.matSpacingY, 0.001, 10, 0.20),
+        matSpacingX,
+        matSpacingY,
         matBottom: i?.matBottom !== false,
-        matTop: i?.matTop !== false,
-        stockLength: sanitizeNumber(i?.stockLength, 1, 50, 10),
-        lapRatio: sanitizeNumber(i?.lapRatio, 1, 200, 60),
-        spacing: sanitizeNumber(i?.spacing, 0.001, 10, 0.15),
-        cover: sanitizeNumber(i?.cover, 0, 1, 0.04),
+        matTop: i?.matTop === true,
+        stockLength: defaultStock,
+        lapRatio: sanitizeNumber(i?.lapRatio, 1, 200, 60, true, `รายการที่ ${idx+1} ระยะทาบ`),
+        spacing: sanitizeNumber(i?.spacing, 0.001, 10, 0.15, true, `รายการที่ ${idx+1} ระยะเรียงปลอก`),
+        cover: sanitizeNumber(i?.cover, 0, 1, 0.04, true, `รายการที่ ${idx+1} ระยะหุ้มคอนกรีต`),
         hookRatio: sanitizeNumber(i?.hookRatio, 0, 100, 10),
         manualSteel: sanitizeNumber(i?.manualSteel, 0, 1000000, 0),
         wastePct: sanitizeNumber(i?.wastePct, 0, 100, 5)
       };
 
-      let computed;
-      try {
-        computed = computeItemMetrics(itemParams);
-      } catch(err) {
-        computed = { concrete:0, leanConc:0, form:0, precastArea:0, excavation:0, backfill:0, sandVolume:0, mainKg:0, stirrupKg:0, rebar:0, rebarNoWaste:0, lapLength:0, laps:0 };
-      }
+      const computed = computeItemMetrics(itemParams);
 
-      return {
+      tempItems.push({
         id: (i && Number.isFinite(Number(i.id))) ? Number(i.id) : (Date.now() + idx),
         name: (i && typeof i.name === 'string' && i.name.trim()) ? i.name : ("Item " + (idx + 1)),
         ...itemParams,
         ...computed,
-        extraCost: sanitizeNumber(i?.extraCost, 0, 1000000000, 0), // ขยายเพดานรองรับ 1 พันล้าน
+        extraCost: sanitizeNumber(i?.extraCost, 0, 1000000000, 0),
         remark: String(i?.remark || "")
-      };
+      });
     });
-  } else {
-    items = [];
   }
 
+  items = tempItems;
+  $("projectName").value = typeof p.projectName === 'string' ? p.projectName : "";
+  $("ownerName").value = typeof p.ownerName === 'string' ? p.ownerName : "";
+  $("estimatorName").value = typeof p.estimatorName === 'string' ? p.estimatorName : "";
+  $("reportDate").value = typeof p.reportDate === 'string' && p.reportDate ? p.reportDate : todayLocal();
+
   if (state.rates && typeof state.rates === 'object') {
+    const legacyRebar = sanitizeNumber(state.rates.rebar, 0, 1000000, 30);
     rates = Object.fromEntries(Object.entries(rateDefaults).map(([k,v]) => {
-      const valNum = sanitizeNumber(state.rates[k], 0, 1000000, v.value);
+      let defVal = v.value;
+      if (k.startsWith("rebar") && state.rates[k] === undefined && state.rates.rebar !== undefined) {
+        defVal = legacyRebar;
+      }
+      const valNum = sanitizeNumber(state.rates[k], 0, 1000000, defVal);
       return [k, valNum];
     }));
   }
@@ -613,6 +719,7 @@ function loadState(state) {
   $("vat").value = sanitizeNumber(state.vat, 0, 100, 7);
   $("wht").value = sanitizeNumber(state.wht, 0, 100, 3);
 
+  resetForm();
   renderRates();
   render();
 }
@@ -643,7 +750,7 @@ function saveProject() {
     persistCurrent();
     alert(`บันทึกโครงการ “${name}” เรียบร้อยแล้ว`);
   } catch (err) {
-    alert("ไม่สามารถบันทึกโครงการได้ หน่วยความจำ LocalStorage เต็มหรือเบราว์เซอร์ไม่อนุญาต");
+    alert("ไม่สามารถบันทึกโครงการได้ หน่วยความจำ LocalStorage เต็ม");
   }
 }
 
@@ -652,10 +759,13 @@ function loadProject() {
   if (!name) return alert("กรุณาเลือกโครงการที่ต้องการโหลด");
   const state = getSavedProjects()[name];
   if (!state) return alert("ไม่พบข้อมูลโครงการนี้");
-  resetForm();
-  loadState(state);
-  persistCurrent();
-  alert(`โหลดโครงการ “${name}” สำเร็จ`);
+  try {
+    loadState(state);
+    persistCurrent();
+    alert(`โหลดโครงการ “${name}” สำเร็จ`);
+  } catch(err) {
+    alert("ไม่สามารถโหลดโครงการได้เนื่องจากข้อมูลไม่ถูกต้อง: " + err.message);
+  }
 }
 
 function clearBOQOnly() {
@@ -667,7 +777,7 @@ function clearBOQOnly() {
 }
 
 function clearAllData() {
-  if (!confirm("⚠️ คำเตือน: ต้องการล้างรายการ BOQ, ข้อมูลโครงการ, ค่าการเงิน และลบโครงการที่เคยเซฟไว้ในเครื่องทั้งหมดใช่หรือไม่?")) return;
+  if (!confirm("⚠️ คำเตือน: ต้องการล้างรายการ BOQ, ข้อมูลโครงการ, และลบโครงการที่เคยเซฟไว้ในเครื่องทั้งหมดใช่หรือไม่?")) return;
   items = [];
   $("projectName").value = "";
   $("ownerName").value = "";
@@ -704,7 +814,8 @@ function renderRates() {
     el.addEventListener("change", () => {
       const key = el.dataset.rate;
       if (el.value === "") return; 
-      const valNum = sanitizeNumber(el.value, 0, 1000000, rates[key] ?? rateDefaults[key].value);
+      const valNum = sanitizeNumber(el.value, 0, 1000000, rates[key] ?? rateDefaults[key].value, true, rateDefaults[key].label);
+      el.value = valNum;
       rates[key] = valNum;
       try {
         localStorage.setItem("qtoRates", JSON.stringify(rates));
@@ -735,6 +846,7 @@ function computeItemMetrics(p) {
   const excClearVal = p.excClear ?? 0.3;
   const excDepthVal = p.excDepth ?? 0.8;
   const sandBedVal = p.sandBed ?? 0.05;
+  const coverVal = p.cover ?? 0.04;
 
   let concrete=0, leanConc=0, form=0, excavation=0, backfill=0, precastArea=0, sandVolume=0;
 
@@ -807,31 +919,39 @@ function computeItemMetrics(p) {
 
     let effectiveLengthForRebar = L;
     if (type === "Ground Stair") {
-      effectiveLengthForRebar = Math.sqrt(L*L + rise*rise);
+      const slope = Math.sqrt(L*L + rise*rise);
+      effectiveLengthForRebar = Math.max(0, slope - 2 * coverVal);
+    } else if (type === "Column" || type === "Stub Column") {
+      effectiveLengthForRebar = Math.max(0, L - 2 * coverVal);
+    } else if (type === "Beam" || type === "Ground Beam") {
+      effectiveLengthForRebar = Math.max(0, L - 2 * coverVal);
     }
 
     if (isMatType(type)) {
+      const netW = Math.max(0, w - 2 * coverVal);
+      const netL = Math.max(0, effectiveLengthForRebar - 2 * coverVal);
+
       const sx = p.matSpacingX;
       const sy = p.matSpacingY;
-      const layers = ((p.matBottom !== false ? 1 : 0) + (p.matTop !== false ? 1 : 0));
-      const barsAlongL = Math.ceil(w/sx)+1;
-      const barsAlongW = Math.ceil(effectiveLengthForRebar/sy)+1;
-      const runL = calculateRebarNetLength(effectiveLengthForRebar, stock, lapLength);
-      const runW = calculateRebarNetLength(w, stock, lapLength);
-      laps = (barsAlongL*runL.laps + barsAlongW*runW.laps)*layers*qty;
-      const totalLength = (barsAlongL*runL.netLength + barsAlongW*runW.netLength)*layers*qty;
+      const layers = ((p.matBottom !== false ? 1 : 0) + (p.matTop === true ? 1 : 0));
+      const barsAlongL = Math.ceil(netW / sx) + 1;
+      const barsAlongW = Math.ceil(netL / sy) + 1;
+      
+      const runL = calculateRebarNetLength(netL, stock, lapLength);
+      const runW = calculateRebarNetLength(netW, stock, lapLength);
+      laps = (barsAlongL * runL.laps + barsAlongW * runW.laps) * layers * qty;
+      const totalLength = (barsAlongL * runL.netLength + barsAlongW * runW.netLength) * layers * qty;
       mainKg = totalLength * unitWeight[mainSize];
     } else {
       const barCountInput = p.barCount;
       const run = calculateRebarNetLength(effectiveLengthForRebar, stock, lapLength);
-      laps = run.laps;
+      laps = run.laps * barCountInput * qty;
       mainKg = barCountInput * run.netLength * unitWeight[mainSize] * qty;
     }
 
     if (isStirrupType(type) && p.stirrupSize && p.stirrupSize !== "NONE" && unitWeight[p.stirrupSize]) {
       const stirrupSize = p.stirrupSize;
       const spacing = p.spacing;
-      const coverVal = p.cover;
       const hookRatioVal = p.hookRatio;
       const stirrupDia = parseInt(stirrupSize.replace(/\D/g,""),10)/1000;
       const n = (Math.ceil(L/spacing)+1)*qty;
@@ -859,90 +979,98 @@ function computeItemMetrics(p) {
 $("qtoForm").addEventListener("submit", e => {
   e.preventDefault();
 
-  const type = $("type").value;
-  if (!supportedTypes.includes(type)) return alert("ประเภทองค์อาคารไม่ถูกต้อง");
-
-  const qtyInput = Number($("qty").value);
-  if (!Number.isInteger(qtyInput) || qtyInput <= 0) {
-    return alert("จำนวน (qty) ต้องเป็นจำนวนเต็มบวก (>= 1)");
-  }
-  const qty = qtyInput;
-
-  const name = $("name").value.trim();
-  const remark = $("remark").value.trim();
-  const extraCostPerUnit = sanitizeNumber($("extraCost").value, 0, 100000000, 0);
-  const extraCost = extraCostPerUnit * qty;
-
-  const w = sanitizeNumber($("width").value, 0.001, 100, 0);
-  const L = sanitizeNumber($("length").value, 0.001, 1000, 0);
-  const d = sanitizeNumber($("depth").value, 0.001, 10, 0);
-  const rise = sanitizeNumber($("rise").value, 0, 100, 0);
-
-  if (!name) return alert("กรุณากรอกชื่อองค์อาคาร");
-  if (w <= 0 || L <= 0 || d <= 0) return alert("มิติ กว้าง, ยาว และลึก/หนา ต้องมากกว่า 0");
-
-  const excClearVal = sanitizeNumber($("excClear").value, 0, 10, 0.3);
-  const excDepthVal = sanitizeNumber($("excDepth").value, 0, 50, 0.8);
-  const sandBedVal = sanitizeNumber($("sandBed").value, 0, 5, 0.05);
-  const wastePctVal = sanitizeNumber($("waste").value, 0, 100, 5);
-
-  const grade = type === "Roof Truss" ? "-" : $("grade").value;
-  if (type !== "Roof Truss" && !supportedGrades.includes(grade)) return alert("เกรดเหล็กไม่ถูกต้อง");
-
-  const mainSize = type === "Roof Truss" ? "-" : $("barSize").value;
-  if (type !== "Roof Truss" && !Object.prototype.hasOwnProperty.call(unitWeight, mainSize)) return alert("ขนาดเหล็กหลักไม่ถูกต้อง");
-
-  const stirrupSize = $("stirrupSize").value;
-  if (stirrupSize !== "NONE" && !Object.prototype.hasOwnProperty.call(unitWeight, stirrupSize)) return alert("ขนาดเหล็กปลอกไม่ถูกต้อง");
-
-  const formData = {
-    type, qty, width: w, length: L, depth: d, rise,
-    excClear: excClearVal, excDepth: excDepthVal, sandBed: sandBedVal,
-    addLean: $("addLean").checked,
-    grade, mainSize,
-    barCount: Math.max(0, Math.floor(sanitizeNumber($("barCount").value, 0, 100, 4))),
-    matSpacingX: sanitizeNumber($("matSpacingX").value, 0.001, 10, 0.20),
-    matSpacingY: sanitizeNumber($("matSpacingY").value, 0.001, 10, 0.20),
-    matBottom: $("matBottom").checked,
-    matTop: $("matTop").checked,
-    stockLength: sanitizeNumber($("stockLength").value, 1, 50, 10),
-    lapRatio: sanitizeNumber($("lapRatio").value, 1, 200, 60),
-    stirrupSize,
-    spacing: sanitizeNumber($("spacing").value, 0.001, 10, 0.15),
-    cover: sanitizeNumber($("cover").value, 0, 1, 0.04),
-    hookRatio: sanitizeNumber($("hookRatio").value, 0, 100, 10),
-    manualSteel: sanitizeNumber($("manualSteel").value, 0, 1000000, 0),
-    wastePct: wastePctVal
-  };
-
-  let computed;
   try {
-    computed = computeItemMetrics(formData);
+    const type = $("type").value;
+    if (!supportedTypes.includes(type)) throw new Error("ประเภทองค์อาคารไม่ถูกต้อง");
+
+    const qtyInput = Number($("qty").value);
+    if (!Number.isSafeInteger(qtyInput) || qtyInput <= 0 || qtyInput > 100000) {
+      throw new Error("จำนวน (qty) ต้องเป็นจำนวนเต็มบวกและไม่เกิน 100,000");
+    }
+    const qty = qtyInput;
+
+    const name = $("name").value.trim();
+    if (!name) throw new Error("กรุณากรอกชื่อองค์อาคาร");
+    const remark = $("remark").value.trim();
+
+    const extraCostPerUnit = sanitizeNumber($("extraCost").value, 0, 1000000000, 0, true, "ต้นทุนเพิ่มเติมต่อชิ้น");
+    const extraCost = extraCostPerUnit * qty;
+
+    const w = sanitizeNumber($("width").value, 0.001, 100, 0, true, "กว้าง");
+    const L = sanitizeNumber($("length").value, 0.001, 1000, 0, true, "ยาว");
+    const d = sanitizeNumber($("depth").value, 0.001, 10, 0, true, "ลึก/หนา");
+    const rise = sanitizeNumber($("rise").value, 0, 50, 0);
+
+    const excClearVal = sanitizeNumber($("excClear").value, 0, 10, 0.3, true, "ระยะขุดเผื่อต่อข้าง");
+    const excDepthVal = sanitizeNumber($("excDepth").value, 0, 50, 0.8, true, "ความลึกขุด");
+    const sandBedVal = sanitizeNumber($("sandBed").value, 0, 5, 0.05, true, "ทรายรองพื้น");
+    const wastePctVal = sanitizeNumber($("waste").value, 0, 100, 5, true, "เผื่อเศษเหล็ก (%)");
+
+    const grade = type === "Roof Truss" ? "-" : $("grade").value;
+    const stirrupGrade = type === "Roof Truss" ? "-" : $("stirrupGrade").value;
+    if (type !== "Roof Truss" && (!supportedGrades.includes(grade) || !supportedGrades.includes(stirrupGrade))) {
+      throw new Error("เกรดเหล็กไม่ถูกต้อง");
+    }
+
+    const mainSize = type === "Roof Truss" ? "-" : $("barSize").value;
+    if (type !== "Roof Truss" && !Object.prototype.hasOwnProperty.call(unitWeight, mainSize)) throw new Error("ขนาดเหล็กหลักไม่ถูกต้อง");
+
+    const stirrupSize = $("stirrupSize").value;
+    if (stirrupSize !== "NONE" && !Object.prototype.hasOwnProperty.call(unitWeight, stirrupSize)) throw new Error("ขนาดเหล็กปลอกไม่ถูกต้อง");
+
+    const needsMatSpacing = isMatType(type);
+    const matSpacingX = needsMatSpacing ? sanitizeNumber($("matSpacingX").value, 0.001, 10, 0.20, true, "ระยะเรียง X") : sanitizeNumber($("matSpacingX").value, 0.001, 10, 0.20);
+    const matSpacingY = needsMatSpacing ? sanitizeNumber($("matSpacingY").value, 0.001, 10, 0.20, true, "ระยะเรียง Y") : sanitizeNumber($("matSpacingY").value, 0.001, 10, 0.20);
+
+    const stockLengthVal = type === "Roof Truss" ? 10 : sanitizeNumber($("stockLength").value, 1, 50, 10, true, "ความยาวเหล็กสต็อก");
+    const barCountVal = Math.max(0, Math.floor(sanitizeNumber($("barCount").value, 0, 100, 4, true, "จำนวนเหล็กหลัก")));
+
+    const formData = {
+      type, qty, width: w, length: L, depth: d, rise,
+      excClear: excClearVal, excDepth: excDepthVal, sandBed: sandBedVal,
+      addLean: $("addLean").checked,
+      grade, stirrupGrade, mainSize,
+      barCount: barCountVal,
+      matSpacingX,
+      matSpacingY,
+      matBottom: $("matBottom").checked,
+      matTop: $("matTop").checked,
+      stockLength: stockLengthVal,
+      lapRatio: sanitizeNumber($("lapRatio").value, 1, 200, 60, true, "ระยะทาบ"),
+      stirrupSize,
+      spacing: sanitizeNumber($("spacing").value, 0.001, 10, 0.15, true, "ระยะเรียงปลอก"),
+      cover: sanitizeNumber($("cover").value, 0, 1, 0.04, true, "ระยะหุ้มคอนกรีต"),
+      hookRatio: sanitizeNumber($("hookRatio").value, 0, 100, 10, true, "ขอปลอก"),
+      manualSteel: sanitizeNumber($("manualSteel").value, 0, 1000000, 0),
+      wastePct: wastePctVal
+    };
+
+    const computed = computeItemMetrics(formData);
+
+    const itemData = {
+      id: Date.now()+Math.random(), name, type, qty, 
+      grade: formData.grade, stirrupGrade: formData.stirrupGrade, mainSize: formData.mainSize, stirrupSize: formData.stirrupSize,
+      ...computed,
+      extraCost, remark,
+      ...formData
+    };
+
+    const editIdx = Number($("editIndex").value);
+    if (editIdx >= 0 && editIdx < items.length) {
+      itemData.id = items[editIdx].id;
+      items[editIdx] = itemData;
+      resetForm();
+      alert("แก้ไขรายการเรียบร้อยแล้ว");
+    } else {
+      items.push(itemData);
+    }
+
+    $("remark").value = "";
+    $("extraCost").value = 0;
+    render();
   } catch (err) {
-    return alert(err.message);
+    alert("⚠️ กรุณาตรวจสอบข้อมูลช่องกรอก: " + err.message);
   }
-
-  const itemData = {
-    id: Date.now()+Math.random(), name, type, qty, 
-    grade: formData.grade, mainSize: formData.mainSize, stirrupSize: formData.stirrupSize,
-    ...computed,
-    extraCost, remark,
-    ...formData
-  };
-
-  const editIdx = Number($("editIndex").value);
-  if (editIdx >= 0 && editIdx < items.length) {
-    itemData.id = items[editIdx].id;
-    items[editIdx] = itemData;
-    resetForm();
-    alert("แก้ไขรายการเรียบร้อยแล้ว");
-  } else {
-    items.push(itemData);
-  }
-
-  $("remark").value = "";
-  $("extraCost").value = 0;
-  render();
 });
 
 function calcTotals() {
@@ -962,9 +1090,27 @@ function calcTotals() {
     return a;
   },{concrete:0,leanConc:0,form:0,exc:0,fill:0,sand:0,rebar:0,rebarNet:0,roofTrussSteel:0,roofTrussNet:0,extra:0,precast:0});
 
+  let costRebarTotal = 0;
+  items.forEach(i => {
+    if (i.type === "Roof Truss") return;
+    
+    const mainGradeKey = "rebar" + (i.grade && i.grade !== "-" ? i.grade : "SR24");
+    const mainRate = rates[mainGradeKey] ?? rates.rebar ?? 30;
+    const factor = 1 + (i.wastePct || 0)/100;
+    const mainPurchaseKg = (i.mainKg || 0) * factor;
+    costRebarTotal += mainPurchaseKg * mainRate;
+
+    if (i.stirrupSize && i.stirrupSize !== "NONE" && i.stirrupKg) {
+      const stirrupGradeKey = "rebar" + (i.stirrupGrade && i.stirrupGrade !== "-" ? i.stirrupGrade : "SR24");
+      const stirrupRate = rates[stirrupGradeKey] ?? rates.rebar ?? 30;
+      const stirrupPurchaseKg = (i.stirrupKg || 0) * factor;
+      costRebarTotal += stirrupPurchaseKg * stirrupRate;
+    }
+  });
+
   const costConcrete = t.concrete * (rates.concrete||0);
   const costLean = t.leanConc * (rates.leanConc||0);
-  const costRebar = t.rebar * (rates.rebar||0);
+  const costRebar = costRebarTotal;
   const costRoofTruss = t.roofTrussSteel * (rates.roofTrussSteel||0);
   const costForm = t.form * (rates.formwork||0);
   const costPrecast = t.precast * (rates.precastSlab||0);
@@ -1022,6 +1168,7 @@ window.editItem = id => {
   $("remark").value = target.remark || "";
   $("extraCost").value = target.qty > 0 ? (target.extraCost || 0) / target.qty : (target.extraCost || 0);
   if (target.grade && target.grade !== "-") $("grade").value = target.grade;
+  if (target.stirrupGrade && target.stirrupGrade !== "-") $("stirrupGrade").value = target.stirrupGrade;
   if (target.mainSize && target.mainSize !== "-") $("barSize").value = target.mainSize;
   $("waste").value = target.wastePct !== undefined ? target.wastePct : 5;
   
@@ -1087,12 +1234,30 @@ document.addEventListener("click", e => {
 function getItemDirectCost(i) {
   const sVol = i.sandVolume || 0;
   const isTruss = i.type === "Roof Truss";
-  const rRebarCost = isTruss ? (rates.roofTrussSteel || 0) : (rates.rebar || 0);
+  
+  let rebarMaterialCost = 0;
+  if (isTruss) {
+    rebarMaterialCost = (i.rebar || 0) * (rates.roofTrussSteel || 0);
+  } else {
+    const mainGradeKey = "rebar" + (i.grade && i.grade !== "-" ? i.grade : "SR24");
+    const mainRate = rates[mainGradeKey] ?? rates.rebar ?? 30;
+    const factor = 1 + (i.wastePct || 0)/100;
+    const mainPurchaseKg = (i.mainKg || 0) * factor;
+    rebarMaterialCost += mainPurchaseKg * mainRate;
+
+    if (i.stirrupSize && i.stirrupSize !== "NONE" && i.stirrupKg) {
+      const stirrupGradeKey = "rebar" + (i.stirrupGrade && i.stirrupGrade !== "-" ? i.stirrupGrade : "SR24");
+      const stirrupRate = rates[stirrupGradeKey] ?? rates.rebar ?? 30;
+      const stirrupPurchaseKg = (i.stirrupKg || 0) * factor;
+      rebarMaterialCost += stirrupPurchaseKg * stirrupRate;
+    }
+  }
+
   const lRebarCost = isTruss ? (rates.laborRoofTruss || 0) : (rates.laborRebar || 0);
   const installedKg = isTruss ? (i.mainKg || 0) : ((i.mainKg || 0) + (i.stirrupKg || 0));
 
   return (i.concrete||0)*(rates.concrete||0) + (i.leanConc||0)*(rates.leanConc||0) +
-    (i.rebar||0)*rRebarCost + (i.form||0)*(rates.formwork||0) + (i.precastArea||0)*(rates.precastSlab||0) +
+    rebarMaterialCost + (i.form||0)*(rates.formwork||0) + (i.precastArea||0)*(rates.precastSlab||0) +
     (i.excavation||0)*(rates.excavation||0) + ((i.backfill||0) + sVol)*(rates.backfill||0) + (i.extraCost||0) +
     (i.concrete||0)*(rates.laborConc||0) + (i.leanConc||0)*(rates.laborLeanConc||0) + installedKg*lRebarCost +
     (i.form||0)*(rates.laborForm||0) + (i.precastArea||0)*(rates.laborPrecast||0) + (i.excavation||0)*(rates.laborExc||0) +
@@ -1117,7 +1282,7 @@ function render() {
 
     return `<tr class="border-b dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/40">
       <td class="p-2"><b>${safe(i.name)}</b>
-        <div class="text-xs text-slate-500">${safe(i.type)} · ${safe(i.grade)} ${i.remark ? '· <span class="text-amber-500">📝 '+safe(i.remark)+'</span>' : ''} ${i.extraCost ? '· <span class="text-violet-500">➕ พิเศษรวม '+money(i.extraCost)+'</span>' : ''}</div></td>
+        <div class="text-xs text-slate-500">${safe(i.type)} · หลัก:${safe(i.grade)} / ปลอก:${safe(i.stirrupGrade||i.grade)} ${i.remark ? '· <span class="text-amber-500">📝 '+safe(i.remark)+'</span>' : ''} ${i.extraCost ? '· <span class="text-violet-500">➕ พิเศษรวม '+money(i.extraCost)+'</span>' : ''}</div></td>
       <td class="p-2">${i.qty}</td>
       <td class="p-2">${(i.concrete||0).toFixed(2)} <span class="text-xs text-slate-400">(${ (i.leanConc||0).toFixed(2) })</span></td>
       <td class="p-2">${areaOrFormText}</td>
@@ -1138,11 +1303,11 @@ function render() {
 
   const categories = [
     { label: "คอนกรีตโครงสร้าง", val: t.costConcrete, color: "bg-blue-500" },
-    { label: "เหล็กเสริม ค.ส.ล.", val: t.costRebar, color: "bg-amber-500" },
+    { label: "เหล็กเสริม ค.ส.ล. (แยกเกรดอิสระ)", val: t.costRebar, color: "bg-amber-500" },
     { label: "เหล็กโครงหลังคา", val: t.costRoofTruss, color: "bg-yellow-600" },
     { label: "ไม้แบบ / ค้ำยัน", val: t.costForm, color: "bg-emerald-500" },
     { label: "แผ่นพื้นสำเร็จรูป", val: t.costPrecast, color: "bg-teal-500" },
-    { label: "งานขุด/ถม/ทรายรองพื้น", val: t.costExc + t.costFill, color: "bg-purple-500" },
+    { label: "งานขุด/ถมประมาณ/ทรายรองพื้น", val: t.costExc + t.costFill, color: "bg-purple-500" },
     { label: "คอนกรีตหยาบ", val: t.costLean, color: "bg-cyan-500" },
     { label: "ต้นทุนเพิ่มเติม", val: t.costExtra, color: "bg-violet-500" },
     { label: "ค่าแรงรวม", val: t.labor, color: "bg-rose-500" }
@@ -1201,7 +1366,8 @@ function render() {
       groups[mainKey].purchase += (i.mainKg || 0) * factor;
 
       if (i.stirrupSize && i.stirrupSize!=="NONE" && i.stirrupKg) {
-        const stirrupKey=`เหล็กเสริม ค.ส.ล.|${i.grade} ${i.stirrupSize} (ปลอก)`;
+        const stirrupGrade = i.stirrupGrade || i.grade;
+        const stirrupKey=`เหล็กเสริม ค.ส.ล.|${stirrupGrade} ${i.stirrupSize} (ปลอก)`;
         if (!groups[stirrupKey]) groups[stirrupKey] = { net: 0, purchase: 0 };
         groups[stirrupKey].net += (i.stirrupKg || 0);
         groups[stirrupKey].purchase += (i.stirrupKg || 0) * factor;
@@ -1235,9 +1401,15 @@ function render() {
   $(id)?.addEventListener("change", () => {
     const el = $(id);
     if (el.value === "") { render(); return; }
-    const valNum = sanitizeNumber(el.value, 0, 100, defVal);
-    el.value = valNum;
-    render();
+    try {
+      const valNum = sanitizeNumber(el.value, 0, 100, defVal, true, id);
+      el.value = valNum;
+      render();
+    } catch(err) {
+      alert("⚠️ " + err.message);
+      el.value = defVal;
+      render();
+    }
   })
 );
 
@@ -1271,17 +1443,11 @@ function importJSON(event) {
         return alert("โครงสร้างไฟล์ JSON ไม่ถูกต้องสำหรับโปรแกรมนี้");
       }
 
-      if (!confirm("พบข้อมูลในไฟล์ JSON ต้องการนำเข้าแทนที่ข้อมูลปัจจุบันใช่หรือไม่?")) {
-        event.target.value = "";
-        return;
-      }
-
-      resetForm();
       loadState(state);
       persistCurrent();
-      alert("นำเข้าข้อมูลโครงการจาก JSON สำเร็จ! ระบบได้ตรวจสอบความถูกต้องและคำนวณปริมาณใหม่ตามมาตรฐานทางวิศวกรรมเรียบร้อยแล้ว");
+      alert("นำเข้าข้อมูลโครงการจาก JSON สำเร็จ!");
     } catch(err) {
-      alert("อ่านไฟล์ JSON ไม่สำเร็จ กรุณาตรวจสอบรูปแบบไฟล์");
+      alert("อ่านไฟล์ JSON ไม่สำเร็จหรือข้อมูลผิดพลาด: " + err.message);
     }
   };
   reader.readAsText(file);
@@ -1298,6 +1464,7 @@ function exportExcel() {
     "เจ้าของงาน":$("ownerName").value,
     "ผู้ถอดแบบ":$("estimatorName").value,
     "วันที่":$("reportDate").value,
+    "สถานะเอกสาร": "⚠️ ประมาณการเบื้องต้น (Preliminary Estimate) - ห้ามใช้เป็นรายการตัดเหล็ก (Cutting List)",
     "Overhead_Pct": sanitizeNumber($("overhead").value, 0, 100, 10),
     "Profit_Pct": sanitizeNumber($("profit").value, 0, 100, 10),
     "VAT_Pct": sanitizeNumber($("vat").value, 0, 100, 7),
@@ -1307,34 +1474,50 @@ function exportExcel() {
 
   const boq=items.map(i => {
     const directCost = getItemDirectCost(i);
-    const rRebarCost = i.type === "Roof Truss" ? (rates.roofTrussSteel || 0) : (rates.rebar || 0);
+    const mainGradeKey = "rebar" + (i.grade && i.grade !== "-" ? i.grade : "SR24");
+    const rRebarCost = i.type === "Roof Truss" ? (rates.roofTrussSteel || 0) : (rates[mainGradeKey] ?? rates.rebar ?? 30);
     const lRebarCost = i.type === "Roof Truss" ? (rates.laborRoofTruss || 0) : (rates.laborRebar || 0);
     const installedKg = i.type === "Roof Truss" ? (i.mainKg || 0) : ((i.mainKg || 0) + (i.stirrupKg || 0));
     
+    let rebarMatCost = 0;
+    if (i.type === "Roof Truss") {
+      rebarMatCost = (i.rebar || 0) * (rates.roofTrussSteel || 0);
+    } else {
+      const factor = 1 + (i.wastePct || 0)/100;
+      rebarMatCost += (i.mainKg || 0) * factor * rRebarCost;
+      if (i.stirrupSize && i.stirrupSize !== "NONE" && i.stirrupKg) {
+        const stirrupGradeKey = "rebar" + (i.stirrupGrade && i.stirrupGrade !== "-" ? i.stirrupGrade : "SR24");
+        const stirrupRate = rates[stirrupGradeKey] ?? rRebarCost;
+        rebarMatCost += (i.stirrupKg || 0) * factor * stirrupRate;
+      }
+    }
+
     const matCost = (i.concrete||0)*(rates.concrete||0) + (i.leanConc||0)*(rates.leanConc||0) +
-      (i.rebar||0)*rRebarCost + (i.form||0)*(rates.formwork||0) + (i.precastArea||0)*(rates.precastSlab||0) +
+      rebarMatCost + (i.form||0)*(rates.formwork||0) + (i.precastArea||0)*(rates.precastSlab||0) +
       (i.excavation||0)*(rates.excavation||0) + ((i.backfill||0) + (i.sandVolume||0))*(rates.backfill||0);
     
     const laborCost = (i.concrete||0)*(rates.laborConc||0) + (i.leanConc||0)*(rates.laborLeanConc||0) + installedKg*lRebarCost +
       (i.form||0)*(rates.laborForm||0) + (i.precastArea||0)*(rates.laborPrecast||0) + (i.excavation||0)*(rates.laborExc||0) +
       ((i.backfill||0) + (i.sandVolume||0))*(rates.laborFill||0);
 
+    const extraCostPerUnit = i.qty > 0 ? (i.extraCost || 0) / i.qty : (i.extraCost || 0);
+
     return {
-      "ชื่อ":i.name,"ประเภท":i.type,"จำนวน":i.qty,"เกรดเหล็ก":i.grade,
+      "ชื่อ":i.name,"ประเภท":i.type,"จำนวน":i.qty,"เกรดเหล็กหลัก":i.grade,"เกรดเหล็กปลอก":i.stirrupGrade||i.grade,
       "กว้าง_m":i.width,"ยาว_m":i.length,"ลึกหนา_m":i.depth,"ระยะยกบันได_m":i.rise ?? 0,
       "คอนกรีตโครงสร้าง (m3)":Number((i.concrete||0).toFixed(4)),
       "คอนกรีตหยาบ (m3)":Number((i.leanConc||0).toFixed(4)),
       "ไม้แบบ (m2)":Number((i.form||0).toFixed(4)),
       "แผ่นพื้นสำเร็จรูป (m2)":Number((i.precastArea||0).toFixed(4)),
       "ขุดดิน (m3)":Number((i.excavation||0).toFixed(4)),
-      "ถมดิน (m3)":Number((i.backfill||0).toFixed(4)),
+      "ถมดินประมาณ (m3)":Number((i.backfill||0).toFixed(4)),
       "ทรายรองพื้น (m3)":Number((i.sandVolume||0).toFixed(4)),
       "เหล็กหลัก/ตะแกรง":i.mainSize,
       "จำนวนเหล็กหลัก":i.barCount ?? 4,
       "ระยะเรียง X_m":i.matSpacingX ?? 0.20,
       "ระยะเรียง Y_m":i.matSpacingY ?? 0.20,
       "ตะแกรงล่าง":i.matBottom !== false ? "YES" : "NO",
-      "ตะแกรงบน":i.matTop !== false ? "YES" : "NO",
+      "ตะแกรงบน":i.matTop === true ? "YES" : "NO",
       "เหล็กปลอก":i.stirrupSize,
       "ระยะปลอก_m":i.spacing ?? 0.15,
       "ระยะหุ้ม_m":i.cover ?? 0.04,
@@ -1347,12 +1530,13 @@ function exportExcel() {
       "ความลึกขุด_m":i.excDepth ?? 0.8,
       "ทรายรองพื้น_m":i.sandBed ?? 0.05,
       "เทปูนหยาบ":i.addLean !== false ? "YES" : "NO",
+      "ต้นทุนเพิ่มเติมต่อชิ้น (บาท)":Number(extraCostPerUnit.toFixed(2)),
       "น้ำหนักเหล็กหลัก (kg)":Number((i.mainKg||0).toFixed(4)),
       "น้ำหนักเหล็กปลอก (kg)":Number((i.stirrupKg||0).toFixed(4)),
       "เหล็กรวมเผื่อเศษ (kg)":Number((i.rebar||0).toFixed(4)),
       "ต้นทุนวัสดุ (บาท)":Number((matCost).toFixed(2)),
       "ค่าแรง (บาท)":Number((laborCost).toFixed(2)),
-      "ต้นทุนเพิ่มเติม (บาท)":Number((i.extraCost||0).toFixed(2)),
+      "ต้นทุนเพิ่มเติมรวม (บาท)":Number((i.extraCost||0).toFixed(2)),
       "ต้นทุนตรงรวม (บาท)":Number((directCost).toFixed(2)),
       "หมายเหตุ":i.remark||""
     };
@@ -1361,12 +1545,13 @@ function exportExcel() {
 
   const t=calcTotals();
   const summary=[
+    {รายการ:"สถานะเอกสาร", จำนวน:"⚠️ ประมาณการเบื้องต้น (Preliminary Estimate) - ห้ามใช้เป็นรายการตัดเหล็ก", หน่วย:"-"},
     {รายการ:"ปริมาตรคอนกรีตโครงสร้างรวม (m3)",จำนวน:t.concrete,หน่วย:"m3"},
     {รายการ:"ปริมาตรคอนกรีตหยาบรวม (m3)",จำนวน:t.leanConc,หน่วย:"m3"},
     {รายการ:"พื้นที่ไม้แบบรวม (m2)",จำนวน:t.form,หน่วย:"m2"},
     {รายการ:"พื้นที่แผ่นพื้นสำเร็จรูป (m2)",จำนวน:t.precast,หน่วย:"m2"},
     {รายการ:"ปริมาตรขุดดินรวม (m3)",จำนวน:t.exc,หน่วย:"m3"},
-    {รายการ:"ปริมาตรถมรวม (m3)",จำนวน:t.fill,หน่วย:"m3"},
+    {รายการ:"ปริมาตรถมประมาณรวม (m3)",จำนวน:t.fill,หน่วย:"m3"},
     {รายการ:"ปริมาตรทรายรองพื้นรวม (m3)",จำนวน:t.sand,หน่วย:"m3"},
     {รายการ:"เหล็กเสริม ค.ส.ล. ติดตั้งสุทธิ (kg)",จำนวน:t.rebarNet,หน่วย:"kg"},
     {รายการ:"เหล็กเสริม ค.ส.ล. จัดซื้อรวม (kg)",จำนวน:t.rebar,หน่วย:"kg"},
@@ -1402,6 +1587,7 @@ function downloadExcelTemplate() {
     "เจ้าของงาน": "เจ้าของโครงการ",
     "ผู้ถอดแบบ": "วิศวกรประเมินราคา",
     "วันที่": todayLocal(),
+    "สถานะเอกสาร": "⚠️ ประมาณการเบื้องต้น (Preliminary Estimate) - ห้ามใช้เป็นรายการตัดเหล็ก",
     "Overhead_Pct": 10,
     "Profit_Pct": 10,
     "VAT_Pct": 7,
@@ -1413,13 +1599,18 @@ function downloadExcelTemplate() {
     "ชื่อ": "GB-1",
     "ประเภท": "Ground Beam",
     "จำนวน": 4,
-    "เกรดเหล็ก": "SR24",
+    "เกรดเหล็กหลัก": "SR24",
+    "เกรดเหล็กปลอก": "SR24",
     "กว้าง_m": 0.20,
     "ยาว_m": 4.00,
     "ลึกหนา_m": 0.40,
     "ระยะยกบันได_m": 0,
     "เหล็กหลัก/ตะแกรง": "RB12",
     "จำนวนเหล็กหลัก": 4,
+    "ระยะเรียง X_m": 0.20,
+    "ระยะเรียง Y_m": 0.20,
+    "ตะแกรงล่าง": "YES",
+    "ตะแกรงบน": "NO",
     "เหล็กปลอก": "RB6",
     "ระยะปลอก_m": 0.15,
     "ระยะหุ้ม_m": 0.04,
@@ -1432,7 +1623,7 @@ function downloadExcelTemplate() {
     "ความลึกขุด_m": 0.8,
     "ทรายรองพื้น_m": 0.05,
     "เทปูนหยาบ": "YES",
-    "ต้นทุนเพิ่มเติมรวม (บาท)": 0,
+    "ต้นทุนเพิ่มเติมต่อชิ้น (บาท)": 0,
     "หมายเหตุ": "คานคอดินมาตรฐาน"
   }];
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(sampleBOQ), "BOQ");
@@ -1445,7 +1636,7 @@ function downloadExcelTemplate() {
   XLSX.writeFile(wb, "BOQ_Template_Standard.xlsx");
 }
 
-// Strict Excel Import: ตรวจสอบความถูกต้องครบถ้วนโดยไม่แทนค่าผิดพลาดด้วยค่าเริ่มต้นอย่างเงียบๆ
+// นำเข้า Excel พร้อมระบบดักจับและสะสม Error รายแถว และรองรับ NONE สำหรับเหล็กปลอกทุกประเภท
 function importExcel(event) {
   if (!window.XLSX) return alert("ไลบรารี XLSX ไม่พร้อมใช้งาน");
   const file = event.target.files[0];
@@ -1466,7 +1657,7 @@ function importExcel(event) {
         const ratesJson = XLSX.utils.sheet_to_json(workbook.Sheets["Rates"]);
         ratesJson.forEach(row => {
           if (row.key && tempRates[row.key] !== undefined) {
-            const rVal = sanitizeNumber(row.ราคา, 0, 1000000, tempRates[row.key]);
+            const rVal = sanitizeNumber(row.ราคา, 0, 1000000, tempRates[row.key], true, `เรทราคา ${row.key}`);
             tempRates[row.key] = rVal;
           }
         });
@@ -1479,11 +1670,11 @@ function importExcel(event) {
           tempProj.projectName = projJson[0]["ชื่อโครงการ"] || "";
           tempProj.ownerName = projJson[0]["เจ้าของงาน"] || "";
           tempProj.estimatorName = projJson[0]["ผู้ถอดแบบ"] || "";
-          tempProj.reportDate = projJson[0]["วันที่"] || todayLocal();
-          tempProj.overhead = sanitizeNumber(projJson[0]["Overhead_Pct"], 0, 100, 10);
-          tempProj.profit = sanitizeNumber(projJson[0]["Profit_Pct"], 0, 100, 10);
-          tempProj.vat = sanitizeNumber(projJson[0]["VAT_Pct"], 0, 100, 7);
-          tempProj.wht = sanitizeNumber(projJson[0]["WHT_Pct"], 0, 100, 3);
+          tempProj.reportDate = excelDateToISO(projJson[0]["วันที่"]);
+          tempProj.overhead = sanitizeNumber(projJson[0]["Overhead_Pct"], 0, 100, 10, true, "Overhead_Pct");
+          tempProj.profit = sanitizeNumber(projJson[0]["Profit_Pct"], 0, 100, 10, true, "Profit_Pct");
+          tempProj.vat = sanitizeNumber(projJson[0]["VAT_Pct"], 0, 100, 7, true, "VAT_Pct");
+          tempProj.wht = sanitizeNumber(projJson[0]["WHT_Pct"], 0, 100, 3, true, "WHT_Pct");
         }
       }
 
@@ -1493,97 +1684,118 @@ function importExcel(event) {
 
       boqJson.forEach((row, idx) => {
         const rowNum = idx + 2; 
-        const itemType = String(row["ประเภท"] || "").trim();
-        if (!supportedTypes.includes(itemType)) {
-          errors.push(`แถวที่ ${rowNum}: ประเภทองค์อาคาร "${itemType}" ไม่ถูกต้อง`);
-          return;
-        }
-
-        const rawQty = Number(row["จำนวน"]);
-        if (!Number.isInteger(rawQty) || rawQty <= 0) {
-          errors.push(`แถวที่ ${rowNum}: จำนวน (qty) ต้องเป็นจำนวนเต็มบวก (พบค่า: ${row["จำนวน"]})`);
-          return;
-        }
-        const qty = rawQty;
-
-        const w = Number(row["กว้าง_m"] ?? row["กว้าง"]);
-        const L = Number(row["ยาว_m"] ?? row["ยาว"]);
-        const d = Number(row["ลึกหนา_m"] ?? row["ลึกหนา"] ?? row["หนา_m"]);
-        if (!Number.isFinite(w) || w <= 0 || !Number.isFinite(L) || L <= 0 || !Number.isFinite(d) || d <= 0) {
-          errors.push(`แถวที่ ${rowNum}: มิติ กว้าง, ยาว หรือลึก/หนา ไม่ถูกต้อง (ต้องเป็นตัวเลขมากกว่า 0)`);
-          return;
-        }
-
-        const waste = Number(row["เผื่อเศษ (%)"] ?? row["เผื่อเศษ"]);
-        if (!Number.isFinite(waste) || waste < 0 || waste > 100) {
-          errors.push(`แถวที่ ${rowNum}: เปอร์เซ็นต์เผื่อเศษต้องอยู่ระหว่าง 0 ถึง 100%`);
-          return;
-        }
-
-        const grade = itemType === "Roof Truss" ? "-" : String(row["เกรดเหล็ก"] || "").trim();
-        if (itemType !== "Roof Truss" && !supportedGrades.includes(grade)) {
-          errors.push(`แถวที่ ${rowNum}: เกรดเหล็ก "${grade}" ไม่รองรับ (รองรับ: ${supportedGrades.join(", ")})`);
-          return;
-        }
-
-        const mainSize = itemType === "Roof Truss" ? "-" : String(row["เหล็กหลัก/ตะแกรง"] || "").trim();
-        if (itemType !== "Roof Truss" && !Object.prototype.hasOwnProperty.call(unitWeight, mainSize)) {
-          errors.push(`แถวที่ ${rowNum}: ขนาดเหล็กหลัก "${mainSize}" ไม่ถูกต้องหรือไม่มีในระบบ`);
-          return;
-        }
-
-        const stirrupSize = String(row["เหล็กปลอก"] || "NONE").trim();
-        if (stirrupSize !== "NONE" && !Object.prototype.hasOwnProperty.call(unitWeight, stirrupSize)) {
-          errors.push(`แถวที่ ${rowNum}: ขนาดเหล็กปลอก "${stirrupSize}" ไม่ถูกต้อง`);
-          return;
-        }
-
-        const rise = sanitizeNumber(row["ระยะยกบันได_m"], 0, 100, 0);
-        const barCount = Math.max(0, Math.floor(sanitizeNumber(row["จำนวนเหล็กหลัก"], 0, 100, 4)));
-        const matSpacingX = sanitizeNumber(row["ระยะเรียง X_m"], 0.001, 10, 0.20);
-        const matSpacingY = sanitizeNumber(row["ระยะเรียง Y_m"], 0.001, 10, 0.20);
-        const matBottom = row["ตะแกรงล่าง"] !== "NO";
-        const matTop = row["ตะแกรงบน"] !== "NO";
-        const spacing = sanitizeNumber(row["ระยะปลอก_m"], 0.001, 10, 0.15);
-        const cover = sanitizeNumber(row["ระยะหุ้ม_m"], 0, 1, 0.04);
-        const lapRatio = sanitizeNumber(row["ระยะทาบ_เท่าd"], 1, 200, 60);
-        const hookRatio = sanitizeNumber(row["ขอปลอก_เท่าd"], 0, 100, 10);
-        const stockLength = sanitizeNumber(row["ความยาวเหล็กสต็อก_m"], 1, 50, 10);
-        const manualSteel = sanitizeNumber(row["น้ำหนักเหล็กหลังคา_kg"], 0, 1000000, 0);
-        const excClear = sanitizeNumber(row["ระยะขุดเผื่อต่อข้าง_m"], 0, 10, 0.3);
-        const excDepth = sanitizeNumber(row["ความลึกขุด_m"], 0, 50, 0.8);
-        const sandBed = sanitizeNumber(row["ทรายรองพื้น_m"], 0, 5, 0.05);
-        const addLean = row["เทปูนหยาบ"] !== "NO";
-        const extraCost = sanitizeNumber(row["ต้นทุนเพิ่มเติมรวม (บาท)"] ?? row["ต้นทุนเพิ่มเติม (บาท)"], 0, 1000000000, 0);
-
-        const itemParams = {
-          type: itemType, qty, width: w, length: L, depth: d, rise,
-          excClear, excDepth, sandBed, addLean, grade, mainSize,
-          barCount, matSpacingX, matSpacingY, matBottom, matTop,
-          stockLength, lapRatio, stirrupSize, spacing, cover, hookRatio,
-          manualSteel, wastePct: waste
-        };
-
-        let computed;
         try {
-          computed = computeItemMetrics(itemParams);
-        } catch (err) {
-          errors.push(`แถวที่ ${rowNum} (${row["ชื่อ"] || ""}): ${err.message}`);
-          return;
-        }
+          const itemType = String(row["ประเภท"] || "").trim();
+          if (!supportedTypes.includes(itemType)) {
+            throw new Error(`ประเภทองค์อาคาร "${itemType}" ไม่ถูกต้องหรือไม่รองรับ`);
+          }
 
-        tempItems.push({
-          id: Date.now() + idx,
-          name: String(row["ชื่อ"] || row["รายการ"] || ("Item " + (idx+1))),
-          ...itemParams,
-          ...computed,
-          extraCost,
-          remark: String(row["หมายเหตุ"] || "")
-        });
+          const rawQty = row["จำนวน"];
+          const qtyNum = Number(rawQty);
+          if (rawQty === undefined || rawQty === null || rawQty === "" || !Number.isSafeInteger(qtyNum) || qtyNum <= 0 || qtyNum > 100000) {
+            throw new Error(`จำนวน (qty) ต้องเป็นจำนวนเต็มบวก 1-100,000 (พบ: ${rawQty})`);
+          }
+          const qty = qtyNum;
+
+          const w = Number(row["กว้าง_m"] ?? row["กว้าง"]);
+          const L = Number(row["ยาว_m"] ?? row["ยาว"]);
+          const d = Number(row["ลึกหนา_m"] ?? row["ลึกหนา"] ?? row["หนา_m"]);
+          if (!Number.isFinite(w) || w < 0.001 || w > 100) throw new Error(`กว้าง_m ต้องอยู่ระหว่าง 0.001 ถึง 100 ม.`);
+          if (!Number.isFinite(L) || L < 0.001 || L > 1000) throw new Error(`ยาว_m ต้องอยู่ระหว่าง 0.001 ถึง 1,000 ม.`);
+          if (!Number.isFinite(d) || d < 0.001 || d > 10) throw new Error(`ลึกหนา_m ต้องอยู่ระหว่าง 0.001 ถึง 10 ม.`);
+
+          const waste = Number(row["เผื่อเศษ (%)"] ?? row["เผื่อเศษ"] ?? 5);
+          if (!Number.isFinite(waste) || waste < 0 || waste > 100) throw new Error(`เผื่อเศษ (%) ต้องอยู่ระหว่าง 0 ถึง 100%`);
+
+          let grade = String(row["เกรดเหล็กหลัก"] || row["เกรดเหล็ก"] || "SR24").trim();
+          if (itemType === "Roof Truss") {
+            grade = "-";
+          } else if (!supportedGrades.includes(grade)) {
+            throw new Error(`เกรดเหล็กหลัก "${grade}" ไม่ถูกต้อง (ต้องเป็น SR24, SD30, SD40, SD50)`);
+          }
+
+          let stirrupGrade = String(row["เกรดเหล็กปลอก"] || grade).trim();
+          if (itemType === "Roof Truss") {
+            stirrupGrade = "-";
+          } else if (stirrupGrade && stirrupGrade !== "-" && !supportedGrades.includes(stirrupGrade)) {
+            throw new Error(`เกรดเหล็กปลอก "${stirrupGrade}" ไม่ถูกต้อง`);
+          }
+
+          const mainSize = itemType === "Roof Truss" ? "-" : String(row["เหล็กหลัก/ตะแกรง"] || "RB12").trim();
+          if (itemType !== "Roof Truss" && !Object.prototype.hasOwnProperty.call(unitWeight, mainSize)) {
+            throw new Error(`เหล็กหลัก/ตะแกรง "${mainSize}" ไม่ถูกต้อง`);
+          }
+
+          const stirrupSize = String(row["เหล็กปลอก"] || "NONE").trim();
+          if (itemType !== "Roof Truss" && stirrupSize !== "NONE" && !Object.prototype.hasOwnProperty.call(unitWeight, stirrupSize)) {
+            throw new Error(`เหล็กปลอก "${stirrupSize}" ไม่ถูกต้อง`);
+          }
+
+          const stockLength = itemType === "Roof Truss" ? 10 : sanitizeNumber(row["ความยาวเหล็กสต็อก_m"], 1, 50, 10, true, "ความยาวเหล็กสต็อก_m");
+          
+          const barCountInput = row["จำนวนเหล็กหลัก"];
+          const barCountNum = barCountInput === undefined || barCountInput === "" ? 4 : Number(barCountInput);
+          if (itemType !== "Roof Truss" && !isMatType(itemType) && (!Number.isSafeInteger(barCountNum) || barCountNum < 0 || barCountNum > 100)) {
+            throw new Error(`จำนวนเหล็กหลักต้องอยู่ระหว่าง 0 ถึง 100 เส้น`);
+          }
+
+          const needsMatSpacing = isMatType(itemType);
+          const rawMatX = row["ระยะเรียง X_m"] ?? 0.20;
+          const rawMatY = row["ระยะเรียง Y_m"] ?? 0.20;
+          let matSpacingX = 0.20;
+          let matSpacingY = 0.20;
+          if (needsMatSpacing) {
+            matSpacingX = sanitizeNumber(rawMatX, 0.001, 10, 0.20, true, "ระยะเรียง X_m");
+            matSpacingY = sanitizeNumber(rawMatY, 0.001, 10, 0.20, true, "ระยะเรียง Y_m");
+          }
+
+          const rawMatBottom = String(row["ตะแกรงล่าง"] ?? "YES").trim().toUpperCase();
+          const rawMatTop = String(row["ตะแกรงบน"] ?? "NO").trim().toUpperCase();
+          const rawAddLean = String(row["เทปูนหยาบ"] ?? "YES").trim().toUpperCase();
+
+          const matBottom = rawMatBottom !== "NO";
+          const matTop = rawMatTop === "YES";
+          const addLean = rawAddLean !== "NO";
+
+          const rise = sanitizeNumber(row["ระยะยกบันได_m"], 0, 50, 0, false);
+          const spacing = sanitizeNumber(row["ระยะปลอก_m"], 0.001, 10, 0.15, false);
+          const cover = sanitizeNumber(row["ระยะหุ้ม_m"], 0, 1, 0.04, false);
+          const lapRatio = sanitizeNumber(row["ระยะทาบ_เท่าd"], 1, 200, 60, false);
+          const hookRatio = sanitizeNumber(row["ขอปลอก_เท่าd"], 0, 100, 10, false);
+          const manualSteel = sanitizeNumber(row["น้ำหนักเหล็กหลังคา_kg"], 0, 1000000, 0, false);
+          const excClear = sanitizeNumber(row["ระยะขุดเผื่อต่อข้าง_m"], 0, 10, 0.3, false);
+          const excDepth = sanitizeNumber(row["ความลึกขุด_m"], 0, 50, 0.8, false);
+          const sandBed = sanitizeNumber(row["ทรายรองพื้น_m"], 0, 5, 0.05, false);
+          
+          const rawExtra = row["ต้นทุนเพิ่มเติมต่อชิ้น (บาท)"] ?? row["ต้นทุนเพิ่มเติมรวม (บาท)"] ?? 0;
+          const extraCostPerUnit = sanitizeNumber(rawExtra, 0, 1000000000, 0, false);
+          const extraCost = extraCostPerUnit * qty;
+
+          const itemParams = {
+            type: itemType, qty, width: w, length: L, depth: d, rise,
+            excClear, excDepth, sandBed, addLean, grade, stirrupGrade, mainSize,
+            barCount: barCountNum, matSpacingX, matSpacingY, matBottom, matTop,
+            stockLength, lapRatio, stirrupSize, spacing, cover, hookRatio,
+            manualSteel, wastePct: waste
+          };
+
+          const computed = computeItemMetrics(itemParams);
+
+          tempItems.push({
+            id: Date.now() + idx,
+            name: String(row["ชื่อ"] || row["รายการ"] || ("Item " + (idx+1))),
+            ...itemParams,
+            ...computed,
+            extraCost,
+            remark: String(row["หมายเหตุ"] || "")
+          });
+        } catch (err) {
+          errors.push(`แถวที่ ${rowNum} (${row["ชื่อ"] || row["รายการ"] || ""}): ${err.message}`);
+        }
       });
 
       if (errors.length > 0) {
-        alert("❌ พบข้อผิดพลาดในการตรวจสอบไฟล์ Excel (ยกเลิกการนำเข้า):\n\n" + errors.slice(0, 12).join("\n") + (errors.length > 12 ? `\n...และอื่น ๆ อีก ${errors.length - 12} รายการ` : "") + "\n\nกรุณาแก้ไขไฟล์ Excel ให้ถูกต้องตามข้อกำหนดก่อนนำเข้าอีกครั้ง");
+        alert("❌ พบข้อผิดพลาดในการตรวจสอบไฟล์ Excel (ยกเลิกการนำเข้า):\n\n" + errors.slice(0, 15).join("\n") + (errors.length > 15 ? `\n...และอื่น ๆ อีก ${errors.length - 15} รายการ` : ""));
         event.target.value = "";
         return;
       }
@@ -1610,9 +1822,8 @@ function importExcel(event) {
 
       render();
       persistCurrent();
-      alert("นำเข้าข้อมูลจาก Excel สำเร็จ! ระบบได้ตรวจสอบความถูกต้องและคำนวณปริมาณใหม่ตามหลักวิศวกรรมเรียบร้อยแล้ว");
+      alert("นำเข้าข้อมูลจาก Excel สำเร็จ!");
     } catch (err) {
-      console.error(err);
       alert("การนำเข้า Excel ล้มเหลว: " + err.message);
     }
   };
@@ -1631,6 +1842,7 @@ try {
     render();
   }
 } catch (e) {
+  console.error(e);
   render();
 }
 </script>
