@@ -62,11 +62,9 @@
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <!-- Form Section -->
     <section class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border dark:border-slate-800 print-card">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-lg font-semibold">เพิ่มองค์อาคาร</h2>
-      </div>
+      <h2 class="text-lg font-semibold mb-4">เพิ่มองค์อาคาร</h2>
 
-      <!-- ฟีเจอร์ใหม่: คลังรายการสำเร็จรูป (Presets) -->
+      <!-- คลังรายการสำเร็จรูป (Presets) -->
       <div class="mb-4 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border dark:border-slate-700 no-print">
         <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">⚡ เลือกสเปกมาตรฐานด่วน (Preset Templates)</label>
         <div class="grid grid-cols-2 gap-2 text-xs">
@@ -252,12 +250,9 @@
         </div>
       </section>
 
-      <!-- ฟีเจอร์ใหม่: กราฟสรุปสัดส่วนต้นทุน (Cost Breakdown Chart) -->
       <section class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border dark:border-slate-800 print-card">
         <h2 class="text-lg font-semibold mb-3">📊 กราฟสัดส่วนต้นทุนวัสดุและงาน (Cost Breakdown)</h2>
-        <div class="space-y-3" id="costChartContainer">
-          <!-- บาร์กราฟจะถูกเรนเดอร์ลงตรงนี้ -->
-        </div>
+        <div class="space-y-3" id="costChartContainer"></div>
       </section>
 
       <section class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border dark:border-slate-800 print-card">
@@ -337,7 +332,6 @@ let items = [];
 let rates = JSON.parse(localStorage.getItem("qtoRates") || "null") ||
   Object.fromEntries(Object.entries(rateDefaults).map(([k,v]) => [k,v.value]));
 
-// --- ฟังก์ชัน Dark Mode ---
 function toggleDarkMode() {
   const html = document.documentElement;
   html.classList.toggle('dark');
@@ -374,14 +368,14 @@ function updateRebarFields() {
 $("type").addEventListener("change", updateRebarFields);
 updateRebarFields();
 
-// --- ฟังก์ชันคลังรายการสำเร็จรูป (Presets) ---
+// --- แก้ไขจุดนี้: ผูกค่า type เข้ากับ Preset สำเร็จแล้ว ---
 function applyPreset(type, w, l, d, defaultName) {
   $("type").value = type;
+  updateRebarFields(); // อัปเดตฟิลด์เหล็กให้ตรงกับประเภททันที
   $("width").value = w;
   $("length").value = l;
   $("depth").value = d;
   $("name").value = defaultName;
-  updateRebarFields();
 }
 
 function getState() {
@@ -661,7 +655,6 @@ function render() {
 
   const t=calcTotals();
 
-  // เรนเดอร์กราฟสัดส่วนต้นทุน (Cost Breakdown Chart)
   const categories = [
     { label: "คอนกรีตโครงสร้าง", val: t.costConcrete, color: "bg-blue-500" },
     { label: "เหล็กเสริม", val: t.costRebar, color: "bg-amber-500" },
