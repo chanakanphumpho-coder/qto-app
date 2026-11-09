@@ -1,38 +1,44 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="th" class="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Structural QTO & BOQ Pro</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class' }
+  </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Prompt', sans-serif; }
     @media print {
       .no-print { display: none !important; }
-      body { background: white !important; }
-      .print-card { box-shadow: none !important; border: 1px solid #ddd !important; }
+      body { background: white !important; color: black !important; }
+      .print-card { box-shadow: none !important; border: 1px solid #ddd !important; background: white !important; }
     }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-800 pb-10">
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 pb-10 transition-colors duration-200">
 <div class="max-w-7xl mx-auto px-4 py-6">
 
   <!-- Header & Project Info -->
-  <header class="bg-slate-900 text-white p-6 rounded-2xl shadow-lg mb-6">
+  <header class="bg-slate-900 dark:bg-slate-900 text-white p-6 rounded-2xl shadow-lg mb-6 border border-slate-800">
     <div class="flex flex-wrap justify-between gap-4 items-center mb-4">
       <div>
         <h1 class="text-2xl font-bold">Structural QTO & BOQ Pro</h1>
         <p class="text-slate-300 text-sm">ระบบถอดปริมาณและประมาณราคางานโครงสร้าง ค.ส.ล. (รองรับฐานราก พื้น คาน เสา)</p>
       </div>
-      <div class="flex gap-2 no-print flex-wrap">
-        <label class="bg-violet-600 hover:bg-violet-700 px-4 py-2 rounded-xl text-sm font-medium cursor-pointer inline-flex items-center">
+      <div class="flex gap-2 no-print flex-wrap items-center">
+        <button onclick="toggleDarkMode()" class="bg-slate-800 hover:bg-slate-700 text-amber-400 p-2.5 rounded-xl text-sm border border-slate-700 transition" title="สลับโหมดมืด/สว่าง">
+          <span id="themeIcon">🌙</span>
+        </button>
+        <label class="bg-violet-600 hover:bg-violet-700 px-4 py-2 rounded-xl text-sm font-medium cursor-pointer inline-flex items-center transition">
           📥 นำเข้า Excel
           <input type="file" id="importFile" accept=".xlsx, .xls" class="hidden" onchange="importExcel(event)">
         </label>
-        <button onclick="exportExcel()" class="bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded-xl text-sm font-medium">📤 Export Excel</button>
-        <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl text-sm font-medium">🖨️ พิมพ์ / PDF</button>
+        <button onclick="exportExcel()" class="bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded-xl text-sm font-medium transition">📤 Export Excel</button>
+        <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl text-sm font-medium transition">🖨️ พิมพ์ / PDF</button>
       </div>
     </div>
 
@@ -55,11 +61,33 @@
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <!-- Form Section -->
-    <section class="bg-white p-5 rounded-2xl shadow-sm border print-card">
-      <h2 class="text-lg font-semibold mb-4">เพิ่มองค์อาคาร</h2>
+    <section class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border dark:border-slate-800 print-card">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-semibold">เพิ่มองค์อาคาร</h2>
+      </div>
+
+      <!-- ฟีเจอร์ใหม่: คลังรายการสำเร็จรูป (Presets) -->
+      <div class="mb-4 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border dark:border-slate-700 no-print">
+        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">⚡ เลือกสเปกมาตรฐานด่วน (Preset Templates)</label>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <button type="button" onclick="applyPreset('Footing', 1.0, 1.0, 0.4, 'F-Std')" class="bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 text-blue-600 dark:text-blue-300 p-2 rounded-lg border border-blue-200 dark:border-blue-800 text-left font-medium">
+            ฐานราก 1.0x1.0x0.4m
+          </button>
+          <button type="button" onclick="applyPreset('Ground Beam', 0.2, 4.0, 0.4, 'GB-Std')" class="bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 text-blue-600 dark:text-blue-300 p-2 rounded-lg border border-blue-200 dark:border-blue-800 text-left font-medium">
+            คานคอดิน 0.2x0.4m (ยาว 4ม.)
+          </button>
+          <button type="button" onclick="applyPreset('Stub Column', 0.2, 0.2, 0.8, 'SC-Std')" class="bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 text-blue-600 dark:text-blue-300 p-2 rounded-lg border border-blue-200 dark:border-blue-800 text-left font-medium">
+            เสาตอม่อ 0.2x0.2x0.8m
+          </button>
+          <button type="button" onclick="applyPreset('Slab on Ground', 4.0, 4.0, 0.10, 'SOG-Std')" class="bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 text-blue-600 dark:text-blue-300 p-2 rounded-lg border border-blue-200 dark:border-blue-800 text-left font-medium">
+            พื้น On Ground 4x4m (หนา 10ซม.)
+          </button>
+        </div>
+      </div>
+
       <form id="qtoForm" class="space-y-3">
         <label class="block text-sm font-medium">ประเภทองค์อาคาร
-          <select id="type" class="mt-1 w-full border rounded-lg p-2">
+          <select id="type" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
             <optgroup label="โครงสร้างใต้ดินและชั้นล่าง">
               <option value="Footing">ฐานราก (Footing)</option>
               <option value="Ground Beam">คานคอดิน (Ground Beam)</option>
@@ -79,59 +107,61 @@
 
         <div class="grid grid-cols-2 gap-3">
           <label class="text-sm">ชื่อองค์อาคาร
-            <input id="name" required placeholder="เช่น GB1, C1" class="mt-1 w-full border rounded-lg p-2">
+            <input id="name" required placeholder="เช่น GB1, C1" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
           <label class="text-sm">จำนวน
-            <input id="qty" type="number" min="1" value="1" step="1" class="mt-1 w-full border rounded-lg p-2">
+            <input id="qty" type="number" min="1" value="1" step="1" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
         </div>
 
         <div class="grid grid-cols-3 gap-2">
           <label class="text-xs">กว้าง (m)
-            <input id="width" type="number" min="0" step="0.01" value="0.20" class="mt-1 w-full border rounded-lg p-2">
+            <input id="width" type="number" min="0" step="0.01" value="0.20" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
           <label class="text-xs">ยาว / สูง (m)
-            <input id="length" type="number" min="0" step="0.01" value="4.00" class="mt-1 w-full border rounded-lg p-2">
+            <input id="length" type="number" min="0" step="0.01" value="4.00" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
           <label class="text-xs">ลึก / หนา (m)
-            <input id="depth" type="number" min="0" step="0.01" value="0.40" class="mt-1 w-full border rounded-lg p-2">
+            <input id="depth" type="number" min="0" step="0.01" value="0.40" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
         </div>
 
         <label class="block text-xs">ระยะยกบันไดรวม (m) — ใช้กับบันไดคอดิน
-          <input id="rise" type="number" min="0" step="0.01" value="0" class="mt-1 w-full border rounded-lg p-2">
+          <input id="rise" type="number" min="0" step="0.01" value="0" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
         </label>
 
-        <hr>
+        <label class="block text-xs">หมายเหตุ / บันทึกย่อหน้างาน
+          <input id="remark" placeholder="เช่น เทปูนรอบเช้า, รอผลทดสอบ" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+        </label>
+
+        <hr class="dark:border-slate-800">
         <h3 class="font-semibold text-sm">เหล็กเสริมโดยประมาณ</h3>
         <div class="grid grid-cols-2 gap-3">
           <label class="text-xs">เกรดเหล็ก
-            <select id="grade" class="mt-1 w-full border rounded-lg p-2">
+            <select id="grade" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
               <option>SR24</option><option>SD30</option><option selected>SD40</option><option>SD50</option>
             </select>
           </label>
           <label class="text-xs">ขนาดเหล็ก
-            <select id="barSize" class="mt-1 w-full border rounded-lg p-2">
+            <select id="barSize" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
               <option value="RB6">RB6</option><option value="RB9">RB9</option>
               <option value="DB12" selected>DB12</option><option value="DB16">DB16</option>
               <option value="DB20">DB20</option><option value="DB25">DB25</option><option value="DB28">DB28</option>
             </select>
           </label>
 
-          <!-- สำหรับคาน/เสา -->
           <div id="longitudinalFields" class="col-span-2 grid grid-cols-2 gap-3">
             <label class="text-xs">จำนวนเหล็กหลัก (เส้น/ชิ้น)
-              <input id="barCount" type="number" min="0" value="4" class="mt-1 w-full border rounded-lg p-2">
+              <input id="barCount" type="number" min="0" value="4" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
             </label>
           </div>
 
-          <!-- สำหรับฐานราก/พื้น (เหล็กตะแกรง) -->
           <div id="matFields" class="col-span-2 grid grid-cols-2 gap-3 hidden">
             <label class="text-xs">ระยะเรียง X (m)
-              <input id="matSpacingX" type="number" min="0.01" step="0.01" value="0.20" class="mt-1 w-full border rounded-lg p-2">
+              <input id="matSpacingX" type="number" min="0.01" step="0.01" value="0.20" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
             </label>
             <label class="text-xs">ระยะเรียง Y (m)
-              <input id="matSpacingY" type="number" min="0.01" step="0.01" value="0.20" class="mt-1 w-full border rounded-lg p-2">
+              <input id="matSpacingY" type="number" min="0.01" step="0.01" value="0.20" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
             </label>
             <div class="col-span-2 flex gap-4 text-xs pt-1">
               <label><input type="checkbox" id="matBottom" checked> ตะแกรงล่าง</label>
@@ -140,47 +170,46 @@
           </div>
 
           <label class="text-xs">ความยาวเหล็กมาตรฐาน (m)
-            <input id="stockLength" type="number" min="1" step="0.1" value="10" class="mt-1 w-full border rounded-lg p-2">
+            <input id="stockLength" type="number" min="1" step="0.1" value="10" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
           <label class="text-xs">ระยะทาบ (เท่าของ d)
-            <select id="lapRatio" class="mt-1 w-full border rounded-lg p-2">
+            <select id="lapRatio" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
               <option value="40">40d</option><option value="50">50d</option><option value="60" selected>60d</option>
             </select>
           </label>
           <label class="text-xs">เผื่อเศษเหล็ก (%)
-            <input id="waste" type="number" min="0" max="100" value="5" class="mt-1 w-full border rounded-lg p-2">
+            <input id="waste" type="number" min="0" max="100" value="5" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
         </div>
 
-        <!-- สำหรับเหล็กปลอก -->
-        <div id="stirrupFields" class="grid grid-cols-2 gap-3 pt-2 border-t">
+        <div id="stirrupFields" class="grid grid-cols-2 gap-3 pt-2 border-t dark:border-slate-800">
           <label class="text-xs">เหล็กปลอก
-            <select id="stirrupSize" class="mt-1 w-full border rounded-lg p-2">
+            <select id="stirrupSize" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
               <option value="NONE">ไม่มี</option><option value="RB6" selected>RB6</option><option value="RB9">RB9</option>
             </select>
           </label>
           <label class="text-xs">ระยะเรียงปลอก (m)
-            <input id="spacing" type="number" min="0.01" step="0.01" value="0.15" class="mt-1 w-full border rounded-lg p-2">
+            <input id="spacing" type="number" min="0.01" step="0.01" value="0.15" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
           <label class="text-xs">ระยะหุ้มคอนกรีต (m)
-            <input id="cover" type="number" min="0" step="0.005" value="0.04" class="mt-1 w-full border rounded-lg p-2">
+            <input id="cover" type="number" min="0" step="0.005" value="0.04" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
           <label class="text-xs">ขอปลอก (เท่าของ d/ข้าง)
-            <input id="hookRatio" type="number" min="0" value="10" class="mt-1 w-full border rounded-lg p-2">
+            <input id="hookRatio" type="number" min="0" value="10" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
         </div>
 
-        <hr>
+        <hr class="dark:border-slate-800">
         <h3 class="font-semibold text-sm">งานดิน & คอนกรีตหยาบ — ใช้กับฐานราก/คานคอดิน</h3>
         <div class="grid grid-cols-2 gap-3">
           <label class="text-xs">ระยะเผื่อขุดต่อข้าง (m)
-            <input id="excClear" type="number" min="0" step="0.05" value="0.30" class="mt-1 w-full border rounded-lg p-2">
+            <input id="excClear" type="number" min="0" step="0.05" value="0.30" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
           <label class="text-xs">ความลึกขุด (m)
-            <input id="excDepth" type="number" min="0" step="0.05" value="0.80" class="mt-1 w-full border rounded-lg p-2">
+            <input id="excDepth" type="number" min="0" step="0.05" value="0.80" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
           <label class="text-xs">ทรายรองพื้น (m)
-            <input id="sandBed" type="number" min="0" step="0.01" value="0.05" class="mt-1 w-full border rounded-lg p-2">
+            <input id="sandBed" type="number" min="0" step="0.01" value="0.05" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
           <div class="text-xs flex items-center pt-4">
             <label class="flex items-center gap-2 cursor-pointer">
@@ -189,7 +218,7 @@
             </label>
           </div>
           <label class="text-xs col-span-2">น้ำหนักโครงหลังคา (kg/ชิ้น)
-            <input id="manualSteel" type="number" min="0" step="0.1" value="0" class="mt-1 w-full border rounded-lg p-2">
+            <input id="manualSteel" type="number" min="0" step="0.1" value="0" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
         </div>
 
@@ -201,11 +230,11 @@
 
     <!-- Results & Summary Section -->
     <main class="lg:col-span-2 space-y-6">
-      <section class="bg-white p-5 rounded-2xl shadow-sm border print-card">
+      <section class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border dark:border-slate-800 print-card">
         <h2 class="text-lg font-semibold mb-3">รายการถอดแบบ / BOQ</h2>
         <div class="overflow-x-auto">
           <table class="w-full text-sm min-w-[1000px]">
-            <thead class="bg-slate-100 text-left">
+            <thead class="bg-slate-100 dark:bg-slate-800 text-left">
               <tr>
                 <th class="p-2">ชื่อ / ประเภท</th>
                 <th class="p-2">จำนวน</th>
@@ -223,35 +252,43 @@
         </div>
       </section>
 
-      <section class="bg-white p-5 rounded-2xl shadow-sm border print-card">
+      <!-- ฟีเจอร์ใหม่: กราฟสรุปสัดส่วนต้นทุน (Cost Breakdown Chart) -->
+      <section class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border dark:border-slate-800 print-card">
+        <h2 class="text-lg font-semibold mb-3">📊 กราฟสัดส่วนต้นทุนวัสดุและงาน (Cost Breakdown)</h2>
+        <div class="space-y-3" id="costChartContainer">
+          <!-- บาร์กราฟจะถูกเรนเดอร์ลงตรงนี้ -->
+        </div>
+      </section>
+
+      <section class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border dark:border-slate-800 print-card">
         <h2 class="text-lg font-semibold mb-3">ราคาวัสดุและค่าแรง — แก้ไขได้</h2>
         <div class="grid grid-cols-2 md:grid-cols-3 gap-3" id="rateInputs"></div>
       </section>
 
-      <section class="bg-white p-5 rounded-2xl shadow-sm border print-card">
+      <section class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border dark:border-slate-800 print-card">
         <h2 class="text-lg font-semibold mb-3">ค่าดำเนินการและสรุปราคา</h2>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
           <label class="text-sm">Overhead (%)
-            <input id="overhead" type="number" min="0" value="10" class="mt-1 w-full border rounded-lg p-2">
+            <input id="overhead" type="number" min="0" value="10" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
           <label class="text-sm">กำไร (%)
-            <input id="profit" type="number" min="0" value="10" class="mt-1 w-full border rounded-lg p-2">
+            <input id="profit" type="number" min="0" value="10" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
           <label class="text-sm">VAT (%)
-            <input id="vat" type="number" min="0" value="7" class="mt-1 w-full border rounded-lg p-2">
+            <input id="vat" type="number" min="0" value="7" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
           <label class="text-sm">หัก ณ ที่จ่าย (%)
-            <input id="wht" type="number" min="0" value="3" class="mt-1 w-full border rounded-lg p-2">
+            <input id="wht" type="number" min="0" value="3" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
         </div>
         <div id="summary" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
       </section>
 
-      <section class="bg-white p-5 rounded-2xl shadow-sm border print-card">
+      <section class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border dark:border-slate-800 print-card">
         <h2 class="text-lg font-semibold mb-3">สรุปเหล็กแยกเกรดและขนาด</h2>
         <div class="overflow-x-auto">
           <table class="w-full text-sm">
-            <thead class="bg-slate-100 text-left">
+            <thead class="bg-slate-100 dark:bg-slate-800 text-left">
               <tr>
                 <th class="p-2">เกรด</th>
                 <th class="p-2">ขนาด</th>
@@ -300,6 +337,20 @@ let items = [];
 let rates = JSON.parse(localStorage.getItem("qtoRates") || "null") ||
   Object.fromEntries(Object.entries(rateDefaults).map(([k,v]) => [k,v.value]));
 
+// --- ฟังก์ชัน Dark Mode ---
+function toggleDarkMode() {
+  const html = document.documentElement;
+  html.classList.toggle('dark');
+  const isDark = html.classList.contains('dark');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  $("themeIcon").textContent = isDark ? '☀️' : '🌙';
+}
+
+if (localStorage.getItem('theme') === 'dark') {
+  document.documentElement.classList.add('dark');
+  $("themeIcon").textContent = '☀️';
+}
+
 function todayLocal() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
@@ -322,6 +373,16 @@ function updateRebarFields() {
 }
 $("type").addEventListener("change", updateRebarFields);
 updateRebarFields();
+
+// --- ฟังก์ชันคลังรายการสำเร็จรูป (Presets) ---
+function applyPreset(type, w, l, d, defaultName) {
+  $("type").value = type;
+  $("width").value = w;
+  $("length").value = l;
+  $("depth").value = d;
+  $("name").value = defaultName;
+  updateRebarFields();
+}
 
 function getState() {
   return {
@@ -401,7 +462,7 @@ function renderRates() {
   $("rateInputs").innerHTML = Object.entries(rateDefaults).map(([key,def]) => `
     <label class="text-xs">${def.label}
       <input type="number" min="0" step="0.01" value="${rates[key] ?? def.value}"
-        data-rate="${key}" class="rate-input mt-1 w-full border rounded-lg p-2">
+        data-rate="${key}" class="rate-input mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
     </label>`).join("");
 
   document.querySelectorAll(".rate-input").forEach(el =>
@@ -424,6 +485,7 @@ $("qtoForm").addEventListener("submit", e => {
   const type = $("type").value;
   const qty = Math.max(1, val("qty"));
   const name = $("name").value.trim();
+  const remark = $("remark").value.trim();
   const w = val("width"), L = val("length"), d = val("depth"), rise = val("rise");
 
   if (!name || w < 0 || L < 0 || d < 0) {
@@ -525,10 +587,11 @@ $("qtoForm").addEventListener("submit", e => {
     id:Date.now()+Math.random(), name, type, qty, grade, mainSize, stirrupSize,
     concrete, leanConc, form, excavation, backfill,
     rebar:rebarTotal, rebarNoWaste, mainKg, stirrupKg,
-    wastePct, lapLength, laps,
+    wastePct, lapLength, laps, remark,
     width:w, length:L, depth:d, barCount:val("barCount")
   });
 
+  $("remark").value = "";
   render();
 });
 
@@ -539,18 +602,27 @@ function calcTotals() {
     return a;
   },{concrete:0,leanConc:0,form:0,exc:0,fill:0,rebar:0});
 
-  const material=t.concrete*(rates.concrete||0) + t.leanConc*(rates.leanConc||0) + 
-    t.rebar*(rates.rebar||0) + t.form*(rates.formwork||0) + 
-    t.exc*(rates.excavation||0) + t.fill*(rates.backfill||0);
-  const labor=t.concrete*(rates.laborConc||0) + t.rebar*(rates.laborRebar||0) + 
+  const costConcrete = t.concrete * (rates.concrete||0);
+  const costLean = t.leanConc * (rates.leanConc||0);
+  const costRebar = t.rebar * (rates.rebar||0);
+  const costForm = t.form * (rates.formwork||0);
+  const costExc = t.exc * (rates.excavation||0);
+  const costFill = t.fill * (rates.backfill||0);
+
+  const material = costConcrete + costLean + costRebar + costForm + costExc + costFill;
+  const labor = t.concrete*(rates.laborConc||0) + t.rebar*(rates.laborRebar||0) + 
     t.form*(rates.laborForm||0) + t.exc*(rates.laborExc||0) + t.fill*(rates.laborFill||0);
-  const direct=material+labor;
-  const overhead=direct*val("overhead")/100;
-  const profit=(direct+overhead)*val("profit")/100;
-  const preVat=direct+overhead+profit;
-  const vat=preVat*val("vat")/100;
-  const wht=preVat*val("wht")/100;
-  return {...t,material,labor,direct,overhead,profit,preVat,vat,wht,net:preVat+vat-wht};
+  const direct = material + labor;
+  const overhead = direct * val("overhead") / 100;
+  const profit = (direct + overhead) * val("profit") / 100;
+  const preVat = direct + overhead + profit;
+  const vat = preVat * val("vat") / 100;
+  const wht = preVat * val("wht") / 100;
+
+  return {
+    ...t, costConcrete, costLean, costRebar, costForm, costExc, costFill,
+    material, labor, direct, overhead, profit, preVat, vat, wht, net: preVat + vat - wht
+  };
 }
 
 function duplicateItem(id) {
@@ -570,9 +642,9 @@ function render() {
       (i.form||0)*(rates.laborForm||0) + (i.excavation||0)*(rates.laborExc||0) +
       (i.backfill||0)*(rates.laborFill||0);
 
-    return `<tr class="border-b">
+    return `<tr class="border-b dark:border-slate-800">
       <td class="p-2"><b>${safe(i.name)}</b>
-        <div class="text-xs text-slate-500">${safe(i.type)} · ${safe(i.grade)}</div></td>
+        <div class="text-xs text-slate-500">${safe(i.type)} · ${safe(i.grade)} ${i.remark ? '· <span class="text-amber-500">📝 '+safe(i.remark)+'</span>' : ''}</div></td>
       <td class="p-2">${i.qty}</td>
       <td class="p-2">${(i.concrete||0).toFixed(2)} <span class="text-xs text-slate-400">(${ (i.leanConc||0).toFixed(2) })</span></td>
       <td class="p-2">${(i.form||0).toFixed(2)}</td>
@@ -581,19 +653,47 @@ function render() {
       <td class="p-2">${(i.rebar||0).toFixed(2)}</td>
       <td class="p-2">${money(direct)}</td>
       <td class="p-2 no-print flex gap-2">
-        <button onclick="duplicateItem('${i.id}')" class="text-blue-600 hover:underline">คัดลอก</button>
-        <button onclick="removeItem('${i.id}')" class="text-red-600 hover:underline">ลบ</button>
+        <button onclick="duplicateItem('${i.id}')" class="text-blue-500 hover:underline">คัดลอก</button>
+        <button onclick="removeItem('${i.id}')" class="text-red-500 hover:underline">ลบ</button>
       </td>
     </tr>`;
   }).join("");
 
   const t=calcTotals();
+
+  // เรนเดอร์กราฟสัดส่วนต้นทุน (Cost Breakdown Chart)
+  const categories = [
+    { label: "คอนกรีตโครงสร้าง", val: t.costConcrete, color: "bg-blue-500" },
+    { label: "เหล็กเสริม", val: t.costRebar, color: "bg-amber-500" },
+    { label: "ไม้แบบ", val: t.costForm, color: "bg-emerald-500" },
+    { label: "งานขุด/ถมดิน", val: t.costExc + t.costFill, color: "bg-purple-500" },
+    { label: "คอนกรีตหยาบ", val: t.costLean, color: "bg-cyan-500" },
+    { label: "ค่าแรงรวม", val: t.labor, color: "bg-rose-500" }
+  ];
+  const maxVal = Math.max(...categories.map(c => c.val), 1);
+
+  $("costChartContainer").innerHTML = categories.map(c => {
+    const pct = t.direct > 0 ? ((c.val / t.direct) * 100).toFixed(1) : 0;
+    const barWidth = Math.max(2, (c.val / maxVal) * 100);
+    return `
+      <div>
+        <div class="flex justify-between text-xs mb-1">
+          <span class="font-medium">${c.label}</span>
+          <span class="text-slate-500 dark:text-slate-400">${money(c.val)} บาท (${pct}%)</span>
+        </div>
+        <div class="w-full bg-slate-100 dark:bg-slate-800 h-3 rounded-full overflow-hidden">
+          <div class="${c.color} h-full rounded-full transition-all duration-500" style="width: ${barWidth}%"></div>
+        </div>
+      </div>
+    `;
+  }).join("");
+
   $("summary").innerHTML=[
     ["ค่าวัสดุ",t.material],["ค่าแรง",t.labor],["ต้นทุนตรง",t.direct],
     ["Overhead",t.overhead],["กำไร",t.profit],["ก่อน VAT",t.preVat],
     ["VAT",t.vat],["หัก ณ ที่จ่าย",t.wht],["ยอดรับสุทธิประมาณ",t.net]
-  ].map(([label,value]) => `<div class="bg-slate-50 p-3 rounded-xl">
-    <div class="text-xs text-slate-500">${label}</div>
+  ].map(([label,value]) => `<div class="bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border dark:border-slate-700">
+    <div class="text-xs text-slate-500 dark:text-slate-400">${label}</div>
     <div class="font-semibold">${money(value)} บาท</div>
   </div>`).join("");
 
@@ -611,7 +711,7 @@ function render() {
 
   $("rebarRows").innerHTML=Object.entries(groups).map(([key,kg]) => {
     const [g,s]=key.split("|");
-    return `<tr class="border-b"><td class="p-2">${safe(g)}</td>
+    return `<tr class="border-b dark:border-slate-800"><td class="p-2">${safe(g)}</td>
       <td class="p-2">${safe(s)}</td><td class="p-2">${kg.toFixed(2)}</td>
       <td class="p-2">${(kg/1000).toFixed(3)}</td></tr>`;
   }).join("") || `<tr><td colspan="4" class="p-3 text-slate-500">ยังไม่มีรายการ</td></tr>`;
@@ -657,7 +757,8 @@ function exportExcel() {
     "น้ำหนักเหล็กหลัก/ตะแกรง (kg)":Number((i.mainKg||0).toFixed(2)),
     "น้ำหนักเหล็กปลอก (kg)":Number((i.stirrupKg||0).toFixed(2)),
     "เหล็กรวมเผื่อเศษ (kg)":Number((i.rebar||0).toFixed(2)),
-    "เผื่อเศษ (%)":i.wastePct
+    "เผื่อเศษ (%)":i.wastePct,
+    "หมายเหตุ":i.remark||""
   }));
   XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(boq),"BOQ");
 
@@ -728,7 +829,8 @@ function importExcel(event) {
         mainKg: Number(row["น้ำหนักเหล็กหลัก/ตะแกรง (kg)"]) || 0,
         stirrupKg: Number(row["น้ำหนักเหล็กปลอก (kg)"]) || 0,
         rebar: Number(row["เหล็กรวมเผื่อเศษ (kg)"]) || 0,
-        wastePct: Number(row["เผื่อเศษ (%)"]) || 5
+        wastePct: Number(row["เผื่อเศษ (%)"]) || 5,
+        remark: row["หมายเหตุ"] || ""
       }));
 
       if (workbook.Sheets["Project"]) {
