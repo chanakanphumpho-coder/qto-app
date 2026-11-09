@@ -76,6 +76,26 @@
                         <input type="number" id="rebarCount" value="4" min="0" class="w-full border rounded-xl p-2.5 border-slate-300">
                     </div>
 
+                    <!-- ส่วนเหล็กปลอก (Stirrups) -->
+                    <div class="mt-3 pt-3 border-t border-slate-200">
+                        <label class="block text-xs font-medium mb-1">เหล็กปลอก (Stirrups)</label>
+                        <select id="stirrupSize" class="w-full border rounded-xl p-2.5 bg-slate-50 border-slate-300 mb-2">
+                            <option value="NONE">ไม่มีเหล็กปลอก</option>
+                            <option value="RB6" selected>RB6 (0.222 kg/m)</option>
+                            <option value="RB9">RB9 (0.499 kg/m)</option>
+                        </select>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] font-medium mb-1">ระยะเรียง @ (m เช่น 0.15)</label>
+                                <input type="number" id="stirrupSpacing" step="0.01" value="0.15" class="w-full border rounded-xl p-2 text-sm border-slate-300">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-medium mb-1">จำนวนขาเหล็กปลอก</label>
+                                <input type="number" id="stirrupLegs" value="2" min="2" class="w-full border rounded-xl p-2 text-sm border-slate-300">
+                            </div>
+                        </div>
+                    </div>
+
                     <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl shadow-sm transition mt-2">
                         + คำนวณและเพิ่มรายการ
                     </button>
@@ -148,9 +168,25 @@
             else if (type === 'Beam') formworkArea = (2 * d + w) * l * qty;
             else if (type === 'Slab') formworkArea = w * l * qty;
 
+            // คำนวณเหล็กแกนหลัก + เหล็กปลอก
             const rebarWeightTotal = rebarCount * l * rebarWeights[rebarSize] * qty;
+            const stirrupSize = document.getElementById('stirrupSize').value;
+            let stirrupWeightTotal = 0;
+            if (stirrupSize !== 'NONE') {
+                const spacing = parseFloat(document.getElementById('stirrupSpacing').value) || 0.15;
+                const numStirrups = Math.ceil(l / spacing) * qty;
+                const perimStirrup = (2 * (w + d)) + 0.10;
+                stirrupWeightTotal = numStirrups * perimStirrup * rebarWeights[stirrupSize];
+            }
+            const totalCombinedRebar = rebarWeightTotal + stirrupWeightTotal;
 
-            items.push({ id: Date.now(), name, type, qty, concrete, formworkArea, rebarWeightTotal, rebarSize });
+            items.push({ 
+                id: Date.now(), name, type, qty, 
+                concrete, formworkArea, 
+                rebarWeightTotal: totalCombinedRebar, 
+                rebarSize: `${rebarSize}(แกน)+${stirrupSize !== 'NONE' ? stirrupSize : 'ไม่มีปลอก'}` 
+            });
+
             updateUI();
             document.getElementById('qtoForm').reset();
         }
