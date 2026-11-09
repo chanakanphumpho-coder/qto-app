@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Structural QTO & BOQ</title>
+  <title>Structural QTO & BOQ Pro</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -23,7 +23,7 @@
   <header class="bg-slate-900 text-white p-6 rounded-2xl shadow-lg mb-6">
     <div class="flex flex-wrap justify-between gap-4 items-center mb-4">
       <div>
-        <h1 class="text-2xl font-bold">Structural QTO & BOQ</h1>
+        <h1 class="text-2xl font-bold">Structural QTO & BOQ Pro</h1>
         <p class="text-slate-300 text-sm">ระบบถอดปริมาณและประมาณราคางานโครงสร้าง ค.ส.ล. (รองรับฐานราก พื้น คาน เสา)</p>
       </div>
       <div class="flex gap-2 no-print">
@@ -167,7 +167,7 @@
         </div>
 
         <hr>
-        <h3 class="font-semibold text-sm">งานดิน — ใช้กับฐานราก/คานคอดิน/ตอม่อ</h3>
+        <h3 class="font-semibold text-sm">งานดิน & คอนกรีตหยาบ — ใช้กับฐานราก/คานคอดิน</h3>
         <div class="grid grid-cols-2 gap-3">
           <label class="text-xs">ระยะเผื่อขุดต่อข้าง (m)
             <input id="excClear" type="number" min="0" step="0.05" value="0.30" class="mt-1 w-full border rounded-lg p-2">
@@ -178,7 +178,13 @@
           <label class="text-xs">ทรายรองพื้น (m)
             <input id="sandBed" type="number" min="0" step="0.01" value="0.05" class="mt-1 w-full border rounded-lg p-2">
           </label>
-          <label class="text-xs">น้ำหนักโครงหลังคา (kg/ชิ้น)
+          <div class="text-xs flex items-center pt-4">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="addLean" checked class="w-4 h-4">
+              <span>เทคอนกรีตหยาบ (5 cm)</span>
+            </label>
+          </div>
+          <label class="text-xs col-span-2">น้ำหนักโครงหลังคา (kg/ชิ้น)
             <input id="manualSteel" type="number" min="0" step="0.1" value="0" class="mt-1 w-full border rounded-lg p-2">
           </label>
         </div>
@@ -199,13 +205,13 @@
               <tr>
                 <th class="p-2">ชื่อ / ประเภท</th>
                 <th class="p-2">จำนวน</th>
-                <th class="p-2">คอนกรีต m³</th>
+                <th class="p-2">คอนกรีต m³ (หยาบ)</th>
                 <th class="p-2">แบบ m²</th>
                 <th class="p-2">ขุด m³</th>
                 <th class="p-2">ถม m³</th>
                 <th class="p-2">เหล็ก kg</th>
                 <th class="p-2">ต้นทุนตรง</th>
-                <th class="p-2 no-print">ลบ</th>
+                <th class="p-2 no-print">จัดการ</th>
               </tr>
             </thead>
             <tbody id="rows"></tbody>
@@ -264,7 +270,8 @@ const unitWeight = {
 };
 
 const rateDefaults = {
-  concrete:{label:"คอนกรีต (บาท/m³)",value:2500},
+  concrete:{label:"คอนกรีตโครงสร้าง (บาท/m³)",value:2500},
+  leanConc:{label:"คอนกรีตหยาบ (บาท/m³)",value:1800},
   rebar:{label:"เหล็กเสริม (บาท/kg)",value:30},
   formwork:{label:"ไม้แบบ (บาท/m²)",value:350},
   excavation:{label:"ขุดดิน (บาท/m³)",value:150},
@@ -294,7 +301,7 @@ function todayLocal() {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
 }
 
-if (!$("reportDate").value) $("reportDate").value = todayLocal();
+if ($("reportDate") && !$("reportDate").value) $("reportDate").value = todayLocal();
 
 function isMatType(type) {
   return ["Footing","Slab on Ground","Elevated Slab","Precast Slab"].includes(type);
@@ -358,3 +365,335 @@ function getSavedProjects() {
 
 function refreshProjectList(selectedName="") {
   const projects = getSavedProjects();
+  $("savedProjects").innerHTML =
+    `<option value="">เลือกโครงการที่บันทึกไว้</option>` +
+    Object.keys(projects).sort().map(name =>
+      `<option value="${safe(name)}">${safe(name)}</option>`
+    ).join("");
+  $("savedProjects").value = selectedName;
+}
+
+function saveProject() {
+  const name = $("projectName").value.trim();
+  if (!name) return alert("กรุณากรอกชื่อโครงการก่อนบันทึก");
+  const projects = getSavedProjects();
+  projects[name] = getState();
+  localStorage.setItem("qtoProjects", JSON.stringify(projects));
+  refreshProjectList(name);
+  persistCurrent();
+  alert(`บันทึกโครงการ “${name}” เรียบร้อยแล้ว`);
+}
+
+function loadProject() {
+  const name = $("savedProjects").value;
+  if (!name) return alert("กรุณาเลือกโครงการที่ต้องการโหลด");
+  const state = getSavedProjects()[name];
+  if (!state) return alert("ไม่พบข้อมูลโครงการนี้");
+  loadState(state);
+  persistCurrent();
+}
+
+function renderRates() {
+  $("rateInputs").innerHTML = Object.entries(rateDefaults).map(([key,def]) => `
+    <label class="text-xs">${def.label}
+      <input type="number" min="0" step="0.01" value="${rates[key] ?? def.value}"
+        data-rate="${key}" class="rate-input mt-1 w-full border rounded-lg p-2">
+    </label>`).join("");
+
+  document.querySelectorAll(".rate-input").forEach(el =>
+    el.addEventListener("input", () => {
+      rates[el.dataset.rate] = Number(el.value) || 0;
+      localStorage.setItem("qtoRates", JSON.stringify(rates));
+      render();
+    })
+  );
+}
+
+function barLengthWithLaps(length, stock, lapLength) {
+  const laps = Math.max(0, Math.ceil(length / stock) - 1);
+  return {length:length + laps * lapLength, laps};
+}
+
+$("qtoForm").addEventListener("submit", e => {
+  e.preventDefault();
+
+  const type = $("type").value;
+  const qty = Math.max(1, val("qty"));
+  const name = $("name").value.trim();
+  const w = val("width"), L = val("length"), d = val("depth"), rise = val("rise");
+
+  if (!name || w < 0 || L < 0 || d < 0) {
+    return alert("กรุณาตรวจสอบชื่อและขนาดองค์อาคาร");
+  }
+
+  let concrete=0, leanConc=0, form=0, excavation=0, backfill=0;
+
+  if (type === "Footing") {
+    concrete=w*L*d*qty;
+    form=2*(w+L)*d*qty;
+    if ($("addLean").checked) leanConc = (w+0.1)*(L+0.1)*0.05*qty;
+    excavation=(w+2*val("excClear"))*(L+2*val("excClear"))*val("excDepth")*qty;
+  } else if (type === "Ground Beam") {
+    concrete=w*L*d*qty;
+    form=(2*d+w)*L*qty;
+    if ($("addLean").checked) leanConc = w*L*0.05*qty;
+    excavation=(w+2*val("excClear"))*L*val("excDepth")*qty;
+  } else if (type === "Stub Column" || type === "Column") {
+    concrete=w*d*L*qty;
+    form=2*(w+d)*L*qty;
+    if (type === "Stub Column") {
+      excavation=(w+2*val("excClear"))*(d+2*val("excClear"))*val("excDepth")*qty;
+    }
+  } else if (type === "Beam") {
+    concrete=w*d*L*qty;
+    form=(2*d+w)*L*qty;
+  } else if (type === "Slab on Ground") {
+    concrete=w*L*d*qty;
+    form=2*(w+L)*d*qty;
+    if ($("addLean").checked) leanConc = w*L*0.05*qty;
+  } else if (type === "Elevated Slab" || type === "Precast Slab") {
+    concrete=w*L*d*qty;
+    form=(w*L+2*(w+L)*d)*qty;
+  } else if (type === "Ground Stair") {
+    const slope=Math.sqrt(L*L+rise*rise);
+    concrete=(w*slope*d+0.5*w*L*rise)*qty;
+    form=(w*slope+rise*slope)*qty;
+  }
+
+  const grade=$("grade").value;
+  const mainSize=$("barSize").value;
+  const diaM=parseInt(mainSize.replace(/\D/g,""),10)/1000;
+  const stock=Math.max(1,val("stockLength"));
+  const lapLength=val("lapRatio")*diaM;
+
+  let mainKg=0, stirrupKg=0, laps=0;
+  let stirrupSize="NONE";
+
+  if (isMatType(type)) {
+    const sx=Math.max(0.01,val("matSpacingX"));
+    const sy=Math.max(0.01,val("matSpacingY"));
+    const layers=(($("matBottom").checked ? 1 : 0)+($("matTop").checked ? 1 : 0));
+    const barsAlongL=Math.ceil(w/sx)+1;
+    const barsAlongW=Math.ceil(L/sy)+1;
+    const runL=barLengthWithLaps(L,stock,lapLength);
+    const runW=barLengthWithLaps(w,stock,lapLength);
+    laps=(barsAlongL*runL.laps+barsAlongW*runW.laps)*layers*qty;
+    const totalLength=(barsAlongL*runL.length+barsAlongW*runW.length)*layers*qty;
+    mainKg=totalLength*(unitWeight[mainSize]||0);
+  } else {
+    const run=barLengthWithLaps(L,stock,lapLength);
+    laps=run.laps;
+    mainKg=val("barCount")*run.length*(unitWeight[mainSize]||0)*qty;
+  }
+
+  if (isStirrupType(type)) {
+    stirrupSize=$("stirrupSize").value;
+    const spacing=Math.max(0.01,val("spacing"));
+    if (stirrupSize !== "NONE" && unitWeight[stirrupSize]) {
+      const stirrupDia=parseInt(stirrupSize.replace(/\D/g,""),10)/1000;
+      const n=(Math.ceil(L/spacing)+1)*qty;
+      const innerW=Math.max(0,w-2*val("cover"));
+      const innerD=Math.max(0,d-2*val("cover"));
+      const hookLength=2*val("hookRatio")*stirrupDia;
+      stirrupKg=n*(2*(innerW+innerD)+hookLength)*(unitWeight[stirrupSize]||0);
+    }
+  }
+
+  if (type === "Roof Truss") {
+    concrete=0; leanConc=0; form=0; excavation=0; backfill=0;
+    mainKg=val("manualSteel")*qty;
+    stirrupKg=0;
+  }
+
+  const wastePct=Math.max(0,val("waste"))/100;
+  const rebarNoWaste=mainKg+stirrupKg;
+  const rebarTotal=rebarNoWaste*(1+wastePct);
+
+  if (excavation > 0) {
+    const sand=Math.min(
+      excavation,
+      val("sandBed")*excavation/Math.max(val("excDepth"),0.01)
+    );
+    backfill=Math.max(0,excavation-concrete-leanConc-sand);
+  }
+
+  items.push({
+    id:Date.now()+Math.random(), name, type, qty, grade, mainSize, stirrupSize,
+    concrete, leanConc, form, excavation, backfill,
+    rebar:rebarTotal, rebarNoWaste, mainKg, stirrupKg,
+    wastePct, lapLength, laps,
+    width:w, length:L, depth:d, barCount:val("barCount")
+  });
+
+  render();
+});
+
+function calcTotals() {
+  const t=items.reduce((a,i) => {
+    a.concrete+=i.concrete||0; a.leanConc+=i.leanConc||0; a.form+=i.form||0; 
+    a.exc+=i.excavation||0; a.fill+=i.backfill||0; a.rebar+=i.rebar||0;
+    return a;
+  },{concrete:0,leanConc:0,form:0,exc:0,fill:0,rebar:0});
+
+  const material=t.concrete*(rates.concrete||0) + t.leanConc*(rates.leanConc||0) + 
+    t.rebar*(rates.rebar||0) + t.form*(rates.formwork||0) + 
+    t.exc*(rates.excavation||0) + t.fill*(rates.backfill||0);
+  const labor=t.concrete*(rates.laborConc||0) + t.rebar*(rates.laborRebar||0) + 
+    t.form*(rates.laborForm||0) + t.exc*(rates.laborExc||0) + t.fill*(rates.laborFill||0);
+  const direct=material+labor;
+  const overhead=direct*val("overhead")/100;
+  const profit=(direct+overhead)*val("profit")/100;
+  const preVat=direct+overhead+profit;
+  const vat=preVat*val("vat")/100;
+  const wht=preVat*val("wht")/100;
+  return {...t,material,labor,direct,overhead,profit,preVat,vat,wht,net:preVat+vat-wht};
+}
+
+function duplicateItem(id) {
+  const target = items.find(i => String(i.id) === String(id));
+  if (!target) return;
+  const newItem = {...target, id: Date.now()+Math.random(), name: target.name + " (ก๊อปปี้)"};
+  items.push(newItem);
+  render();
+}
+
+function render() {
+  $("rows").innerHTML=items.map(i => {
+    const direct=(i.concrete||0)*(rates.concrete||0) + (i.leanConc||0)*(rates.leanConc||0) +
+      (i.rebar||0)*(rates.rebar||0) + (i.form||0)*(rates.formwork||0) +
+      (i.excavation||0)*(rates.excavation||0) + (i.backfill||0)*(rates.backfill||0) +
+      (i.concrete||0)*(rates.laborConc||0) + (i.rebar||0)*(rates.laborRebar||0) +
+      (i.form||0)*(rates.laborForm||0) + (i.excavation||0)*(rates.laborExc||0) +
+      (i.backfill||0)*(rates.laborFill||0);
+
+    return `<tr class="border-b">
+      <td class="p-2"><b>${safe(i.name)}</b>
+        <div class="text-xs text-slate-500">${safe(i.type)} · ${safe(i.grade)}</div></td>
+      <td class="p-2">${i.qty}</td>
+      <td class="p-2">${(i.concrete||0).toFixed(2)} <span class="text-xs text-slate-400">(${ (i.leanConc||0).toFixed(2) })</span></td>
+      <td class="p-2">${(i.form||0).toFixed(2)}</td>
+      <td class="p-2">${(i.excavation||0).toFixed(2)}</td>
+      <td class="p-2">${(i.backfill||0).toFixed(2)}</td>
+      <td class="p-2">${(i.rebar||0).toFixed(2)}</td>
+      <td class="p-2">${money(direct)}</td>
+      <td class="p-2 no-print flex gap-2">
+        <button onclick="duplicateItem('${i.id}')" class="text-blue-600 hover:underline">คัดลอก</button>
+        <button onclick="removeItem('${i.id}')" class="text-red-600 hover:underline">ลบ</button>
+      </td>
+    </tr>`;
+  }).join("");
+
+  const t=calcTotals();
+  $("summary").innerHTML=[
+    ["ค่าวัสดุ",t.material],["ค่าแรง",t.labor],["ต้นทุนตรง",t.direct],
+    ["Overhead",t.overhead],["กำไร",t.profit],["ก่อน VAT",t.preVat],
+    ["VAT",t.vat],["หัก ณ ที่จ่าย",t.wht],["ยอดรับสุทธิประมาณ",t.net]
+  ].map(([label,value]) => `<div class="bg-slate-50 p-3 rounded-xl">
+    <div class="text-xs text-slate-500">${label}</div>
+    <div class="font-semibold">${money(value)} บาท</div>
+  </div>`).join("");
+
+  const groups={};
+  items.forEach(i => {
+    const factor=1+(i.wastePct||0)/100;
+    const mainKey=`${i.grade}|${i.mainSize}`;
+    groups[mainKey]=(groups[mainKey]||0)+(i.mainKg||0)*factor;
+
+    if (i.stirrupSize && i.stirrupSize!=="NONE" && i.stirrupKg) {
+      const key=`${i.grade}|${i.stirrupSize}`;
+      groups[key]=(groups[key]||0)+i.stirrupKg*factor;
+    }
+  });
+
+  $("rebarRows").innerHTML=Object.entries(groups).map(([key,kg]) => {
+    const [g,s]=key.split("|");
+    return `<tr class="border-b"><td class="p-2">${safe(g)}</td>
+      <td class="p-2">${safe(s)}</td><td class="p-2">${kg.toFixed(2)}</td>
+      <td class="p-2">${(kg/1000).toFixed(3)}</td></tr>`;
+  }).join("") || `<tr><td colspan="4" class="p-3 text-slate-500">ยังไม่มีรายการ</td></tr>`;
+
+  persistCurrent();
+}
+
+window.removeItem=id => {
+  items=items.filter(i => String(i.id)!==String(id));
+  render();
+};
+
+["overhead","profit","vat","wht"].forEach(id =>
+  $(id)?.addEventListener("input",render)
+);
+
+["projectName","ownerName","estimatorName","reportDate"].forEach(id =>
+  $(id)?.addEventListener("input",persistCurrent)
+);
+
+function exportExcel() {
+  if (!items.length) return alert("กรุณาเพิ่มรายการก่อน Export");
+  if (!window.XLSX) return alert("โหลดไลบรารี Excel ไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เน็ต");
+
+  const wb=XLSX.utils.book_new();
+  const project=[{
+    "ชื่อโครงการ":$("projectName").value,
+    "เจ้าของงาน":$("ownerName").value,
+    "ผู้ถอดแบบ":$("estimatorName").value,
+    "วันที่":$("reportDate").value
+  }];
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(project),"Project");
+
+  const boq=items.map(i => ({
+    "ชื่อ":i.name,"ประเภท":i.type,"จำนวน":i.qty,"เกรดเหล็ก":i.grade,
+    "คอนกรีตโครงสร้าง (m3)":Number((i.concrete||0).toFixed(3)),
+    "คอนกรีตหยาบ (m3)":Number((i.leanConc||0).toFixed(3)),
+    "ไม้แบบ (m2)":Number((i.form||0).toFixed(3)),
+    "ขุดดิน (m3)":Number((i.excavation||0).toFixed(3)),
+    "ถมดิน (m3)":Number((i.backfill||0).toFixed(3)),
+    "เหล็กหลัก/ตะแกรง":i.mainSize,
+    "เหล็กปลอก":i.stirrupSize,
+    "น้ำหนักเหล็กหลัก/ตะแกรง (kg)":Number((i.mainKg||0).toFixed(2)),
+    "น้ำหนักเหล็กปลอก (kg)":Number((i.stirrupKg||0).toFixed(2)),
+    "เหล็กรวมเผื่อเศษ (kg)":Number((i.rebar||0).toFixed(2)),
+    "เผื่อเศษ (%)":i.wastePct
+  }));
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(boq),"BOQ");
+
+  const t=calcTotals();
+  const summary=[
+    {รายการ:"ปริมาตรคอนกรีตโครงสร้างรวม (m3)",จำนวน:t.concrete},
+    {รายการ:"ปริมาตรคอนกรีตหยาบรวม (m3)",จำนวน:t.leanConc},
+    {รายการ:"พื้นที่ไม้แบบรวม (m2)",จำนวน:t.form},
+    {รายการ:"ปริมาตรขุดดินรวม (m3)",จำนวน:t.exc},
+    {รายการ:"ปริมาตรถมรวม (m3)",จำนวน:t.fill},
+    {รายการ:"เหล็กรวม (kg)",จำนวน:t.rebar},
+    {รายการ:"ค่าวัสดุ (บาท)",จำนวน:t.material},
+    {รายการ:"ค่าแรง (บาท)",จำนวน:t.labor},
+    {รายการ:"ต้นทุนตรง (บาท)",จำนวน:t.direct},
+    {รายการ:"Overhead (บาท)",จำนวน:t.overhead},
+    {รายการ:"กำไร (บาท)",จำนวน:t.profit},
+    {รายการ:"ก่อน VAT (บาท)",จำนวน:t.preVat},
+    {รายการ:"VAT (บาท)",จำนวน:t.vat},
+    {รายการ:"หัก ณ ที่จ่าย (บาท)",จำนวน:t.wht},
+    {รายการ:"ยอดรับสุทธิประมาณ (บาท)",จำนวน:t.net}
+  ];
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(summary),"Summary");
+
+  const rateData=Object.entries(rateDefaults).map(([key,d]) => ({
+    รายการ:d.label, ราคา:rates[key]||0
+  }));
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rateData),"Rates");
+  XLSX.writeFile(wb,"Structural_QTO_BOQ.xlsx");
+}
+
+renderRates();
+refreshProjectList();
+
+const savedCurrent=localStorage.getItem("qtoCurrent");
+if (savedCurrent) {
+  try { loadState(JSON.parse(savedCurrent)); }
+  catch (e) { render(); }
+} else {
+  render();
+}
+</script>
+</body>
+</html>
