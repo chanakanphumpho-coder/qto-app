@@ -16,6 +16,7 @@
       .no-print { display: none !important; }
       body { background: white !important; color: black !important; }
       .print-card { box-shadow: none !important; border: 1px solid #ddd !important; background: white !important; }
+      input, select { border: none !important; background: transparent !important; padding: 0 !important; }
     }
   </style>
 </head>
@@ -42,14 +43,14 @@
       </div>
     </div>
 
-    <!-- Project Controls -->
-    <div class="bg-slate-800 p-4 rounded-xl grid grid-cols-1 md:grid-cols-4 gap-3 no-print text-sm">
+    <!-- Project Controls (แก้ไขให้ข้อมูลโครงการติดพิมพ์) -->
+    <div class="bg-slate-800 p-4 rounded-xl grid grid-cols-1 md:grid-cols-4 gap-3 text-sm">
       <input id="projectName" placeholder="ชื่อโครงการ" class="bg-slate-700 border-slate-600 text-white border rounded-lg p-2">
       <input id="ownerName" placeholder="เจ้าของงาน" class="bg-slate-700 border-slate-600 text-white border rounded-lg p-2">
       <input id="estimatorName" placeholder="ผู้ถอดแบบ" class="bg-slate-700 border-slate-600 text-white border rounded-lg p-2">
       <input id="reportDate" type="date" class="bg-slate-700 border-slate-600 text-white border rounded-lg p-2">
       
-      <div class="md:col-span-4 flex flex-wrap gap-2 items-center pt-2 border-t border-slate-700">
+      <div class="md:col-span-4 flex flex-wrap gap-2 items-center pt-2 border-t border-slate-700 no-print">
         <button onclick="saveProject()" class="bg-amber-600 hover:bg-amber-700 px-3 py-1.5 rounded-lg text-xs font-medium">บันทึกโครงการนี้</button>
         <select id="savedProjects" class="bg-slate-700 border-slate-600 text-white border rounded-lg p-1.5 text-xs flex-1 max-w-xs">
           <option value="">เลือกโครงการที่บันทึกไว้</option>
@@ -64,7 +65,7 @@
     <section class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border dark:border-slate-800 print-card">
       <h2 class="text-lg font-semibold mb-4">เพิ่มองค์อาคาร</h2>
 
-      <!-- คลังรายการสำเร็จรูป (Presets) -->
+      <!-- Preset Templates -->
       <div class="mb-4 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border dark:border-slate-700 no-print">
         <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">⚡ เลือกสเปกมาตรฐานด่วน (Preset Templates)</label>
         <div class="grid grid-cols-2 gap-2 text-xs">
@@ -97,7 +98,7 @@
               <option value="Column">เสาชั้นบน</option>
               <option value="Beam">คานรับพื้น</option>
               <option value="Elevated Slab">พื้นหล่อในที่ / พื้นยก</option>
-              <option value="Precast Slab">พื้นสำเร็จรูป</option>
+              <option value="Precast Slab">พื้นสำเร็จรูป (Topping)</option>
               <option value="Roof Truss">โครงหลังคา / ทรัสส์เหล็ก</option>
             </optgroup>
           </select>
@@ -133,7 +134,7 @@
         </label>
 
         <hr class="dark:border-slate-800">
-        <h3 class="font-semibold text-sm">เหล็กเสริมโดยประมาณ</h3>
+        <h3 class="font-semibold text-sm">เหล็กเสริมโดยประมาณ <span class="text-xs text-slate-400 font-normal">(ค่าประมาณทางวิศวกรรม)</span></h3>
         <div class="grid grid-cols-2 gap-3">
           <label class="text-xs">เกรดเหล็ก
             <select id="grade" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
@@ -198,7 +199,7 @@
         </div>
 
         <hr class="dark:border-slate-800">
-        <h3 class="font-semibold text-sm">งานดิน & คอนกรีตหยาบ — ใช้กับฐานราก/คานคอดิน</h3>
+        <h3 class="font-semibold text-sm">งานดิน & คอนกรีตหยาบ</h3>
         <div class="grid grid-cols-2 gap-3">
           <label class="text-xs">ระยะเผื่อขุดต่อข้าง (m)
             <input id="excClear" type="number" min="0" step="0.05" value="0.30" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
@@ -313,6 +314,7 @@ const rateDefaults = {
   excavation:{label:"ขุดดิน (บาท/m³)",value:150},
   backfill:{label:"ถมดิน/ทราย (บาท/m³)",value:200},
   laborConc:{label:"ค่าแรงคอนกรีต (บาท/m³)",value:500},
+  laborLeanConc:{label:"ค่าแรงคอนกรีตหยาบ (บาท/m³)",value:150},
   laborRebar:{label:"ค่าแรงผูกเหล็ก (บาท/kg)",value:5},
   laborForm:{label:"ค่าแรงไม้แบบ (บาท/m²)",value:150},
   laborExc:{label:"ค่าแรงขุด (บาท/m³)",value:0},
@@ -329,8 +331,19 @@ const safe = s => String(s ?? "").replace(/[&<>"']/g, c => ({
 }[c]));
 
 let items = [];
-let rates = JSON.parse(localStorage.getItem("qtoRates") || "null") ||
-  Object.fromEntries(Object.entries(rateDefaults).map(([k,v]) => [k,v.value]));
+
+// ป้องกันข้อมูล LocalStorage พังด้วย Try/Catch และ Merge กับ Defaults ป้องกันค่า Missing Keys
+let rates = (() => {
+  try {
+    const saved = JSON.parse(localStorage.getItem("qtoRates"));
+    if (saved && typeof saved === 'object') {
+      return Object.fromEntries(Object.entries(rateDefaults).map(([k,v]) => [k, saved[k] ?? v.value]));
+    }
+  } catch(e) {
+    console.warn("Could not load saved rates, using defaults.");
+  }
+  return Object.fromEntries(Object.entries(rateDefaults).map(([k,v]) => [k,v.value]));
+})();
 
 function toggleDarkMode() {
   const html = document.documentElement;
@@ -368,10 +381,9 @@ function updateRebarFields() {
 $("type").addEventListener("change", updateRebarFields);
 updateRebarFields();
 
-// --- แก้ไขจุดนี้: ผูกค่า type เข้ากับ Preset สำเร็จแล้ว ---
 function applyPreset(type, w, l, d, defaultName) {
   $("type").value = type;
-  updateRebarFields(); // อัปเดตฟิลด์เหล็กให้ตรงกับประเภททันที
+  updateRebarFields();
   $("width").value = w;
   $("length").value = l;
   $("depth").value = d;
@@ -395,7 +407,9 @@ function getState() {
 }
 
 function persistCurrent() {
-  localStorage.setItem("qtoCurrent", JSON.stringify(getState()));
+  try {
+    localStorage.setItem("qtoCurrent", JSON.stringify(getState()));
+  } catch(e) {}
 }
 
 function loadState(state) {
@@ -407,7 +421,9 @@ function loadState(state) {
   $("reportDate").value = p.reportDate || todayLocal();
 
   items = Array.isArray(state.items) ? state.items : [];
-  rates = state.rates || rates;
+  if (state.rates && typeof state.rates === 'object') {
+    rates = Object.fromEntries(Object.entries(rateDefaults).map(([k,v]) => [k, state.rates[k] ?? v.value]));
+  }
   $("overhead").value = state.overhead ?? 10;
   $("profit").value = state.profit ?? 10;
   $("vat").value = state.vat ?? 7;
@@ -462,7 +478,9 @@ function renderRates() {
   document.querySelectorAll(".rate-input").forEach(el =>
     el.addEventListener("input", () => {
       rates[el.dataset.rate] = Number(el.value) || 0;
-      localStorage.setItem("qtoRates", JSON.stringify(rates));
+      try {
+        localStorage.setItem("qtoRates", JSON.stringify(rates));
+      } catch(e) {}
       render();
     })
   );
@@ -604,7 +622,7 @@ function calcTotals() {
   const costFill = t.fill * (rates.backfill||0);
 
   const material = costConcrete + costLean + costRebar + costForm + costExc + costFill;
-  const labor = t.concrete*(rates.laborConc||0) + t.rebar*(rates.laborRebar||0) + 
+  const labor = t.concrete*(rates.laborConc||0) + t.leanConc*(rates.laborLeanConc||0) + t.rebar*(rates.laborRebar||0) + 
     t.form*(rates.laborForm||0) + t.exc*(rates.laborExc||0) + t.fill*(rates.laborFill||0);
   const direct = material + labor;
   const overhead = direct * val("overhead") / 100;
@@ -632,7 +650,7 @@ function render() {
     const direct=(i.concrete||0)*(rates.concrete||0) + (i.leanConc||0)*(rates.leanConc||0) +
       (i.rebar||0)*(rates.rebar||0) + (i.form||0)*(rates.formwork||0) +
       (i.excavation||0)*(rates.excavation||0) + (i.backfill||0)*(rates.backfill||0) +
-      (i.concrete||0)*(rates.laborConc||0) + (i.rebar||0)*(rates.laborRebar||0) +
+      (i.concrete||0)*(rates.laborConc||0) + (i.leanConc||0)*(rates.laborLeanConc||0) + (i.rebar||0)*(rates.laborRebar||0) +
       (i.form||0)*(rates.laborForm||0) + (i.excavation||0)*(rates.laborExc||0) +
       (i.backfill||0)*(rates.laborFill||0);
 
@@ -655,6 +673,7 @@ function render() {
 
   const t=calcTotals();
 
+  // เรนเดอร์กราฟสัดส่วนต้นทุน (แก้บั๊กแถบกราฟขั้นต่ำ 2% เมื่อมูลค่าเป็น 0)
   const categories = [
     { label: "คอนกรีตโครงสร้าง", val: t.costConcrete, color: "bg-blue-500" },
     { label: "เหล็กเสริม", val: t.costRebar, color: "bg-amber-500" },
@@ -667,7 +686,7 @@ function render() {
 
   $("costChartContainer").innerHTML = categories.map(c => {
     const pct = t.direct > 0 ? ((c.val / t.direct) * 100).toFixed(1) : 0;
-    const barWidth = Math.max(2, (c.val / maxVal) * 100);
+    const barWidth = c.val > 0 ? Math.max(4, (c.val / maxVal) * 100) : 0;
     return `
       <div>
         <div class="flex justify-between text-xs mb-1">
@@ -775,15 +794,16 @@ function exportExcel() {
   ];
   XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(summary),"Summary");
 
+  // ส่งออก Rates พร้อม Key เพื่อใช้นำเข้ากลับได้อย่างแม่นยำ
   const rateData=Object.entries(rateDefaults).map(([key,d]) => ({
-    รายการ:d.label, ราคา:rates[key]||0
+    key: key, รายการ:d.label, ราคา:rates[key]||0
   }));
   XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rateData),"Rates");
 
   const pr4 = [
     { ลำดับ: 1, รายการ: "ค่างานต้นทุนโครงสร้าง (คอนกรีต ไม้แบบ ดิน เหล็ก)", ค่าวัสดุ: t.material, ค่าแรง: t.labor, รวมทั้งสิ้น: t.direct },
     { ลำดับ: 2, รายการ: "ค่าดำเนินการ (Overhead " + val("overhead") + "%)", ค่าวัสดุ: 0, ค่าแรง: 0, รวมทั้งสิ้น: t.overhead },
-    { ลำดับ: 3, รายการ: "กำไร (Profit " + val("profit") + "%)", ค่าวัสดุ: 0, ค่าแรง: 0, รวมทั้งสิ้น: t.profit }
+    { ลำดับ: 3, รายการ: "กำไร (Profit " + val("profit") + "%)", ค่าวัสดុ: 0, ค่าแรง: 0, รวมทั้งสิ้น: t.profit }
   ];
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(pr4), "แบบฟอร์ม ปร.4");
 
@@ -792,6 +812,9 @@ function exportExcel() {
 }
 
 function importExcel(event) {
+  // ตรวจสอบไลบรารี XLSX ก่อนใช้งาน
+  if (!window.XLSX) return alert("ไลบรารี Excel (XLSX) ยังไม่พร้อมใช้งาน กรุณาตรวจสอบอินเทอร์เน็ต");
+  
   const file = event.target.files[0];
   if (!file) return;
 
@@ -803,6 +826,20 @@ function importExcel(event) {
 
       if (!workbook.Sheets["BOQ"]) {
         return alert("ไฟล์ Excel นี้ไม่ตรงรูปแบบโครงสร้างของโปรแกรม (ไม่พบชีต BOQ)");
+      }
+
+      // นำเข้า Rates หากมีชีต Rates
+      if (workbook.Sheets["Rates"]) {
+        const ratesJson = XLSX.utils.sheet_to_json(workbook.Sheets["Rates"]);
+        ratesJson.forEach(row => {
+          if (row.key && rates[row.key] !== undefined) {
+            rates[row.key] = Number(row.ราคา) || rates[row.key];
+          }
+        });
+        try {
+          localStorage.setItem("qtoRates", JSON.stringify(rates));
+        } catch(e) {}
+        renderRates();
       }
 
       const boqJson = XLSX.utils.sheet_to_json(workbook.Sheets["BOQ"]);
@@ -837,7 +874,7 @@ function importExcel(event) {
       }
 
       render();
-      alert("นำเข้าข้อมูลจาก Excel สำเร็จแล้ว!");
+      alert("นำเข้าข้อมูลและอัตราราคาจาก Excel สำเร็จแล้ว!");
     } catch (err) {
       console.error(err);
       alert("เกิดข้อผิดพลาดในการอ่านไฟล์ Excel กรุณาตรวจสอบรูปแบบไฟล์");
@@ -850,11 +887,14 @@ function importExcel(event) {
 renderRates();
 refreshProjectList();
 
-const savedCurrent=localStorage.getItem("qtoCurrent");
-if (savedCurrent) {
-  try { loadState(JSON.parse(savedCurrent)); }
-  catch (e) { render(); }
-} else {
+try {
+  const savedCurrent = localStorage.getItem("qtoCurrent");
+  if (savedCurrent) {
+    loadState(JSON.parse(savedCurrent));
+  } else {
+    render();
+  }
+} catch (e) {
   render();
 }
 </script>
