@@ -1,12 +1,9 @@
 <!DOCTYPE html>
-<html lang="th" class="light">
+<html lang="th">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Structural QTO & BOQ Pro - Enterprise Production Edition v15.9.1 (Strict AI Vision & Unit Normalization)</title>
-  <script>
-    tailwind = { config: { darkMode: 'class' } }
-  </script>
+  <title>Structural QTO & BOQ Pro - Enterprise Production Edition v15.9.2 (Realistic Detailed 3D Rebar)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -36,7 +33,7 @@
     }
   </style>
 </head>
-<body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 pb-12 transition-colors duration-200">
+<body class="bg-slate-100 text-slate-800 pb-12">
 <div class="max-w-7xl mx-auto px-4 py-6">
 
   <!-- Header & Project Info -->
@@ -45,17 +42,14 @@
       <div>
         <h1 class="text-2xl font-bold flex items-center gap-2">
           🏗️ Structural QTO & BOQ Pro 
-          <span class="text-xs bg-emerald-600 text-white px-2.5 py-1 rounded-md font-normal no-print">v15.9.1 Strict Enterprise</span>
+          <span class="text-xs bg-emerald-600 text-white px-2.5 py-1 rounded-md font-normal no-print">v15.9.2 Realistic Detailing</span>
         </h1>
-        <p class="text-slate-300 text-sm no-print">ระบบถอดปริมาณและประมาณราคางานโครงสร้าง ค.ส.ล. (v15.9.1: Strict AI Vision & Unit Normalization) — <span class="text-amber-400">⚠️ ราคาอิงเรตผู้ใช้กำหนด</span></p>
+        <p class="text-slate-300 text-sm no-print">ระบบถอดปริมาณและประมาณราคางานโครงสร้าง ค.ส.ล. (v15.9.2: Realistic Detailed 3D Rebar & Component Separation) — <span class="text-amber-400">⚠️ ราคาอิงเรตผู้ใช้กำหนด</span></p>
         <div class="hidden print-watermark-warning">
           ⚠️ คำเตือนรายงานพิมพ์: เอกสารนี้เป็นประมาณการเบื้องต้น (Gross Volume อิงเรตผู้ใช้กำหนด) คำนวณตามสูตรระยะทาบและเผื่อเศษ (% Waste) ยังไม่ได้จำลองการตัดเหล็กจริง (Cutting List / BBS) ไม่สามารถใช้แทนแบบก่อสร้างจริงได้
         </div>
       </div>
       <div class="flex gap-2 no-print flex-wrap items-center">
-        <button onclick="toggleDarkMode()" class="bg-slate-800 hover:bg-slate-700 text-amber-400 p-2.5 rounded-xl text-sm border border-slate-700 transition" title="สลับโหมดมืด/สว่าง">
-          <span id="themeIcon">🌙</span>
-        </button>
         <button onclick="downloadExcelTemplate()" class="bg-indigo-600 hover:bg-indigo-700 px-3 py-2 rounded-xl text-xs font-medium transition shadow-sm">📋 โหลดเทมเพลต Excel</button>
         <label class="bg-violet-600 hover:bg-violet-700 px-3 py-2 rounded-xl text-xs font-medium cursor-pointer inline-flex items-center transition shadow-sm">
           📥 นำเข้า Excel (True Strict)
@@ -91,11 +85,11 @@
       </div>
       
       <div class="md:col-span-4 flex flex-wrap gap-2 items-center pt-2 border-t border-slate-700 no-print">
-        <button onclick="saveProject()" class="bg-amber-600 hover:bg-amber-700 px-3 py-1.5 rounded-lg text-xs font-medium">บันทึกโครงการลงเครื่อง</button>
+        <button onclick="saveProject()" class="bg-amber-600 hover:bg-amber-700 px-3 py-1.5 rounded-lg text-xs font-medium text-white">บันทึกโครงการลงเครื่อง</button>
         <select id="savedProjects" class="bg-slate-700 border-slate-600 text-white border rounded-lg p-1.5 text-xs flex-1 max-w-xs">
           <option value="">เลือกโครงการที่บันทึกไว้ในเบราว์เซอร์</option>
         </select>
-        <button onclick="loadProject()" class="bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg text-xs border border-slate-600">โหลดโครงการ</button>
+        <button onclick="loadProject()" class="bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg text-xs text-white border border-slate-600">โหลดโครงการ</button>
         <div class="ml-auto flex gap-2">
           <button onclick="clearBOQOnly()" class="bg-orange-600/80 hover:bg-orange-700 text-white px-3 py-1.5 rounded-lg text-xs">🧹 ล้างเฉพาะรายการ BOQ</button>
           <button onclick="clearAllData()" class="bg-red-600/80 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg text-xs">⚠️ ล้างข้อมูลทั้งหมด (รวมโครงการที่บันทึก)</button>
@@ -106,41 +100,41 @@
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <!-- Form Section -->
-    <section class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border dark:border-slate-800 print-card no-print">
+    <section class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 print-card no-print">
       <div class="flex justify-between items-center mb-4">
-        <h2 id="formTitle" class="text-lg font-semibold">➕ เพิ่มองค์อาคารใหม่</h2>
-        <button id="cancelEditBtn" onclick="cancelEdit()" class="hidden text-xs bg-slate-200 dark:bg-slate-800 px-2 py-1 rounded text-red-500 font-medium">ยกเลิกแก้ไข</button>
+        <h2 id="formTitle" class="text-lg font-semibold text-slate-900">➕ เพิ่มองค์อาคารใหม่</h2>
+        <button id="cancelEditBtn" onclick="cancelEdit()" class="hidden text-xs bg-slate-100 px-2 py-1 rounded text-red-500 font-medium">ยกเลิกแก้ไข</button>
       </div>
 
       <!-- Real AI Vision Scan Upload Box -->
-      <div class="mb-4 p-3 bg-purple-50 dark:bg-purple-950/30 rounded-xl border border-purple-200 dark:border-purple-900">
+      <div class="mb-4 p-3 bg-purple-50 rounded-xl border border-purple-200">
         <div class="flex justify-between items-center mb-2">
-          <span class="text-xs font-bold text-purple-600 dark:text-purple-400 flex items-center gap-1">📸 AI Vision Scan (Strict Unit Normalization)</span>
+          <span class="text-xs font-bold text-purple-600 flex items-center gap-1">📸 AI Vision Scan (Strict Unit Normalization)</span>
           <span class="text-[10px] text-slate-500">อัปโหลดภาพหน้าตัด/แบบแปลน</span>
         </div>
         <label class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 px-3 rounded-lg text-xs font-medium cursor-pointer flex items-center justify-center gap-1 transition shadow-sm">
           <span>📤 อัปโหลดรูปภาพเพื่อวิเคราะห์แบบโครงสร้าง</span>
           <input type="file" id="visionFileInput" accept="image/jpeg, image/png, image/webp" class="hidden" onchange="handleVisionScanUpload(event)">
         </label>
-        <div id="visionLoading" class="hidden mt-2 text-center text-xs text-purple-600 dark:text-purple-400 animate-pulse">
+        <div id="visionLoading" class="hidden mt-2 text-center text-xs text-purple-600 animate-pulse">
           🤖 กำลังวิเคราะห์ภาพและแปลงหน่วยด้วย AI โปรดรอสักครู่...
         </div>
       </div>
 
       <!-- Preset Templates -->
-      <div class="mb-4 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border dark:border-slate-700">
-        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">⚡ เลือกสเปกมาตรฐานด่วน (Preset Templates)</label>
+      <div class="mb-4 p-3 bg-slate-50 rounded-xl border border-slate-200">
+        <label class="block text-xs font-medium text-slate-500 mb-2">⚡ เลือกสเปกมาตรฐานด่วน (Preset Templates)</label>
         <div class="grid grid-cols-2 gap-2 text-xs">
-          <button type="button" onclick="applyPreset('Footing', 1.0, 1.0, 0.4, 'F-Std')" class="bg-blue-50 dark:bg-blue-900/35 hover:bg-blue-100 text-blue-600 dark:text-blue-300 p-2 rounded-lg border border-blue-200 dark:border-blue-800 text-left font-medium">
+          <button type="button" onclick="applyPreset('Footing', 1.0, 1.0, 0.4, 'F-Std')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 p-2 rounded-lg border border-blue-200 text-left font-medium">
             ฐานราก 1.0x1.0x0.4m
           </button>
-          <button type="button" onclick="applyPreset('Ground Beam', 0.2, 4.0, 0.4, 'GB-Std')" class="bg-blue-50 dark:bg-blue-900/35 hover:bg-blue-100 text-blue-600 dark:text-blue-300 p-2 rounded-lg border border-blue-200 dark:border-blue-800 text-left font-medium">
+          <button type="button" onclick="applyPreset('Ground Beam', 0.2, 4.0, 0.4, 'GB-Std')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 p-2 rounded-lg border border-blue-200 text-left font-medium">
             คานคอดิน 0.2x0.4m (ยาว 4ม.)
           </button>
-          <button type="button" onclick="applyPreset('Stub Column', 0.2, 0.8, 0.2, 'SC-Std')" class="bg-blue-50 dark:bg-blue-900/35 hover:bg-blue-100 text-blue-600 dark:text-blue-300 p-2 rounded-lg border border-blue-200 dark:border-blue-800 text-left font-medium">
+          <button type="button" onclick="applyPreset('Stub Column', 0.2, 0.8, 0.2, 'SC-Std')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 p-2 rounded-lg border border-blue-200 text-left font-medium">
             เสาตอม่อ 0.2x0.2x0.8m
           </button>
-          <button type="button" onclick="applyPreset('Precast Slab', 4.0, 4.0, 0.05, 'PS-Std')" class="bg-emerald-50 dark:bg-emerald-900/35 hover:bg-emerald-100 text-emerald-600 dark:text-emerald-300 p-2 rounded-lg border border-emerald-200 dark:border-emerald-800 text-left font-medium col-span-2">
+          <button type="button" onclick="applyPreset('Precast Slab', 4.0, 4.0, 0.05, 'PS-Std')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-600 p-2 rounded-lg border border-emerald-200 text-left font-medium col-span-2">
             พื้นสำเร็จรูป 4x4m (Topping 5ซม.)
           </button>
         </div>
@@ -149,23 +143,23 @@
       <!-- Realtime 3D Studio Preview Box -->
       <div class="mb-4 p-3 bg-slate-900 text-slate-100 rounded-xl border border-slate-700 text-center relative overflow-hidden">
         <div class="flex justify-between items-center mb-1">
-          <span class="text-xs font-semibold text-amber-400">✨ พรีวิว 3D Schematic Studio (v15.9.1)</span>
+          <span class="text-xs font-semibold text-amber-400">✨ พรีวิว 3D Studio (v15.9.2: Hooks & Detailed Rebars)</span>
           <span id="previewInfo" class="text-[10px] text-slate-400">หมุน 360° ด้วยเมาส์</span>
         </div>
         <div id="canvas3dContainer" class="w-full h-48 bg-slate-950 rounded-lg border border-slate-800 my-1 relative cursor-grab active:cursor-grabbing shadow-inner overflow-hidden"></div>
         <div id="previewLegend" class="flex flex-wrap gap-2 justify-center text-[10px] text-slate-300 mt-1.5 pt-1.5 border-t border-slate-800">
           <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-sky-400 inline-block"></span> คอนกรีต</span>
-          <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-yellow-400 inline-block"></span> เหล็กหลัก</span>
-          <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-sky-600 inline-block"></span> ปลอก</span>
-          <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-rose-500 inline-block"></span> พิเศษ</span>
+          <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-yellow-400 inline-block"></span> เหล็กมีขอเกี่ยว (Hooks)</span>
+          <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-sky-600 inline-block"></span> ปลอก/ตะแกรง</span>
+          <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-rose-500 inline-block"></span> เหล็กเสริมพิเศษ</span>
         </div>
         <p id="previewWarning" class="text-[10px] text-amber-400 mt-1 hidden"></p>
       </div>
 
       <form id="qtoForm" class="space-y-3">
         <input type="hidden" id="editId" value="">
-        <label class="block text-sm font-medium">ประเภทองค์อาคาร
-          <select id="type" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" onchange="updateRebarFields()">
+        <label class="block text-sm font-medium text-slate-700">ประเภทองค์อาคาร
+          <select id="type" class="mt-1 w-full border border-slate-300 bg-white text-slate-900 rounded-lg p-2" onchange="updateRebarFields()">
             <optgroup label="โครงสร้างใต้ดินและชั้นล่าง">
               <option value="Footing" selected>ฐานราก (Footing)</option>
               <option value="Ground Beam">คานคอดิน (Ground Beam)</option>
@@ -184,62 +178,62 @@
         </label>
 
         <div class="grid grid-cols-2 gap-3">
-          <label class="text-sm">ชื่อองค์อาคาร
-            <input id="name" required placeholder="เช่น GB1, C1" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
+          <label class="text-sm font-medium text-slate-700">ชื่อองค์อาคาร
+            <input id="name" required placeholder="เช่น GB1, C1" class="mt-1 w-full border border-slate-300 bg-white text-slate-900 rounded-lg p-2" oninput="triggerPreview()">
           </label>
-          <label class="text-sm">จำนวน (qty)
-            <input id="qty" type="number" min="1" max="100000" step="1" value="1" required class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
+          <label class="text-sm font-medium text-slate-700">จำนวน (qty)
+            <input id="qty" type="number" min="1" max="100000" step="1" value="1" required class="mt-1 w-full border border-slate-300 bg-white text-slate-900 rounded-lg p-2" oninput="triggerPreview()">
           </label>
         </div>
 
         <div class="grid grid-cols-3 gap-2">
-          <label class="text-xs">กว้าง Width (m) *
-            <input id="width" type="number" min="0.001" max="100" step="0.01" value="1.00" required class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
+          <label class="text-xs font-medium text-slate-700">กว้าง Width (m) *
+            <input id="width" type="number" min="0.001" max="100" step="0.01" value="1.00" required class="mt-1 w-full border border-slate-300 bg-white text-slate-900 rounded-lg p-2" oninput="triggerPreview()">
           </label>
-          <label class="text-xs" id="lengthLabelContainer"><span id="lengthLabelText">ยาว / ช่วง Length (m) *</span>
-            <input id="length" type="number" min="0.001" max="1000" step="0.01" value="1.00" required class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
+          <label class="text-xs font-medium text-slate-700" id="lengthLabelContainer"><span id="lengthLabelText">ยาว / ช่วง Length (m) *</span>
+            <input id="length" type="number" min="0.001" max="1000" step="0.01" value="1.00" required class="mt-1 w-full border border-slate-300 bg-white text-slate-900 rounded-lg p-2" oninput="triggerPreview()">
           </label>
-          <label class="text-xs" id="depthLabel"><span id="depthLabelText">ลึก / หนา Depth (m) *</span>
-            <input id="depth" type="number" min="0.001" max="10" step="0.01" value="0.40" required class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
-          </label>
-        </div>
-
-        <div id="stairFieldsContainer" class="hidden grid grid-cols-2 gap-2 pt-2 border-t dark:border-slate-800">
-          <label class="text-xs">ระยะยกบันไดรวม Rise (m)
-            <input id="rise" type="number" min="0" max="50" step="0.01" value="0" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
-          </label>
-          <label class="text-xs">จำนวนขั้นบันได (Steps)
-            <input id="stairSteps" type="number" min="0" max="100" step="1" value="0" placeholder="0 = ทางลาด" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
+          <label class="text-xs font-medium text-slate-700" id="depthLabel"><span id="depthLabelText">ลึก / หนา Depth (m) *</span>
+            <input id="depth" type="number" min="0.001" max="10" step="0.01" value="0.40" required class="mt-1 w-full border border-slate-300 bg-white text-slate-900 rounded-lg p-2" oninput="triggerPreview()">
           </label>
         </div>
 
-        <div id="precastFieldsContainer" class="hidden pt-2 border-t dark:border-slate-800">
-          <label class="text-xs">ความหนาแผ่นสำเร็จรูปจริง (m)
-            <input id="precastPanelThick" type="number" min="0" max="1" step="0.01" value="" placeholder="เช่น 0.05" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
+        <div id="stairFieldsContainer" class="hidden grid grid-cols-2 gap-2 pt-2 border-t border-slate-200">
+          <label class="text-xs font-medium text-slate-700">ระยะยกบันไดรวม Rise (m)
+            <input id="rise" type="number" min="0" max="50" step="0.01" value="0" class="mt-1 w-full border border-slate-300 bg-white text-slate-900 rounded-lg p-2" oninput="triggerPreview()">
+          </label>
+          <label class="text-xs font-medium text-slate-700">จำนวนขั้นบันได (Steps)
+            <input id="stairSteps" type="number" min="0" max="100" step="1" value="0" placeholder="0 = ทางลาด" class="mt-1 w-full border border-slate-300 bg-white text-slate-900 rounded-lg p-2" oninput="triggerPreview()">
           </label>
         </div>
 
-        <label class="block text-xs">ต้นทุนเพิ่มเติมต่อชิ้น (บาท)
-          <input id="extraCost" type="number" min="0" max="1000000000" step="0.01" value="0" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+        <div id="precastFieldsContainer" class="hidden pt-2 border-t border-slate-200">
+          <label class="text-xs font-medium text-slate-700">ความหนาแผ่นสำเร็จรูปจริง (m)
+            <input id="precastPanelThick" type="number" min="0" max="1" step="0.01" value="" placeholder="เช่น 0.05" class="mt-1 w-full border border-slate-300 bg-white text-slate-900 rounded-lg p-2" oninput="triggerPreview()">
+          </label>
+        </div>
+
+        <label class="block text-xs font-medium text-slate-700">ต้นทุนเพิ่มเติมต่อชิ้น (บาท)
+          <input id="extraCost" type="number" min="0" max="1000000000" step="0.01" value="0" class="mt-1 w-full border border-slate-300 bg-white text-slate-900 rounded-lg p-2">
         </label>
 
-        <label class="block text-xs">หมายเหตุหน้างาน
-          <input id="remark" placeholder="เช่น เทปูนรอบเช้า" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+        <label class="block text-xs font-medium text-slate-700">หมายเหตุหน้างาน
+          <input id="remark" placeholder="เช่น เทปูนรอบเช้า" class="mt-1 w-full border border-slate-300 bg-white text-slate-900 rounded-lg p-2">
         </label>
 
-        <hr class="dark:border-slate-800">
+        <hr class="border-slate-200">
         <div id="rebarSectionContainer">
-          <h3 id="rebarSectionTitle" class="font-semibold text-sm flex justify-between items-center mb-2">
-            <span>เหล็กเสริม ค.ส.ล. (Schematic Preview)</span>
+          <h3 id="rebarSectionTitle" class="font-semibold text-sm text-slate-900 flex justify-between items-center mb-2">
+            <span>เหล็กเสริม ค.ส.ล. (Detailed 3D Hooks & Bends)</span>
           </h3>
           <div class="grid grid-cols-2 gap-3" id="rcRebarFields">
-            <label class="text-xs">เกรดเหล็กหลัก
-              <select id="grade" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+            <label class="text-xs font-medium text-slate-700">เกรดเหล็กหลัก
+              <select id="grade" class="mt-1 w-full border border-slate-300 bg-white text-slate-900 rounded-lg p-2">
                 <option selected>SR24</option><option>SD30</option><option>SD40</option><option>SD50</option>
               </select>
             </label>
-            <label class="text-xs">ขนาดเหล็กหลัก
-              <select id="barSize" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" onchange="triggerPreview()">
+            <label class="text-xs font-medium text-slate-700">ขนาดเหล็กหลัก
+              <select id="barSize" class="mt-1 w-full border border-slate-300 bg-white text-slate-900 rounded-lg p-2" onchange="triggerPreview()">
                 <option value="RB6">RB6</option><option value="RB9">RB9</option>
                 <option value="RB12" selected>RB12</option><option value="RB15">RB15</option>
                 <option value="DB12">DB12</option><option value="DB16">DB16</option>
@@ -249,44 +243,44 @@
             </label>
 
             <div id="longitudinalFields" class="col-span-2 grid grid-cols-2 gap-3 hidden">
-              <label class="text-xs">จำนวนเหล็กหลัก (เส้น) <span class="text-amber-500">*สำหรับเสาแนะนำอย่างน้อย 4 เส้น</span>
-                <input id="barCount" type="number" min="0" max="100" step="1" value="4" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
+              <label class="text-xs font-medium text-slate-700">จำนวนเหล็กหลัก (เส้น) <span class="text-amber-600">*สำหรับเสาแนะนำอย่างน้อย 4 เส้น</span>
+                <input id="barCount" type="number" min="0" max="100" step="1" value="4" class="mt-1 w-full border border-slate-300 bg-white text-slate-900 rounded-lg p-2" oninput="triggerPreview()">
               </label>
             </div>
 
             <div id="matFields" class="col-span-2 grid grid-cols-2 gap-3">
-              <label class="text-xs">ระยะเรียง X (m)
-                <input id="matSpacingX" type="number" min="0.001" max="10" step="0.01" value="0.20" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
+              <label class="text-xs font-medium text-slate-700">ระยะเรียง X (m)
+                <input id="matSpacingX" type="number" min="0.001" max="10" step="0.01" value="0.20" class="mt-1 w-full border border-slate-300 bg-white text-slate-900 rounded-lg p-2" oninput="triggerPreview()">
               </label>
-              <label class="text-xs">ระยะเรียง Y (m)
-                <input id="matSpacingY" type="number" min="0.001" max="10" step="0.01" value="0.20" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
+              <label class="text-xs font-medium text-slate-700">ระยะเรียง Y (m)
+                <input id="matSpacingY" type="number" min="0.001" max="10" step="0.01" value="0.20" class="mt-1 w-full border border-slate-300 bg-white text-slate-900 rounded-lg p-2" oninput="triggerPreview()">
               </label>
               <div class="col-span-2 flex gap-4 text-xs pt-1">
-                <label><input type="checkbox" id="matBottom" checked onchange="triggerPreview()"> ตะแกรงล่าง</label>
-                <label><input type="checkbox" id="matTop" onchange="triggerPreview()"> ตะแกรงบน</label>
+                <label class="text-slate-700"><input type="checkbox" id="matBottom" checked onchange="triggerPreview()"> ตะแกรงล่าง (งอขอเกี่ยว 90°)</label>
+                <label class="text-slate-700"><input type="checkbox" id="matTop" onchange="triggerPreview()"> ตะแกรงบน</label>
               </div>
             </div>
 
-            <div id="specialRebarContainer" class="col-span-2 pt-2 border-t dark:border-slate-800 bg-amber-50/40 dark:bg-amber-950/20 p-2.5 rounded-xl border border-amber-200 dark:border-amber-900/50">
-              <span class="text-xs font-semibold text-amber-600 dark:text-amber-400 block mb-1">⭐ เหล็กเสริมพิเศษ</span>
+            <div id="specialRebarContainer" class="col-span-2 pt-2 border-t border-slate-200 bg-amber-50 p-2.5 rounded-xl border border-amber-200">
+              <span class="text-xs font-semibold text-amber-700 block mb-1">⭐ เหล็กเสริมพิเศษ</span>
               <div class="grid grid-cols-2 gap-2 text-xs">
-                <label class="flex flex-col">เหล็กกันร้าวข้างคาน
-                  <select id="extraBarSize" class="mt-1 border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-1.5 text-xs" onchange="triggerPreview()">
+                <label class="flex flex-col text-slate-700">เหล็กกันร้าวข้างคาน
+                  <select id="extraBarSize" class="mt-1 border border-slate-300 bg-white text-slate-900 rounded-lg p-1.5 text-xs" onchange="triggerPreview()">
                     <option value="NONE">ไม่มี (NONE)</option>
                     <option value="RB6">RB6</option><option value="RB9">RB9</option><option value="RB12" selected>RB12</option><option value="DB12">DB12</option><option value="DB16">DB16</option>
                   </select>
                 </label>
-                <label class="flex flex-col">จำนวนเส้นต่อด้าน
-                  <input id="extraBarCount" type="number" min="0" max="20" step="1" value="0" class="mt-1 border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-1.5 text-xs" oninput="triggerPreview()">
+                <label class="flex flex-col text-slate-700">จำนวนเส้นต่อด้าน
+                  <input id="extraBarCount" type="number" min="0" max="20" step="1" value="0" class="mt-1 border border-slate-300 bg-white text-slate-900 rounded-lg p-1.5 text-xs" oninput="triggerPreview()">
                 </label>
               </div>
             </div>
 
-            <label class="text-xs">ความยาวเหล็กสต็อก (m)
-              <input id="stockLength" type="number" min="1" max="50" step="0.1" value="10" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+            <label class="text-xs font-medium text-slate-700">ความยาวเหล็กสต็อก (m)
+              <input id="stockLength" type="number" min="1" max="50" step="0.1" value="10" class="mt-1 w-full border border-slate-300 bg-white text-slate-900 rounded-lg p-2">
             </label>
-            <label class="text-xs">ระยะทาบ (เท่าของ d)
-              <select id="lapRatio" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+            <label class="text-xs font-medium text-slate-700">ระยะทาบ (เท่าของ d)
+              <select id="lapRatio" class="mt-1 w-full border border-slate-300 bg-white text-slate-900 rounded-lg p-2">
                 <option value="40">40d</option><option value="50">50d</option><option value="60" selected>60d</option>
               </select>
             </label>
@@ -295,54 +289,54 @@
           <!-- Roof Truss Container -->
           <div id="roofTrussFields" class="hidden pt-1 space-y-3">
             <div class="flex justify-between items-center">
-              <p class="text-xs text-amber-500 font-medium">📋 รายการโครงสร้างเหล็กรูปพรรณ</p>
+              <p class="text-xs text-amber-600 font-medium">📋 รายการโครงสร้างเหล็กรูปพรรณ</p>
               <button type="button" onclick="addRoofMemberRow()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 rounded-lg text-xs font-medium">+ เพิ่มสมาชิกเหล็ก</button>
             </div>
             <div id="roofMembersContainer" class="space-y-2 max-h-72 overflow-y-auto pr-1"></div>
           </div>
 
-          <div class="grid grid-cols-2 gap-3 pt-2 mt-2 border-t dark:border-slate-800">
-            <label class="text-xs">เผื่อเศษเหล็ก (% Waste)
-              <input id="waste" type="number" min="0" max="100" value="5" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+          <div class="grid grid-cols-2 gap-3 pt-2 mt-2 border-t border-slate-200">
+            <label class="text-xs font-medium text-slate-700">เผื่อเศษเหล็ก (% Waste)
+              <input id="waste" type="number" min="0" max="100" value="5" class="mt-1 w-full border border-slate-300 bg-white text-slate-900 rounded-lg p-2">
             </label>
           </div>
         </div>
 
-        <div id="stirrupFields" class="grid grid-cols-2 gap-3 pt-2 border-t dark:border-slate-800 hidden">
-          <label class="text-xs">เหล็กปลอก
-            <select id="stirrupSize" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" onchange="triggerPreview()">
+        <div id="stirrupFields" class="grid grid-cols-2 gap-3 pt-2 border-t border-slate-200 hidden">
+          <label class="text-xs font-medium text-slate-700">เหล็กปลอก
+            <select id="stirrupSize" class="mt-1 w-full border border-slate-300 bg-white text-slate-900 rounded-lg p-2" onchange="triggerPreview()">
               <option value="NONE">ไม่มี (NONE)</option><option value="RB6" selected>RB6</option><option value="RB9">RB9</option>
             </select>
           </label>
-          <label class="text-xs">เกรดเหล็กปลอก
-            <select id="stirrupGrade" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+          <label class="text-xs font-medium text-slate-700">เกรดเหล็กปลอก
+            <select id="stirrupGrade" class="mt-1 w-full border border-slate-300 bg-white text-slate-900 rounded-lg p-2">
               <option selected>SR24</option><option>SD30</option><option>SD40</option><option>SD50</option>
             </select>
           </label>
-          <label class="text-xs">ระยะเรียงปลอก (m)
-            <input id="spacing" type="number" min="0.001" max="10" step="0.01" value="0.15" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
+          <label class="text-xs font-medium text-slate-700">ระยะเรียงปลอก (m)
+            <input id="spacing" type="number" min="0.001" max="10" step="0.01" value="0.15" class="mt-1 w-full border border-slate-300 bg-white text-slate-900 rounded-lg p-2" oninput="triggerPreview()">
           </label>
-          <label class="text-xs">ระยะหุ้ม Cover (m)
-            <input id="cover" type="number" min="0" max="1" step="0.005" value="0.04" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
+          <label class="text-xs font-medium text-slate-700">ระยะหุ้ม Cover (m)
+            <input id="cover" type="number" min="0" max="1" step="0.005" value="0.04" class="mt-1 w-full border border-slate-300 bg-white text-slate-900 rounded-lg p-2" oninput="triggerPreview()">
           </label>
-          <label class="text-xs col-span-2">อัตราขอเกี่ยว (Hook Ratio)
-            <input id="hookRatio" type="number" min="0" max="100" value="10" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
+          <label class="text-xs font-medium text-slate-700 col-span-2">อัตราขอเกี่ยว (Hook Ratio)
+            <input id="hookRatio" type="number" min="0" max="100" value="10" class="mt-1 w-full border border-slate-300 bg-white text-slate-900 rounded-lg p-2" oninput="triggerPreview()">
           </label>
         </div>
 
-        <hr class="dark:border-slate-800">
-        <h3 class="font-semibold text-sm">งานดิน & คอนกรีตหยาบ</h3>
+        <hr class="border-slate-200">
+        <h3 class="font-semibold text-sm text-slate-900">งานดิน & คอนกรีตหยาบ</h3>
         <div class="grid grid-cols-2 gap-3">
-          <label class="text-xs">ระยะเผื่อขุดต่อข้าง (m)
-            <input id="excClear" type="number" min="0" max="10" step="0.05" value="0.30" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+          <label class="text-xs font-medium text-slate-700">ระยะเผื่อขุดต่อข้าง (m)
+            <input id="excClear" type="number" min="0" max="10" step="0.05" value="0.30" class="mt-1 w-full border border-slate-300 bg-white text-slate-900 rounded-lg p-2">
           </label>
-          <label class="text-xs">ความลึกขุด (m)
-            <input id="excDepth" type="number" min="0" max="50" step="0.05" value="0.80" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+          <label class="text-xs font-medium text-slate-700">ความลึกขุด (m)
+            <input id="excDepth" type="number" min="0" max="50" step="0.05" value="0.80" class="mt-1 w-full border border-slate-300 bg-white text-slate-900 rounded-lg p-2">
           </label>
-          <label class="text-xs">ทรายรองพื้น (m)
-            <input id="sandBed" type="number" min="0" max="5" step="0.01" value="0.05" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+          <label class="text-xs font-medium text-slate-700">ทรายรองพื้น (m)
+            <input id="sandBed" type="number" min="0" max="5" step="0.01" value="0.05" class="mt-1 w-full border border-slate-300 bg-white text-slate-900 rounded-lg p-2">
           </label>
-          <div class="text-xs flex items-center pt-4">
+          <div class="text-xs font-medium text-slate-700 flex items-center pt-4">
             <label class="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" id="addLean" checked class="w-4 h-4">
               <span>เทคอนกรีตหยาบ (5 cm)</span>
@@ -359,15 +353,15 @@
 
     <!-- Results & Summary Section -->
     <section class="lg:col-span-2 space-y-6">
-      <section class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border dark:border-slate-800 print-card">
+      <section class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 print-card">
         <div class="flex flex-wrap justify-between items-center gap-3 mb-3">
           <div>
-            <h2 class="text-lg font-semibold">รายการถอดแบบ / BOQ</h2>
-            <p class="text-[11px] text-amber-600 dark:text-amber-400">⚠️ คำเตือน: ประมาณการเบื้องต้น คำนวณตามสูตรระยะทาบและเผื่อเศษ ยังไม่ใช่การตัดเหล็กจริง (BBS)</p>
+            <h2 class="text-lg font-semibold text-slate-900">รายการถอดแบบ / BOQ</h2>
+            <p class="text-[11px] text-amber-600">⚠️ คำเตือน: ประมาณการเบื้องต้น คำนวณตามสูตรระยะทาบและเผื่อเศษ ยังไม่ใช่การตัดเหล็กจริง (BBS)</p>
           </div>
           <div class="flex gap-2 no-print">
-            <input id="searchQuery" oninput="render()" placeholder="🔍 ค้นหารายการ..." class="text-xs bg-slate-50 dark:bg-slate-800 border dark:border-slate-700 rounded-lg px-3 py-1.5 w-36 md:w-48">
-            <select id="filterType" onchange="render()" class="text-xs bg-slate-50 dark:bg-slate-800 border dark:border-slate-700 rounded-lg px-2 py-1.5">
+            <input id="searchQuery" oninput="render()" placeholder="🔍 ค้นหารายการ..." class="text-xs bg-slate-50 border border-slate-300 text-slate-900 rounded-lg px-3 py-1.5 w-36 md:w-48">
+            <select id="filterType" onchange="render()" class="text-xs bg-slate-50 border border-slate-300 text-slate-900 rounded-lg px-2 py-1.5">
               <option value="">ทุกประเภทองค์อาคาร</option>
               <option value="Footing">ฐานราก</option>
               <option value="Ground Beam">คานคอดิน</option>
@@ -385,7 +379,7 @@
 
         <div class="overflow-x-auto">
           <table class="w-full text-sm min-w-[1150px]">
-            <thead class="bg-slate-100 dark:bg-slate-800 text-left text-xs">
+            <thead class="bg-slate-100 text-slate-700 text-left text-xs">
               <tr>
                 <th class="p-2">ชื่อ / ประเภท</th>
                 <th class="p-2">จำนวน</th>
@@ -398,53 +392,45 @@
                 <th class="p-2 no-print">จัดการ</th>
               </tr>
             </thead>
-            <tbody id="rows"></tbody>
+            <tbody id="rows" class="text-slate-800"></tbody>
           </table>
         </div>
       </section>
 
-      <!-- Cost Breakdown Chart -->
-      <section class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border dark:border-slate-800 print-card">
-        <div class="flex justify-between items-center mb-3">
-          <h2 class="text-lg font-semibold">📊 กราฟสัดส่วนต้นทุนวัสดุและงาน (Cost Breakdown)</h2>
-        </div>
-        <div class="space-y-3" id="costChartContainer"></div>
-      </section>
-
       <!-- Rates Configuration -->
-      <section class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border dark:border-slate-800 print-card no-print">
-        <h2 class="text-lg font-semibold mb-3">ราคาวัสดุและค่าแรง (อิงเรตผู้ใช้กำหนด)</h2>
+      <section class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 print-card no-print">
+        <h2 class="text-lg font-semibold text-slate-900 mb-3">ราคาวัสดุและค่าแรง (อิงเรตผู้ใช้กำหนด)</h2>
         <div class="grid grid-cols-2 md:grid-cols-3 gap-3" id="rateInputs"></div>
       </section>
 
       <!-- Financial Summary -->
-      <section class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border dark:border-slate-800 print-card">
+      <section class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 print-card">
         <div class="flex justify-between items-center mb-3">
-          <h2 class="text-lg font-semibold">ค่าดำเนินการและสรุปราคาประเมิน</h2>
+          <h2 class="text-lg font-semibold text-slate-900">ค่าดำเนินการและสรุปราคาประเมิน</h2>
         </div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4 no-print">
-          <label class="text-sm">Overhead (%) [0-100]
-            <input id="overhead" type="number" min="0" max="100" value="10" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+          <label class="text-sm font-medium text-slate-700">Overhead (%) [0-100]
+            <input id="overhead" type="number" min="0" max="100" value="10" class="mt-1 w-full border border-slate-300 bg-white text-slate-900 rounded-lg p-2">
           </label>
-          <label class="text-sm">กำไร Profit (%) [0-100]
-            <input id="profit" type="number" min="0" max="100" value="10" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+          <label class="text-sm font-medium text-slate-700">กำไร Profit (%) [0-100]
+            <input id="profit" type="number" min="0" max="100" value="10" class="mt-1 w-full border border-slate-300 bg-white text-slate-900 rounded-lg p-2">
           </label>
-          <label class="text-sm">VAT (%) [0-100]
-            <input id="vat" type="number" min="0" max="100" value="7" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+          <label class="text-sm font-medium text-slate-700">VAT (%) [0-100]
+            <input id="vat" type="number" min="0" max="100" value="7" class="mt-1 w-full border border-slate-300 bg-white text-slate-900 rounded-lg p-2">
           </label>
-          <label class="text-sm">หัก ณ ที่จ่าย (%) [0-100]
-            <input id="wht" type="number" min="0" max="100" value="3" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+          <label class="text-sm font-medium text-slate-700">หัก ณ ที่จ่าย (%) [0-100]
+            <input id="wht" type="number" min="0" max="100" value="3" class="mt-1 w-full border border-slate-300 bg-white text-slate-900 rounded-lg p-2">
           </label>
         </div>
         <div id="summary" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
       </section>
 
       <!-- Rebar Summary Table -->
-      <section class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border dark:border-slate-800 print-card">
-        <h2 class="text-lg font-semibold mb-3">สรุปเหล็กเสริม ค.ส.ล. และเหล็กรูปพรรณ</h2>
+      <section class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 print-card">
+        <h2 class="text-lg font-semibold text-slate-900 mb-3">สรุปเหล็กเสริม ค.ส.ล. และเหล็กรูปพรรณ</h2>
         <div class="overflow-x-auto">
           <table class="w-full text-sm">
-            <thead class="bg-slate-100 dark:bg-slate-800 text-left text-xs">
+            <thead class="bg-slate-100 text-slate-700 text-left text-xs">
               <tr>
                 <th class="p-2">ประเภทเหล็ก</th>
                 <th class="p-2">เกรด / หน้าตัด</th>
@@ -454,7 +440,7 @@
                 <th class="p-2">น้ำหนัก (ton)</th>
               </tr>
             </thead>
-            <tbody id="rebarRows"></tbody>
+            <tbody id="rebarRows" class="text-slate-800"></tbody>
           </table>
         </div>
       </section>
@@ -464,28 +450,28 @@
 
 <!-- Import Summary Modal -->
 <div id="importReportModal" class="fixed inset-0 bg-slate-950/70 z-50 flex items-center justify-center hidden">
-  <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl max-w-lg w-full mx-4 shadow-xl border dark:border-slate-800">
+  <div class="bg-white p-6 rounded-2xl max-w-lg w-full mx-4 shadow-xl border border-slate-200">
     <h3 id="importModalTitle" class="text-lg font-bold mb-2 text-blue-600">📥 รายงานผลการนำเข้าข้อมูล (True Strict Mode)</h3>
     <p id="importModalSub" class="text-xs text-slate-500 mb-4">ระบบตรวจสอบข้อมูลแบบ All-or-Nothing Strict Validation</p>
-    <div id="importReportContent" class="bg-slate-50 dark:bg-slate-800 p-3 rounded-xl text-xs max-h-60 overflow-y-auto space-y-1 mb-4 border dark:border-slate-700"></div>
+    <div id="importReportContent" class="bg-slate-50 p-3 rounded-xl text-xs max-h-60 overflow-y-auto space-y-1 mb-4 border border-slate-200 text-slate-800"></div>
     <button onclick="$('importReportModal').classList.add('hidden')" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-xl text-xs font-medium">รับทราบและปิดหน้าต่าง</button>
   </div>
 </div>
 
 <!-- Vision Scan Review & Confirmation Modal -->
 <div id="visionModal" class="fixed inset-0 bg-slate-950/80 z-50 flex items-center justify-center hidden">
-  <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl max-w-3xl w-full mx-4 shadow-2xl border dark:border-slate-800 max-h-[90vh] flex flex-col">
+  <div class="bg-white p-6 rounded-2xl max-w-3xl w-full mx-4 shadow-2xl border border-slate-200 max-h-[90vh] flex flex-col">
     <div class="flex justify-between items-center mb-3">
       <div>
-        <h3 class="text-lg font-bold text-purple-600 dark:text-purple-400 flex items-center gap-2">🔍 ตรวจสอบและเลือกข้อมูลจาก AI Vision Scan (Strict Normalization)</h3>
-        <p class="text-xs text-amber-500">⚠️ ติ๊กเลือกเฉพาะช่องที่ต้องการนำเข้า (ค่าเริ่มต้นจะไม่ถูกติ๊ก เพื่อให้ผู้ใช้ตรวจสอบความถูกต้อง)</p>
+        <h3 class="text-lg font-bold text-purple-600 flex items-center gap-2">🔍 ตรวจสอบและเลือกข้อมูลจาก AI Vision Scan (Strict Normalization)</h3>
+        <p class="text-xs text-amber-600">⚠️ ติ๊กเลือกเฉพาะช่องที่ต้องการนำเข้า (ค่าเริ่มต้นจะไม่ถูกติ๊ก เพื่อให้ผู้ใช้ตรวจสอบความถูกต้อง)</p>
       </div>
-      <button onclick="closeVisionModal()" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+      <button onclick="closeVisionModal()" class="text-slate-400 hover:text-slate-700 text-lg font-bold">✕</button>
     </div>
 
-    <div id="visionModalContent" class="overflow-y-auto space-y-3 pr-2 flex-1 text-xs my-2"></div>
+    <div id="visionModalContent" class="overflow-y-auto space-y-3 pr-2 flex-1 text-xs my-2 text-slate-800"></div>
 
-    <div class="flex gap-3 pt-3 border-t dark:border-slate-800 mt-auto">
+    <div class="flex gap-3 pt-3 border-t border-slate-200 mt-auto">
       <button onclick="applyVisionData()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl text-xs font-semibold shadow transition">
         ✅ ตรวจสอบและยืนยันนำเข้าข้อมูล
       </button>
@@ -502,7 +488,7 @@
 // ==========================================
 const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
   ? 'http://localhost:3000'
-  : (window.ENV_API_URL || 'https://api.structural-boq-pro.com'); // แทนที่ด้วยโดเมน Backend จริงที่ตั้งค่า CORS อนุญาต Origin เรียบร้อยแล้ว
+  : (window.ENV_API_URL || 'https://api.structural-boq-pro.com');
 
 const unitWeight = {
   RB6:0.222, RB9:0.499, RB12:0.888, RB15:1.387,
@@ -647,26 +633,6 @@ let rates = (() => {
   return Object.fromEntries(Object.entries(rateDefaults).map(([k,v]) => [k, v.value]));
 })();
 
-function toggleDarkMode() {
-  const html = document.documentElement;
-  const isDark = html.classList.toggle('dark');
-  try { localStorage.setItem('theme_v15_9', isDark ? 'dark' : 'light'); } catch(e) {}
-  
-  const icon = $("themeIcon");
-  if (icon) icon.textContent = isDark ? '☀️' : '🌙';
-  
-  if (scene3d) {
-    scene3d.background = new THREE.Color(isDark ? 0x0a0f1d : 0xf8fafc);
-  }
-}
-
-try {
-  if (localStorage.getItem('theme_v15_9') === 'dark') {
-    document.documentElement.classList.add('dark');
-    if ($("themeIcon")) $("themeIcon").textContent = '☀️';
-  }
-} catch(e) {}
-
 function todayLocal() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
@@ -702,13 +668,12 @@ function validateVisionScanResponse(raw) {
     throw new Error(raw.message || "ระบบ Vision API ประมวลผลล้มเหลว");
   }
 
-  // Unit Normalization & Validation: ฟิลด์ที่ลงท้ายด้วย _m ถือเป็นเมตรที่ Normalize จาก Backend เรียบร้อยแล้ว ห้ามหารซ้ำ
   const parseNormalizedMetric = (val, fieldName = "") => {
     if (val === null || val === undefined || val === "") return null;
     const num = Number(val);
     if (!Number.isFinite(num)) return null;
     if (fieldName.endsWith("_m")) {
-      return num; // ยึดถือว่าเป็นเมตรตามสัญญา API อย่างเคร่งครัด ห้ามหารซ้ำ
+      return num;
     }
     return num;
   };
@@ -787,14 +752,14 @@ function openVisionModal(data) {
 
   let warningsHtml = "";
   if (data.warnings && data.warnings.length > 0) {
-    warningsHtml = `<div class="p-2 bg-amber-50 dark:bg-amber-950/40 rounded-lg border border-amber-200 dark:border-amber-900 text-amber-600 dark:text-amber-400 mb-2">
+    warningsHtml = `<div class="p-2 bg-amber-50 rounded-lg border border-amber-200 text-amber-600 mb-2">
       <b>⚠️ คำเตือนจาก AI Vision:</b><ul class="list-disc pl-4">${data.warnings.map(w => `<li>${safe(w)}</li>`).join("")}</ul>
     </div>`;
   }
 
   let unreadableHtml = "";
   if (data.unreadableFields && data.unreadableFields.length > 0) {
-    unreadableHtml = `<div class="p-2 bg-red-50 dark:bg-red-950/40 rounded-lg border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 mb-2">
+    unreadableHtml = `<div class="p-2 bg-red-50 rounded-lg border border-red-200 text-red-600 mb-2">
       <b>❌ ช่องที่อ่านค่าไม่ได้ / ไม่ชัดเจน (ถูกเว้นว่าง):</b> ${data.unreadableFields.map(x => safe(x)).join(", ")}
     </div>`;
   }
@@ -828,14 +793,14 @@ function openVisionModal(data) {
     let inputControlHtml = "";
     if (f.type === "select") {
       const optionsHtml = f.options.map(opt => `<option value="${opt}" ${String(val) === String(opt) ? 'selected' : ''}>${opt}</option>`).join("");
-      inputControlHtml = `<select id="scan_${f.key}" class="w-full border dark:border-slate-600 dark:bg-slate-900 dark:text-white rounded-lg p-1.5 text-xs">${optionsHtml}</select>`;
+      inputControlHtml = `<select id="scan_${f.key}" class="w-full border border-slate-300 bg-white text-slate-900 rounded-lg p-1.5 text-xs">${optionsHtml}</select>`;
     } else {
-      inputControlHtml = `<input type="${f.type === 'number' ? 'number' : 'text'}" id="scan_${f.key}" value="${safe(val)}" ${f.min !== undefined ? `min="${f.min}" max="${f.max}" step="any"` : ''} class="w-full border dark:border-slate-600 dark:bg-slate-900 dark:text-white rounded-lg p-1.5 text-xs">`;
+      inputControlHtml = `<input type="${f.type === 'number' ? 'number' : 'text'}" id="scan_${f.key}" value="${safe(val)}" ${f.min !== undefined ? `min="${f.min}" max="${f.max}" step="any"` : ''} class="w-full border border-slate-300 bg-white text-slate-900 rounded-lg p-1.5 text-xs">`;
     }
 
-    return `<div class="bg-slate-50 dark:bg-slate-800 p-2.5 rounded-xl border dark:border-slate-700" id="container_${f.key}">
+    return `<div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200" id="container_${f.key}">
       <div class="flex justify-between items-center mb-1">
-        <label class="font-medium text-slate-700 dark:text-slate-300 flex items-center gap-2 cursor-pointer">
+        <label class="font-medium text-slate-700 flex items-center gap-2 cursor-pointer">
           <input type="checkbox" id="chk_${f.key}" class="w-3.5 h-3.5 accent-purple-600" title="เลือกเพื่อใช้นำเข้าค่านี้">
           ${f.label}
         </label>
@@ -1157,7 +1122,7 @@ function loadState(state) {
 }
 
 // ==========================================
-// 3D STUDIO PREVIEW ENGINE
+// 3D STUDIO PREVIEW ENGINE (REALISTIC DETAILED)
 // ==========================================
 let scene3d, camera3d, renderer3d, controls3d, modelGroup3d;
 let previewDebounceTimer = null;
@@ -1168,8 +1133,7 @@ function init3DPreview() {
 
   try {
     scene3d = new THREE.Scene();
-    const isDark = document.documentElement.classList.contains('dark');
-    scene3d.background = new THREE.Color(isDark ? 0x0a0f1d : 0xf8fafc);
+    scene3d.background = new THREE.Color(0xf8fafc);
 
     const width = container.clientWidth > 0 ? container.clientWidth : 320;
     const height = container.clientHeight > 0 ? container.clientHeight : 192;
@@ -1239,7 +1203,7 @@ function getPreviewParams() {
   const cover = readNumber("cover", 0.04, 0);
   const hookRatio = readNumber("hookRatio", 10, 0);
   const barCount = Math.floor(readNumber("barCount", 4, 0));
-  const spacing = readNumber("spacing", 0.15, 0.001); // เพิ่ม spacing ป้องกัน NaN ใน 3D Preview
+  const spacing = readNumber("spacing", 0.15, 0.001);
 
   const stirrupSize = $("stirrupSize")?.value || "NONE";
   const extraBarSize = $("extraBarSize")?.value || "NONE";
@@ -1300,6 +1264,28 @@ function clearModelGroup() {
   disposeRecursive(modelGroup3d);
 }
 
+// สร้างเหล็กเสริมแบบมีขอเกี่ยวปลาย (Hook / Bending 90-degree) เพื่อความสมจริงระดับ BIM
+function createHookedBar(length, radius, material, hookLen = 0.08) {
+  const group = new THREE.Group();
+  const mainBarGeo = new THREE.CylinderGeometry(radius, radius, Math.max(0.01, length - 2*hookLen), 8);
+  const mainBar = new THREE.Mesh(mainBarGeo, material);
+  group.add(mainBar);
+
+  const hookGeo = new THREE.CylinderGeometry(radius, radius, hookLen, 8);
+  
+  const hook1 = new THREE.Mesh(hookGeo, material);
+  hook1.rotation.z = Math.PI / 2;
+  hook1.position.set(-length/2 + hookLen/2, radius + hookLen/2, 0);
+  group.add(hook1);
+
+  const hook2 = new THREE.Mesh(hookGeo, material);
+  hook2.rotation.z = Math.PI / 2;
+  hook2.position.set(length/2 - hookLen/2, radius + hookLen/2, 0);
+  group.add(hook2);
+
+  return group;
+}
+
 function createFootingModel(p, matConc, matWire, matRebar, matLean) {
   const w = p.width, l = p.length, d = p.depth;
   const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, d, l), matConc);
@@ -1321,18 +1307,17 @@ function createFootingModel(p, matConc, matWire, matRebar, matLean) {
     let count = 0;
     for (let x = -w/2 + cover; x <= w/2 - cover; x += Math.max(p.matSpacingX, 0.1)) {
       if (count++ > maxBars) break;
-      const bar = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, l - 2*cover, 8), matRebar);
-      bar.rotation.x = Math.PI / 2;
-      bar.position.set(x, yPos, 0);
-      modelGroup3d.add(bar);
+      const barGroup = createHookedBar(l - 2*cover, radius, matRebar, 0.06);
+      barGroup.rotation.y = Math.PI / 2;
+      barGroup.position.set(x, yPos, 0);
+      modelGroup3d.add(barGroup);
     }
     count = 0;
     for (let z = -l/2 + cover; z <= l/2 - cover; z += Math.max(p.matSpacingY, 0.1)) {
       if (count++ > maxBars) break;
-      const bar = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, w - 2*cover, 8), matRebar);
-      bar.rotation.z = Math.PI / 2;
-      bar.position.set(0, yPos + (isTop ? -radius : radius), z);
-      modelGroup3d.add(bar);
+      const barGroup = createHookedBar(w - 2*cover, radius, matRebar, 0.06);
+      barGroup.position.set(0, yPos + (isTop ? -radius : radius), z);
+      modelGroup3d.add(barGroup);
     }
   };
 
@@ -1652,28 +1637,28 @@ function addRoofMemberRow(data = {}) {
   }).join("");
 
   const div = document.createElement("div");
-  div.className = "p-2 bg-slate-50 dark:bg-slate-800/60 rounded-xl border dark:border-slate-700 text-xs space-y-1 roof-member-row";
+  div.className = "p-2 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-1 roof-member-row";
   div.id = rowId;
   div.innerHTML = `
     <div class="grid grid-cols-12 gap-1 items-center">
       <div class="col-span-3">
-        <input type="text" name="mName" value="${safe(data.name || 'จันทัน')}" placeholder="ชื่อสมาชิก" class="w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded p-1 text-xs">
+        <input type="text" name="mName" value="${safe(data.name || 'จันทัน')}" placeholder="ชื่อสมาชิก" class="w-full border border-slate-300 bg-white text-slate-900 rounded p-1 text-xs">
       </div>
       <div class="col-span-4">
-        <select name="mProfileSelect" class="w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded p-1 text-xs" onchange="onProfileSelectChange(this)">
+        <select name="mProfileSelect" class="w-full border border-slate-300 bg-white text-slate-900 rounded p-1 text-xs" onchange="onProfileSelectChange(this)">
           <option value="">-- เลือกหน้าตัดเหล็กมาตรฐาน --</option>
           ${optionsHtml}
         </select>
         <input type="hidden" name="mProfile" value="${safe(data.profile || 'เหล็กกล่อง 50x50x2.3mm')}">
       </div>
       <div class="col-span-1">
-        <input type="number" name="mQty" min="1" value="${data.qty ?? 10}" class="w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded p-1 text-xs" title="จำนวน">
+        <input type="number" name="mQty" min="1" value="${data.qty ?? 10}" class="w-full border border-slate-300 bg-white text-slate-900 rounded p-1 text-xs" title="จำนวน">
       </div>
       <div class="col-span-2">
-        <input type="number" name="mLen" min="0.1" step="0.1" value="${data.len ?? 4.0}" class="w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded p-1 text-xs" title="ยาว (m)">
+        <input type="number" name="mLen" min="0.1" step="0.1" value="${data.len ?? 4.0}" class="w-full border border-slate-300 bg-white text-slate-900 rounded p-1 text-xs" title="ยาว (m)">
       </div>
       <div class="col-span-2 flex items-center justify-between">
-        <input type="number" name="mWpm" min="0.1" step="0.01" value="${data.wpm ?? 3.33}" class="w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded p-1 text-xs" title="นน. (kg/m)">
+        <input type="number" name="mWpm" min="0.1" step="0.01" value="${data.wpm ?? 3.33}" class="w-full border border-slate-300 bg-white text-slate-900 rounded p-1 text-xs" title="นน. (kg/m)">
         <button type="button" onclick="this.closest('.roof-member-row').remove(); triggerPreview();" class="text-red-500 font-bold ml-1">✕</button>
       </div>
     </div>
@@ -2107,9 +2092,9 @@ function renderRates() {
   const container = $("rateInputs");
   if (!container) return;
   container.innerHTML = Object.entries(rateDefaults).map(([key,def]) => `
-    <label class="text-xs">${def.label}
+    <label class="text-xs font-medium text-slate-700">${def.label}
       <input type="number" min="0" step="0.01" value="${rates[key] ?? def.value}"
-        data-rate="${key}" class="rate-input mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+        data-rate="${key}" class="rate-input mt-1 w-full border border-slate-300 bg-white text-slate-900 rounded-lg p-2">
     </label>`).join("");
 
   document.querySelectorAll(".rate-input").forEach(el => {
@@ -2221,7 +2206,7 @@ function render() {
   $("rows").innerHTML = filtered.map(i => {
     const direct = getItemDirectCost(i);
     const netRebarKg = i.type === "Roof Truss" ? (i.mainKg||0) : ((i.mainKg||0) + (i.stirrupKg||0) + (i.extraKg||0));
-    return `<tr class="border-b dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/40">
+    return `<tr class="border-b border-slate-200 hover:bg-slate-50">
       <td class="p-2"><b>${safe(i.name)}</b><div class="text-xs text-slate-500">${safe(i.type)}</div></td>
       <td class="p-2">${i.qty}</td>
       <td class="p-2">${(i.concrete||0).toFixed(2)} <span class="text-xs text-slate-400">/ ${(i.leanConc||0).toFixed(2)}</span></td>
@@ -2231,45 +2216,19 @@ function render() {
       <td class="p-2 font-semibold text-blue-600">${(i.rebar||0).toFixed(2)}</td>
       <td class="p-2 font-medium">${money(direct)}</td>
       <td class="p-2 no-print flex gap-2">
-        <button type="button" data-action="edit" data-id="${safe(i.id)}" class="text-amber-500 hover:underline">แก้ไข</button>
+        <button type="button" data-action="edit" data-id="${safe(i.id)}" class="text-amber-600 hover:underline">แก้ไข</button>
         <button type="button" data-action="remove" data-id="${safe(i.id)}" class="text-red-500 hover:underline">ลบ</button>
       </td>
     </tr>`;
   }).join("") || `<tr><td colspan="9" class="p-4 text-center text-slate-400">ยังไม่มีรายการองค์อาคาร</td></tr>`;
 
-  const t = calcTotals();
-
-  const categories = [
-    { label: "คอนกรีตโครงสร้าง", val: t.costConcrete, color: "bg-blue-500" },
-    { label: "เหล็กเสริม ค.ส.ล.", val: t.costRebar, color: "bg-amber-500" },
-    { label: "เหล็กโครงสร้างรูปพรรณ", val: t.costRoofTruss, color: "bg-yellow-600" },
-    { label: "ไม้แบบ / ค้ำยัน", val: t.costForm, color: "bg-emerald-500" },
-    { label: "แผ่นพื้นสำเร็จรูป", val: t.costPrecast, color: "bg-teal-500" },
-    { label: "งานขุด/ถม/ทราย", val: t.costExc + t.costFill, color: "bg-purple-500" },
-    { label: "คอนกรีตหยาบ", val: t.costLean, color: "bg-cyan-500" },
-    { label: "ต้นทุนเพิ่มเติม", val: t.extra, color: "bg-slate-500" },
-    { label: "ค่าแรงรวม", val: t.labor, color: "bg-rose-500" }
-  ];
-
-  $("costChartContainer").innerHTML = categories.map(c => {
-    const pct = t.direct > 0 ? ((c.val / t.direct) * 100).toFixed(1) : 0;
-    return `<div>
-      <div class="flex justify-between text-xs mb-1">
-        <span class="font-medium">${c.label}</span>
-        <span class="text-slate-500">${money(c.val)} บาท (${pct}%)</span>
-      </div>
-      <div class="w-full bg-slate-100 dark:bg-slate-800 h-3 rounded-full overflow-hidden">
-        <div class="${c.color} h-full rounded-full transition-all duration-500" style="width: ${Math.min(100, Math.max(2, pct))}%"></div>
-      </div>
-    </div>`;
-  }).join("");
-
   renderRates();
 
+  const t = calcTotals();
   $("summary").innerHTML = [
     ["ค่าวัสดุรวม",t.material], ["ค่าแรงรวม",t.labor], ["ต้นทุนเพิ่มเติม",t.extra], ["ต้นทุนตรง",t.direct],
     ["Overhead",t.overhead], ["กำไร Profit",t.profit], ["ก่อน VAT",t.preVat], ["ยอดรับสุทธิ",t.net]
-  ].map(([l,v]) => `<div class="bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border dark:border-slate-700"><div class="text-xs text-slate-400">${l}</div><div class="font-semibold text-base">${money(v)} บาท</div></div>`).join("");
+  ].map(([l,v]) => `<div class="bg-slate-50 p-3 rounded-xl border border-slate-200"><div class="text-xs text-slate-400">${l}</div><div class="font-semibold text-base text-slate-900">${money(v)} บาท</div></div>`).join("");
 
   const groups={}, trussGroups={};
   items.forEach(i => {
@@ -2309,9 +2268,9 @@ function render() {
   $("rebarRows").innerHTML = [
     ...Object.entries(groups).map(([k, d]) => {
       const [cat, s] = k.split("|");
-      return `<tr class="border-b dark:border-slate-800"><td class="p-2 font-medium">${safe(cat)}</td><td class="p-2">${safe(s)}</td><td class="p-2 text-slate-400">-</td><td class="p-2">${d.net.toFixed(2)}</td><td class="p-2 font-semibold text-blue-600">${d.purchase.toFixed(2)}</td><td class="p-2">${(d.purchase/1000).toFixed(3)}</td></tr>`;
+      return `<tr class="border-b border-slate-200"><td class="p-2 font-medium">${safe(cat)}</td><td class="p-2">${safe(s)}</td><td class="p-2 text-slate-400">-</td><td class="p-2">${d.net.toFixed(2)}</td><td class="p-2 font-semibold text-blue-600">${d.purchase.toFixed(2)}</td><td class="p-2">${(d.purchase/1000).toFixed(3)}</td></tr>`;
     }),
-    ...Object.values(trussGroups).map(d => `<tr class="border-b dark:border-slate-800 bg-yellow-50/50 dark:bg-yellow-900/10"><td class="p-2 font-medium text-yellow-600">เหล็กรูปพรรณ</td><td class="p-2">${safe(d.name)} (${safe(d.profile)})</td><td class="p-2 font-medium text-amber-600">${d.length.toFixed(2)} m</td><td class="p-2">${d.net.toFixed(2)}</td><td class="p-2 font-semibold text-blue-600">${d.purchase.toFixed(2)}</td><td class="p-2">${(d.purchase/1000).toFixed(3)}</td></tr>`)
+    ...Object.values(trussGroups).map(d => `<tr class="border-b border-slate-200 bg-yellow-50/50"><td class="p-2 font-medium text-yellow-700">เหล็กรูปพรรณ</td><td class="p-2">${safe(d.name)} (${safe(d.profile)})</td><td class="p-2 font-medium text-amber-600">${d.length.toFixed(2)} m</td><td class="p-2">${d.net.toFixed(2)}</td><td class="p-2 font-semibold text-blue-600">${d.purchase.toFixed(2)}</td><td class="p-2">${(d.purchase/1000).toFixed(3)}</td></tr>`)
   ].join("") || `<tr><td colspan="6" class="p-3 text-slate-400 text-center">ยังไม่มีข้อมูลเหล็กเสริม</td></tr>`;
 
   persistCurrent();
@@ -2322,7 +2281,7 @@ function exportJSON() {
   const blob = new Blob([JSON.stringify(getState(), null, 2)], { type: "application/json;charset=utf-8" });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `BOQ_${($("projectName").value || "Project").replace(/[/\\?%*:|"<>]/g, "_")}_v15.9.1.json`;
+  a.download = `BOQ_${($("projectName").value || "Project").replace(/[/\\?%*:|"<>]/g, "_")}_v15.9.2.json`;
   a.click();
 }
 
@@ -2355,7 +2314,7 @@ function showImportReport(reports, isSuccess = true, isError = false) {
     title.className = "text-lg font-bold mb-2 text-blue-600";
   }
 
-  content.innerHTML = reports.map(r => `<div class="p-1 border-b dark:border-slate-700 ${isError ? 'text-red-500 font-medium' : ''}">${safe(r)}</div>`).join("");
+  content.innerHTML = reports.map(r => `<div class="p-1 border-b border-slate-200 ${isError ? 'text-red-500 font-medium' : ''}">${safe(r)}</div>`).join("");
   $("importReportModal").classList.remove("hidden");
 }
 
@@ -2493,7 +2452,7 @@ function exportExcel() {
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(summaryRows), "สรุป BOQ รวม");
 
   const projName = ($("projectName")?.value || "Project").replace(/[/\\?%*:|"<>]/g, "_");
-  XLSX.writeFile(wb, `BOQ_Roundtrip_${projName}_v15.9.1.xlsx`);
+  XLSX.writeFile(wb, `BOQ_Roundtrip_${projName}_v15.9.2.xlsx`);
 }
 
 function downloadExcelTemplate() {
@@ -2513,7 +2472,7 @@ function downloadExcelTemplate() {
     "ทรายรองพื้น_m": 0.05, "เทคอนกรีตหยาบ": true, "ระยะเรียง X_m": 0.2, "ระยะเรียง Y_m": 0.2,
     "ตะแกรงล่าง": true, "ตะแกรงบน": false, "เผื่อเศษเหล็ก_pct": 5, "ต้นทุนเพิ่มเติมต่อชิ้น_บาท": 0, "หมายเหตุ": "", "สมาชิกโครงหลังคา_JSON": "[]"
   }]), "ข้อมูลนำเข้า");
-  XLSX.writeFile(wb, "BOQ_Template_v15.9.1.xlsx");
+  XLSX.writeFile(wb, "BOQ_Template_v15.9.2.xlsx");
 }
 
 function importExcel(event) {
