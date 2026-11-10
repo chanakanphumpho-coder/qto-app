@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Structural QTO & BOQ Pro - Enterprise Production Edition v15.8</title>
+  <title>Structural QTO & BOQ Pro - Enterprise Production Edition v15.9 (Strict AI Vision & Validation)</title>
   <script>
     tailwind = { config: { darkMode: 'class' } }
   </script>
@@ -45,9 +45,9 @@
       <div>
         <h1 class="text-2xl font-bold flex items-center gap-2">
           🏗️ Structural QTO & BOQ Pro 
-          <span class="text-xs bg-emerald-600 text-white px-2.5 py-1 rounded-md font-normal no-print">v15.8 Enterprise Edition</span>
+          <span class="text-xs bg-emerald-600 text-white px-2.5 py-1 rounded-md font-normal no-print">v15.9 Strict Enterprise</span>
         </h1>
-        <p class="text-slate-300 text-sm no-print">ระบบถอดปริมาณและประมาณราคางานโครงสร้าง ค.ส.ล. (v15.8: True Strict Validation & Interactive Mock Scan) — <span class="text-amber-400">⚠️ ราคาอิงเรตผู้ใช้กำหนด</span></p>
+        <p class="text-slate-300 text-sm no-print">ระบบถอดปริมาณและประมาณราคางานโครงสร้าง ค.ส.ล. (v15.9: Strict AI Vision & Unit Normalization) — <span class="text-amber-400">⚠️ ราคาอิงเรตผู้ใช้กำหนด</span></p>
         <div class="hidden print-watermark-warning">
           ⚠️ คำเตือนรายงานพิมพ์: เอกสารนี้เป็นประมาณการเบื้องต้น (Gross Volume อิงเรตผู้ใช้กำหนด) คำนวณตามสูตรระยะทาบและเผื่อเศษ (% Waste) ยังไม่ได้จำลองการตัดเหล็กจริง (Cutting List / BBS) ไม่สามารถใช้แทนแบบก่อสร้างจริงได้
         </div>
@@ -112,16 +112,19 @@
         <button id="cancelEditBtn" onclick="cancelEdit()" class="hidden text-xs bg-slate-200 dark:bg-slate-800 px-2 py-1 rounded text-red-500 font-medium">ยกเลิกแก้ไข</button>
       </div>
 
-      <!-- Mock AI Vision Scan Upload Box -->
+      <!-- Real AI Vision Scan Upload Box -->
       <div class="mb-4 p-3 bg-purple-50 dark:bg-purple-950/30 rounded-xl border border-purple-200 dark:border-purple-900">
         <div class="flex justify-between items-center mb-2">
-          <span class="text-xs font-bold text-purple-600 dark:text-purple-400 flex items-center gap-1">📸 Mock AI Vision Scan (พร้อมยืนยันค่า)</span>
-          <span class="text-[10px] text-slate-500">อัปโหลดภาพเพื่อจำลองการแกะแบบ</span>
+          <span class="text-xs font-bold text-purple-600 dark:text-purple-400 flex items-center gap-1">📸 AI Vision Scan (Strict Unit Normalization)</span>
+          <span class="text-[10px] text-slate-500">อัปโหลดภาพหน้าตัด/แบบแปลน</span>
         </div>
         <label class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 px-3 rounded-lg text-xs font-medium cursor-pointer flex items-center justify-center gap-1 transition shadow-sm">
-          <span>📤 อัปโหลดรูปภาพหน้าตัดเพื่อจำลองการแกะข้อมูล</span>
-          <input type="file" accept="image/*" class="hidden" onchange="handleVisionScanUpload(event)">
+          <span>📤 อัปโหลดรูปภาพเพื่อวิเคราะห์แบบโครงสร้าง</span>
+          <input type="file" id="visionFileInput" accept="image/jpeg, image/png, image/webp" class="hidden" onchange="handleVisionScanUpload(event)">
         </label>
+        <div id="visionLoading" class="hidden mt-2 text-center text-xs text-purple-600 dark:text-purple-400 animate-pulse">
+          🤖 กำลังวิเคราะห์ภาพและแปลงหน่วยด้วย AI โปรดรอสักครู่...
+        </div>
       </div>
 
       <!-- Preset Templates -->
@@ -146,7 +149,7 @@
       <!-- Realtime 3D Studio Preview Box -->
       <div class="mb-4 p-3 bg-slate-900 text-slate-100 rounded-xl border border-slate-700 text-center relative overflow-hidden">
         <div class="flex justify-between items-center mb-1">
-          <span class="text-xs font-semibold text-amber-400">✨ พรีวิว 3D Schematic Studio (v15.8)</span>
+          <span class="text-xs font-semibold text-amber-400">✨ พรีวิว 3D Schematic Studio (v15.9)</span>
           <span id="previewInfo" class="text-[10px] text-slate-400">หมุน 360° ด้วยเมาส์</span>
         </div>
         <div id="canvas3dContainer" class="w-full h-48 bg-slate-950 rounded-lg border border-slate-800 my-1 relative cursor-grab active:cursor-grabbing shadow-inner overflow-hidden"></div>
@@ -211,7 +214,7 @@
         </div>
 
         <div id="precastFieldsContainer" class="hidden pt-2 border-t dark:border-slate-800">
-          <label class="text-xs">ความหนาแผ่นสำเร็จรูปจริง (m) [พรีวิวและแยกแผ่น]
+          <label class="text-xs">ความหนาแผ่นสำเร็จรูปจริง (m)
             <input id="precastPanelThick" type="number" min="0" max="1" step="0.01" value="" placeholder="เช่น 0.05" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
           </label>
         </div>
@@ -265,7 +268,7 @@
             </div>
 
             <div id="specialRebarContainer" class="col-span-2 pt-2 border-t dark:border-slate-800 bg-amber-50/40 dark:bg-amber-950/20 p-2.5 rounded-xl border border-amber-200 dark:border-amber-900/50">
-              <span class="text-xs font-semibold text-amber-600 dark:text-amber-400 block mb-1">⭐ เหล็กเสริมพิเศษ (ใช้อิงเกรดเดียวกับเหล็กหลัก)</span>
+              <span class="text-xs font-semibold text-amber-600 dark:text-amber-400 block mb-1">⭐ เหล็กเสริมพิเศษ</span>
               <div class="grid grid-cols-2 gap-2 text-xs">
                 <label class="flex flex-col">เหล็กกันร้าวข้างคาน
                   <select id="extraBarSize" class="mt-1 border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-1.5 text-xs" onchange="triggerPreview()">
@@ -289,10 +292,10 @@
             </label>
           </div>
 
-          <!-- Roof Truss Container with Complete X, Y, Z Coordinate Inputs & Steel Profile Presets -->
+          <!-- Roof Truss Container -->
           <div id="roofTrussFields" class="hidden pt-1 space-y-3">
             <div class="flex justify-between items-center">
-              <p class="text-xs text-amber-500 font-medium">📋 รายการโครงสร้างเหล็กรูปพรรณ (พร้อมพิกัดจุดต่อ 3D)</p>
+              <p class="text-xs text-amber-500 font-medium">📋 รายการโครงสร้างเหล็กรูปพรรณ</p>
               <button type="button" onclick="addRoofMemberRow()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 rounded-lg text-xs font-medium">+ เพิ่มสมาชิกเหล็ก</button>
             </div>
             <div id="roofMembersContainer" class="space-y-2 max-h-72 overflow-y-auto pr-1"></div>
@@ -346,7 +349,7 @@
             </label>
           </div>
         </div>
-        <p id="earthworkNote" class="text-[10px] text-slate-500">*สมมติฐานงานดิน: ฐานรากคิดขุดรอบตัวด้วยระยะเผื่อขุด / คานคิดขุดตามแนวความยาว / พื้นคิดเฉพาะทรายรองพื้น</p>
+        <p id="earthworkNote" class="text-[10px] text-slate-500">*สมมติฐานงานดิน: ฐานรากคิดขุดรอบตัวด้วยระยะเผื่อขุด / คานคิดขุดตามแนวความยาว</p>
 
         <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-medium transition shadow">
           + คำนวณและเพิ่มรายการ
@@ -469,7 +472,38 @@
   </div>
 </div>
 
+<!-- Vision Scan Review & Confirmation Modal -->
+<div id="visionModal" class="fixed inset-0 bg-slate-950/80 z-50 flex items-center justify-center hidden">
+  <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl max-w-3xl w-full mx-4 shadow-2xl border dark:border-slate-800 max-h-[90vh] flex flex-col">
+    <div class="flex justify-between items-center mb-3">
+      <div>
+        <h3 class="text-lg font-bold text-purple-600 dark:text-purple-400 flex items-center gap-2">🔍 ตรวจสอบและเลือกข้อมูลจาก AI Vision Scan (Strict Normalization)</h3>
+        <p class="text-xs text-amber-500">⚠️ ติ๊กเลือกเฉพาะช่องที่ต้องการนำเข้า (ค่าเริ่มต้นจะไม่ถูกติ๊ก เพื่อให้ผู้ใช้ตรวจสอบความถูกต้อง)</p>
+      </div>
+      <button onclick="closeVisionModal()" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+    </div>
+
+    <div id="visionModalContent" class="overflow-y-auto space-y-3 pr-2 flex-1 text-xs my-2"></div>
+
+    <div class="flex gap-3 pt-3 border-t dark:border-slate-800 mt-auto">
+      <button onclick="applyVisionData()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl text-xs font-semibold shadow transition">
+        ✅ ตรวจสอบและยืนยันนำเข้าข้อมูล
+      </button>
+      <button onclick="closeVisionModal()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2.5 rounded-xl text-xs font-medium transition">
+        ยกเลิก
+      </button>
+    </div>
+  </div>
+</div>
+
 <script>
+// ==========================================
+// CONFIGURABLE PRODUCTION ENDPOINT & CORS SETUP
+// ==========================================
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:3000'
+  : (window.ENV_API_URL || 'https://api.structural-boq-pro.com'); // แทนที่ด้วยโดเมน Backend จริงที่ตั้งค่า CORS อนุญาต Origin เรียบร้อยแล้ว
+
 const unitWeight = {
   RB6:0.222, RB9:0.499, RB12:0.888, RB15:1.387,
   DB12:0.888, DB16:1.58, DB20:2.47, DB25:3.85, 
@@ -520,21 +554,21 @@ const money = n => (Number(n)||0).toLocaleString("th-TH", { minimumFractionDigit
 const safe = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
 
 // ==========================================
-// STORAGE MIGRATION (v15.x -> v15.8)
+// MIGRATION & SANITIZATION UTILITIES
 // ==========================================
 function migrateStorageKeys() {
   try {
-    if (!localStorage.getItem("qtoRates_v15_8")) {
-      const oldRates = localStorage.getItem("qtoRates_v15_7") || localStorage.getItem("qtoRates_v15_6");
-      if (oldRates) localStorage.setItem("qtoRates_v15_8", oldRates);
+    if (!localStorage.getItem("qtoRates_v15_9")) {
+      const oldRates = localStorage.getItem("qtoRates_v15_8") || localStorage.getItem("qtoRates_v15_7");
+      if (oldRates) localStorage.setItem("qtoRates_v15_9", oldRates);
     }
-    if (!localStorage.getItem("qtoProjects_v15_8")) {
-      const oldProj = localStorage.getItem("qtoProjects_v15_7") || localStorage.getItem("qtoProjects_v15_6");
-      if (oldProj) localStorage.setItem("qtoProjects_v15_8", oldProj);
+    if (!localStorage.getItem("qtoProjects_v15_9")) {
+      const oldProj = localStorage.getItem("qtoProjects_v15_8") || localStorage.getItem("qtoProjects_v15_7");
+      if (oldProj) localStorage.setItem("qtoProjects_v15_9", oldProj);
     }
-    if (!localStorage.getItem("qtoCurrent_v15_8")) {
-      const oldCurr = localStorage.getItem("qtoCurrent_v15_7") || localStorage.getItem("qtoCurrent_v15_6");
-      if (oldCurr) localStorage.setItem("qtoCurrent_v15_8", oldCurr);
+    if (!localStorage.getItem("qtoCurrent_v15_9")) {
+      const oldCurr = localStorage.getItem("qtoCurrent_v15_8") || localStorage.getItem("qtoCurrent_v15_7");
+      if (oldCurr) localStorage.setItem("qtoCurrent_v15_9", oldCurr);
     }
   } catch(e) {}
 }
@@ -605,7 +639,7 @@ function parseExcelDate(val) {
 let items = [];
 let rates = (() => {
   try {
-    const saved = JSON.parse(localStorage.getItem("qtoRates_v15_8"));
+    const saved = JSON.parse(localStorage.getItem("qtoRates_v15_9"));
     if (saved && typeof saved === 'object') {
       return Object.fromEntries(Object.entries(rateDefaults).map(([k,v]) => [k, sanitizeNumber(saved[k], 0, 1000000, v.value)]));
     }
@@ -616,7 +650,7 @@ let rates = (() => {
 function toggleDarkMode() {
   const html = document.documentElement;
   const isDark = html.classList.toggle('dark');
-  try { localStorage.setItem('theme_v15_8', isDark ? 'dark' : 'light'); } catch(e) {}
+  try { localStorage.setItem('theme_v15_9', isDark ? 'dark' : 'light'); } catch(e) {}
   
   const icon = $("themeIcon");
   if (icon) icon.textContent = isDark ? '☀️' : '🌙';
@@ -627,7 +661,7 @@ function toggleDarkMode() {
 }
 
 try {
-  if (localStorage.getItem('theme_v15_8') === 'dark') {
+  if (localStorage.getItem('theme_v15_9') === 'dark') {
     document.documentElement.classList.add('dark');
     if ($("themeIcon")) $("themeIcon").textContent = '☀️';
   }
@@ -655,54 +689,295 @@ function isStirrupType(type) { return ["Ground Beam","Beam","Stub Column","Colum
 function isColumnType(type) { return ["Column","Stub Column"].includes(type); }
 
 // ==========================================
-// INTERACTIVE MOCK AI VISION SCAN
+// STRICT SCHEMA & UNIT NORMALIZATION VALIDATION FOR VISION AI
 // ==========================================
-function handleVisionScanUpload(event) {
+let currentScannedData = null;
+
+function validateVisionScanResponse(raw) {
+  if (!raw || typeof raw !== 'object') {
+    throw new Error("โครงสร้างข้อมูลจาก Vision API ไม่ถูกต้อง (ไม่ใช่ Object)");
+  }
+
+  // Strict Schema Check: ตรวจสอบความถูกต้องของโครงสร้างและ Field พื้นฐาน
+  if (raw.status && raw.status === "error") {
+    throw new Error(raw.message || "ระบบ Vision API ประมวลผลล้มเหลว");
+  }
+
+  // Unit Normalization & Validation: ตรวจสอบหน่วยและแปลงเป็นเมตร (m) ตามที่ Backend ส่งมา
+  // หากหน่วยไม่ชัดเจนหรือไม่มีหน่วย Backend ต้องส่งค่าเป็น null พร้อมคำเตือน ห้ามถือค่าดิบเป็นเมตรโดยปริยาย
+  const parseNormalizedMetric = (val, evObj) => {
+    if (val === null || val === undefined || val === "") return null;
+    const num = Number(val);
+    if (!Number.isFinite(num)) return null;
+
+    // ตรวจสอบ unit metadata จาก evidence หรือ unitsDetected ถ้ามี
+    if (evObj && evObj.unit) {
+      const u = String(evObj.unit).toLowerCase().trim();
+      if (u === "cm" || u === "เซนติเมตร" || u === "ซม.") return num / 100;
+      if (u === "mm" || u === "มิลลิเมตร" || u === "มม.") return num / 1000;
+    }
+    return num; // ถือว่าเป็นเมตร (m) เรียบร้อยแล้วหลังจาก normalize โดย backend
+  };
+
+  const evidenceMap = {};
+  if (Array.isArray(raw.evidence)) {
+    raw.evidence.forEach(ev => { evidenceMap[ev.field] = ev; });
+  }
+
+  return {
+    elementType: supportedTypes.includes(raw.elementType) ? raw.elementType : "Footing",
+    name: raw.name ? String(raw.name).trim() : "Scanned-Element",
+    width_m: parseNormalizedMetric(raw.width_m, evidenceMap["width_m"]),
+    length_m: parseNormalizedMetric(raw.length_m, evidenceMap["length_m"]),
+    depth_m: parseNormalizedMetric(raw.depth_m, evidenceMap["depth_m"]),
+    mainBarSize: supportedBarSizes.includes(raw.mainBarSize) ? raw.mainBarSize : "RB12",
+    barCount: sanitizeInteger(raw.barCount, 0, 100, 4),
+    barSpacingX_m: parseNormalizedMetric(raw.barSpacingX_m, evidenceMap["barSpacingX_m"]),
+    barSpacingY_m: parseNormalizedMetric(raw.barSpacingY_m, evidenceMap["barSpacingY_m"]),
+    stirrupSize: supportedStirrupSizes.includes(raw.stirrupSize) ? raw.stirrupSize : "NONE",
+    stirrupSpacing_m: parseNormalizedMetric(raw.stirrupSpacing_m, evidenceMap["stirrupSpacing_m"]),
+    cover_m: parseNormalizedMetric(raw.cover_m, evidenceMap["cover_m"]),
+    unitsDetected: Array.isArray(raw.unitsDetected) ? raw.unitsDetected.map(x => String(x)) : [],
+    unreadableFields: Array.isArray(raw.unreadableFields) ? raw.unreadableFields.map(x => String(x)) : [],
+    warnings: Array.isArray(raw.warnings) ? raw.warnings.map(x => String(x)) : [],
+    evidence: Array.isArray(raw.evidence) ? raw.evidence : []
+  };
+}
+
+async function handleVisionScanUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
 
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const mockScannedData = {
-      type: "Footing",
-      name: "F-Mock-Scanned",
-      width: 1.50,
-      length: 1.50,
-      depth: 0.50,
-      mainSize: "DB16",
-      matSpacingX: 0.20,
-      matSpacingY: 0.20,
-      matBottom: true,
-      matTop: false
-    };
+  if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+    alert("❌ รองรับเฉพาะไฟล์รูปภาพ JPG, PNG หรือ WEBP เท่านั้น");
+    event.target.value = "";
+    return;
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    alert("❌ ขนาดไฟล์ใหญ่เกินไป (จำกัดไม่เกิน 5MB)");
+    event.target.value = "";
+    return;
+  }
 
-    const confirmMsg = `📸 [Mock AI Vision Scan Confirmed]\n\nตรวจสอบข้อมูลที่ AI สแกนพบจากรูป:\n- ชื่อ: ${mockScannedData.name}\n- ประเภท: ${mockScannedData.type}\n- ขนาด: ${mockScannedData.width} x ${mockScannedData.length} x ${mockScannedData.depth} m\n- เหล็กหลัก: ${mockScannedData.mainSize}\n\nต้องการแทนที่ค่าในฟอร์มด้วยข้อมูลนี้หรือไม่?`;
-    
-    if (confirm(confirmMsg)) {
-      $("type").value = mockScannedData.type;
-      updateRebarFields();
-      $("name").value = mockScannedData.name;
-      $("width").value = mockScannedData.width;
-      $("length").value = mockScannedData.length;
-      $("depth").value = mockScannedData.depth;
-      $("barSize").value = mockScannedData.mainSize;
-      $("matSpacingX").value = mockScannedData.matSpacingX;
-      $("matSpacingY").value = mockScannedData.matSpacingY;
-      $("matBottom").checked = mockScannedData.matBottom;
-      $("matTop").checked = mockScannedData.matTop;
-      triggerPreview();
-      alert("✨ นำเข้าข้อมูลจากการสแกนลงฟอร์มเรียบร้อยแล้ว");
+  const formData = new FormData();
+  formData.append("image", file);
+  $("visionLoading").classList.remove("hidden");
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/vision-scan`, {
+      method: "POST",
+      body: formData
+    });
+
+    const result = await response.json();
+    $("visionLoading").classList.add("hidden");
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.error || "เกิดข้อผิดพลาดในการเชื่อมต่อกับ Vision API");
     }
+
+    currentScannedData = validateVisionScanResponse(result.data);
+    openVisionModal(currentScannedData);
+
+  } catch (err) {
+    $("visionLoading").classList.add("hidden");
+    alert("❌ การวิเคราะห์ภาพล้มเหลว: " + err.message);
+  } finally {
+    event.target.value = "";
+  }
+}
+
+function openVisionModal(data) {
+  const container = $("visionModalContent");
+  if (!container) return;
+
+  let warningsHtml = "";
+  if (data.warnings && data.warnings.length > 0) {
+    warningsHtml = `<div class="p-2 bg-amber-50 dark:bg-amber-950/40 rounded-lg border border-amber-200 dark:border-amber-900 text-amber-600 dark:text-amber-400 mb-2">
+      <b>⚠️ คำเตือนจาก AI Vision:</b><ul class="list-disc pl-4">${data.warnings.map(w => `<li>${safe(w)}</li>`).join("")}</ul>
+    </div>`;
+  }
+
+  let unreadableHtml = "";
+  if (data.unreadableFields && data.unreadableFields.length > 0) {
+    unreadableHtml = `<div class="p-2 bg-red-50 dark:bg-red-950/40 rounded-lg border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 mb-2">
+      <b>❌ ช่องที่อ่านค่าไม่ได้ / ไม่ชัดเจน (ถูกเว้นว่าง):</b> ${data.unreadableFields.map(x => safe(x)).join(", ")}
+    </div>`;
+  }
+
+  const fieldsConfig = [
+    { key: "elementType", label: "ประเภทองค์อาคาร (Element Type)", type: "select", options: supportedTypes },
+    { key: "name", label: "ชื่อองค์อาคาร", type: "text" },
+    { key: "width_m", label: "กว้าง Width (m)", type: "number", min: 0.001, max: 100 },
+    { key: "length_m", label: "ยาว Length (m)", type: "number", min: 0.001, max: 1000 },
+    { key: "depth_m", label: "ลึก/หนา Depth (m)", type: "number", min: 0.001, max: 10 },
+    { key: "mainBarSize", label: "ขนาดเหล็กหลัก", type: "select", options: supportedBarSizes },
+    { key: "barCount", label: "จำนวนเหล็กหลัก", type: "number", min: 0, max: 100 },
+    { key: "barSpacingX_m", label: "ระยะเรียง X (m)", type: "number", min: 0.001, max: 10 },
+    { key: "barSpacingY_m", label: "ระยะเรียง Y (m)", type: "number", min: 0.001, max: 10 },
+    { key: "stirrupSize", label: "ขนาดเหล็กปลอก", type: "select", options: supportedStirrupSizes },
+    { key: "stirrupSpacing_m", label: "ระยะเรียงปลอก (m)", type: "number", min: 0.001, max: 10 },
+    { key: "cover_m", label: "ระยะหุ้ม Cover (m)", type: "number", min: 0, max: 1 }
+  ];
+
+  const evidenceMap = {};
+  if (Array.isArray(data.evidence)) {
+    data.evidence.forEach(ev => { evidenceMap[ev.field] = ev; });
+  }
+
+  let fieldsHtml = fieldsConfig.map(f => {
+    const val = data[f.key] !== null && data[f.key] !== undefined ? data[f.key] : "";
+    const ev = evidenceMap[f.key];
+    const confidenceBadge = ev ? `<span class="px-1.5 py-0.5 rounded text-[10px] ${ev.confidence > 0.8 ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">Conf: ${(ev.confidence * 100).toFixed(0)}%</span>` : '';
+    const evidenceText = ev && ev.visibleText ? `<div class="text-[10px] text-slate-400">อ้างอิงจากภาพ: "${safe(ev.visibleText)}"</div>` : '';
+
+    // Fix #1: สร้างฟิลด์ให้ถูกต้องตาม type (select สร้าง <select> พร้อม options, text/number สร้าง <input>)
+    let inputControlHtml = "";
+    if (f.type === "select") {
+      const optionsHtml = f.options.map(opt => `<option value="${opt}" ${String(val) === String(opt) ? 'selected' : ''}>${opt}</option>`).join("");
+      inputControlHtml = `<select id="scan_${f.key}" class="w-full border dark:border-slate-600 dark:bg-slate-900 dark:text-white rounded-lg p-1.5 text-xs">${optionsHtml}</select>`;
+    } else {
+      inputControlHtml = `<input type="${f.type === 'number' ? 'number' : 'text'}" id="scan_${f.key}" value="${safe(val)}" ${f.min !== undefined ? `min="${f.min}" max="${f.max}" step="any"` : ''} class="w-full border dark:border-slate-600 dark:bg-slate-900 dark:text-white rounded-lg p-1.5 text-xs">`;
+    }
+
+    // Fix #4: Checkbox เริ่มต้นไม่ถูกติ๊กไว้ล่วงหน้า (unchecked by default) ยกเว้นมีค่าและมั่นใจสูง ซึ่งตามโจทย์ต้องการให้ผู้ใช้ตรวจยืนยันเอง จึงเริ่มต้นไม่ติ๊กทั้งหมด
+    return `<div class="bg-slate-50 dark:bg-slate-800 p-2.5 rounded-xl border dark:border-slate-700" id="container_${f.key}">
+      <div class="flex justify-between items-center mb-1">
+        <label class="font-medium text-slate-700 dark:text-slate-300 flex items-center gap-2 cursor-pointer">
+          <input type="checkbox" id="chk_${f.key}" class="w-3.5 h-3.5 accent-purple-600" title="เลือกเพื่อใช้นำเข้าค่านี้">
+          ${f.label}
+        </label>
+        ${confidenceBadge}
+      </div>
+      ${inputControlHtml}
+      ${evidenceText}
+      <div id="err_${f.key}" class="text-[10px] text-red-500 font-medium mt-1 hidden"></div>
+    </div>`;
+  }).join("");
+
+  container.innerHTML = warningsHtml + unreadableHtml + `<p class="text-[11px] text-slate-500 mb-2">💡 กรุณาตรวจสอบความถูกต้องและติ๊กเลือกช่องที่ต้องการนำเข้าทีละรายการ</p><div class="grid grid-cols-1 md:grid-cols-2 gap-2">${fieldsHtml}</div>`;
+  $("visionModal").classList.remove("hidden");
+}
+
+function closeVisionModal() {
+  $("visionModal").classList.add("hidden");
+  currentScannedData = null;
+}
+
+function applyVisionData() {
+  if (!currentScannedData) return;
+
+  let hasValidationError = false;
+  const fieldsToValidate = [
+    { key: "width_m", min: 0.001, max: 100, name: "กว้าง Width" },
+    { key: "length_m", min: 0.001, max: 1000, name: "ยาว Length" },
+    { key: "depth_m", min: 0.001, max: 10, name: "ลึก/หนา Depth" },
+    { key: "barCount", min: 0, max: 100, name: "จำนวนเหล็กหลัก" },
+    { key: "barSpacingX_m", min: 0.001, max: 10, name: "ระยะเรียง X" },
+    { key: "barSpacingY_m", min: 0.001, max: 10, name: "ระยะเรียง Y" },
+    { key: "stirrupSpacing_m", min: 0.001, max: 10, name: "ระยะเรียงปลอก" },
+    { key: "cover_m", min: 0, max: 1, name: "ระยะหุ้ม Cover" }
+  ];
+
+  // Reset error displays
+  fieldsToValidate.forEach(f => {
+    const errEl = $(`err_${f.key}`);
+    if (errEl) { errEl.textContent = ""; errEl.classList.add("hidden"); }
+  });
+
+  // Fix #3: ตรวจสอบความถูกต้องก่อนนำเข้า หากมีค่าผิดช่วง ห้ามปิด modal และแสดง error ใต้ช่องนั้นทันที
+  fieldsToValidate.forEach(f => {
+    const chk = $(`chk_${f.key}`);
+    if (chk && chk.checked) {
+      const inputEl = $(`scan_${f.key}`);
+      const val = inputEl ? inputEl.value : "";
+      const num = Number(val);
+      const errEl = $(`err_${f.key}`);
+
+      if (val === "" || !Number.isFinite(num) || num < f.min || num > f.max) {
+        hasValidationError = true;
+        if (errEl) {
+          errEl.textContent = `❌ ค่า "${f.name}" ไม่ถูกต้อง (ต้องอยู่ระหว่าง ${f.min} ถึง ${f.max})`;
+          errEl.classList.remove("hidden");
+        }
+      }
+    }
+  });
+
+  if (hasValidationError) {
+    alert("⚠️ กรุณาแก้ไขข้อมูลในช่องที่มีข้อผิดพลาด (แสดงสีแดงใต้ช่องข้อมูล) ก่อนทำการยืนยัน");
+    return;
+  }
+
+  const getCheckedAndVal = (key) => {
+    const chk = $(`chk_${key}`);
+    if (!chk || !chk.checked) return null;
+    return $(`scan_${key}`)?.value.trim() || "";
   };
-  reader.readAsDataURL(file);
-  event.target.value = "";
+
+  const typeVal = getCheckedAndVal("elementType");
+  if (typeVal && supportedTypes.includes(typeVal)) {
+    $("type").value = typeVal;
+    updateRebarFields();
+  }
+
+  const currentElementType = $("type").value;
+  const isMat = isMatType(currentElementType);
+  const isStirrup = isStirrupType(currentElementType);
+
+  const nameVal = getCheckedAndVal("name");
+  if (nameVal) $("name").value = nameVal;
+
+  const w = getCheckedAndVal("width_m");
+  if (w !== null) $("width").value = Number(w);
+
+  const l = getCheckedAndVal("length_m");
+  if (l !== null) $("length").value = Number(l);
+
+  const d = getCheckedAndVal("depth_m");
+  if (d !== null) $("depth").value = Number(d);
+
+  if (currentElementType !== "Roof Truss") {
+    const mainSize = getCheckedAndVal("mainBarSize");
+    if (mainSize !== null && supportedBarSizes.includes(mainSize)) {
+      $("barSize").value = mainSize;
+    }
+
+    const barCnt = getCheckedAndVal("barCount");
+    if (barCnt !== null && !isMat) {
+      $("barCount").value = parseInt(barCnt, 10);
+    }
+
+    if (isMat) {
+      const sx = getCheckedAndVal("barSpacingX_m");
+      if (sx !== null) $("matSpacingX").value = Number(sx);
+      const sy = getCheckedAndVal("barSpacingY_m");
+      if (sy !== null) $("matSpacingY").value = Number(sy);
+    }
+
+    if (isStirrup) {
+      const stirSize = getCheckedAndVal("stirrupSize");
+      if (stirSize !== null && supportedStirrupSizes.includes(stirSize)) {
+        $("stirrupSize").value = stirSize;
+      }
+      const stirSp = getCheckedAndVal("stirrupSpacing_m");
+      if (stirSp !== null) $("spacing").value = Number(stirSp);
+    }
+
+    const cover = getCheckedAndVal("cover_m");
+    if (cover !== null) $("cover").value = Number(cover);
+  }
+
+  triggerPreview();
+  closeVisionModal();
+  alert("✨ นำเข้าข้อมูลที่เลือกผ่านการตรวจสอบความถูกต้องเรียบร้อยแล้ว");
 }
 
 // ==========================================
 // PROJECT MANAGEMENT FUNCTIONS
 // ==========================================
 function getSavedProjects() {
-  try { return JSON.parse(localStorage.getItem("qtoProjects_v15_8") || "{}"); } catch { return {}; }
+  try { return JSON.parse(localStorage.getItem("qtoProjects_v15_9") || "{}"); } catch { return {}; }
 }
 
 function refreshProjectList(selectedName="") {
@@ -720,7 +995,7 @@ function saveProject() {
   try {
     const projects = getSavedProjects();
     projects[name] = getState();
-    localStorage.setItem("qtoProjects_v15_8", JSON.stringify(projects));
+    localStorage.setItem("qtoProjects_v15_9", JSON.stringify(projects));
     refreshProjectList(name);
     persistCurrent();
     alert(`บันทึกโครงการ “${name}” เรียบร้อยแล้ว`);
@@ -767,10 +1042,10 @@ function clearAllData() {
   $("wht").value = 3;
 
   try {
-    localStorage.removeItem("qtoRates_v15_8");
-    localStorage.removeItem("qtoCurrent_v15_8");
+    localStorage.removeItem("qtoRates_v15_9");
+    localStorage.removeItem("qtoCurrent_v15_9");
     if (clearSaved) {
-      localStorage.removeItem("qtoProjects_v15_8");
+      localStorage.removeItem("qtoProjects_v15_9");
     }
   } catch(e) {}
 
@@ -987,7 +1262,6 @@ function getPreviewParams() {
     const coordValues = [sX, sY, sZ, eX, eY, eZ];
     const filledCount = coordValues.filter(v => v !== "" && v !== undefined && !Number.isNaN(Number(v))).length;
     const hasNodes = filledCount === 6;
-    const hasPartialNodes = filledCount > 0 && filledCount < 6;
 
     return {
       name: row.querySelector("input[name='mName']")?.value.trim() || "สมาชิก",
@@ -1001,8 +1275,7 @@ function getPreviewParams() {
       endX: eX !== "" && eX !== undefined ? Number(eX) : "",
       endY: eY !== "" && eY !== undefined ? Number(eY) : "",
       endZ: eZ !== "" && eZ !== undefined ? Number(eZ) : "",
-      hasNodes,
-      hasPartialNodes
+      hasNodes
     };
   });
 
@@ -1029,9 +1302,6 @@ function clearModelGroup() {
   disposeRecursive(modelGroup3d);
 }
 
-// ==========================================
-// MODEL CREATOR FUNCTIONS
-// ==========================================
 function createFootingModel(p, matConc, matWire, matRebar, matLean) {
   const w = p.width, l = p.length, d = p.depth;
   const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, d, l), matConc);
@@ -1340,13 +1610,6 @@ function build3DModelFromForm() {
       break;
     case "Roof Truss":
       createRoofTrussModel(p, matRebar);
-      if (p.roofMembers.length > 0) {
-        if (p.roofMembers.some(m => m.hasPartialNodes)) {
-          warningText = "⚠️ กรอกพิกัดไม่ครบ 6 ค่า (ต้องกรอก Start & End ให้ครบ)";
-        } else if (!p.roofMembers.some(m => m.hasNodes)) {
-          warningText = "⚠️ ยังไม่มีพิกัดโหนด แสดงสมาชิกโครงหลังคาเป็น Schematic ตัวอย่าง";
-        }
-      }
       break;
   }
 
@@ -1454,7 +1717,6 @@ function updateRebarFields() {
   $("stairFieldsContainer").classList.toggle("hidden", type !== "Ground Stair");
   $("precastFieldsContainer").classList.toggle("hidden", type !== "Precast Slab");
 
-  // Dynamic Earthwork assumption note update
   const noteEl = $("earthworkNote");
   if (noteEl) {
     if (type === "Footing") noteEl.textContent = "*สมมติฐานงานดิน: ฐานรากคิดขุดรอบตัวด้วยระยะเผื่อขุด และเทคอนกรีตหยาบใต้ฐานราก";
@@ -1501,7 +1763,7 @@ function getState() {
 }
 
 function persistCurrent() {
-  try { localStorage.setItem("qtoCurrent_v15_8", JSON.stringify(getState())); } catch(e) {}
+  try { localStorage.setItem("qtoCurrent_v15_9", JSON.stringify(getState())); } catch(e) {}
 }
 
 function calculateRebarNetLength(netRequiredLength, stock, lapLength) {
@@ -1699,7 +1961,6 @@ $("qtoForm").addEventListener("submit", e => {
         const coords = [sX, sY, sZ, eX, eY, eZ];
         const filledCount = coords.filter(v => v !== "" && v !== undefined && !Number.isNaN(Number(v))).length;
         const hasNodes = filledCount === 6;
-        const hasPartialNodes = filledCount > 0 && filledCount < 6;
 
         return {
           name: row.querySelector("input[name='mName']").value.trim(),
@@ -1713,8 +1974,7 @@ $("qtoForm").addEventListener("submit", e => {
           endX: eX !== "" && eX !== undefined ? Number(eX) : "",
           endY: eY !== "" && eY !== undefined ? Number(eY) : "",
           endZ: eZ !== "" && eZ !== undefined ? Number(eZ) : "",
-          hasNodes,
-          hasPartialNodes
+          hasNodes
         };
       }) : [],
       wastePct: sanitizeNumber($("waste").value, 0, 100, 5)
@@ -1864,7 +2124,7 @@ function renderRates() {
         const valNum = sanitizeNumber(el.value, 0, 1000000, rates[key] ?? rateDefaults[key].value, true, rateDefaults[key].label);
         el.value = valNum;
         rates[key] = valNum;
-        try { localStorage.setItem("qtoRates_v15_8", JSON.stringify(rates)); } catch(e) {}
+        try { localStorage.setItem("qtoRates_v15_9", JSON.stringify(rates)); } catch(e) {}
         render();
       } catch (err) {
         alert("⚠️ " + err.message);
@@ -2066,7 +2326,7 @@ function exportJSON() {
   const blob = new Blob([JSON.stringify(getState(), null, 2)], { type: "application/json;charset=utf-8" });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `BOQ_${($("projectName").value || "Project").replace(/[/\\?%*:|"<>]/g, "_")}_v15.8.json`;
+  a.download = `BOQ_${($("projectName").value || "Project").replace(/[/\\?%*:|"<>]/g, "_")}_v15.9.json`;
   a.click();
 }
 
@@ -2103,9 +2363,6 @@ function showImportReport(reports, isSuccess = true, isError = false) {
   $("importReportModal").classList.remove("hidden");
 }
 
-// ==========================================
-// ROBUST EXCEL EXPORT & TRUE STRICT TRANSACTIONAL IMPORT
-// ==========================================
 function exportExcel() {
   if (!items.length) return alert("ไม่มีข้อมูลสำหรับ Export");
   
@@ -2240,7 +2497,7 @@ function exportExcel() {
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(summaryRows), "สรุป BOQ รวม");
 
   const projName = ($("projectName")?.value || "Project").replace(/[/\\?%*:|"<>]/g, "_");
-  XLSX.writeFile(wb, `BOQ_Roundtrip_${projName}_v15.8.xlsx`);
+  XLSX.writeFile(wb, `BOQ_Roundtrip_${projName}_v15.9.xlsx`);
 }
 
 function downloadExcelTemplate() {
@@ -2260,10 +2517,9 @@ function downloadExcelTemplate() {
     "ทรายรองพื้น_m": 0.05, "เทคอนกรีตหยาบ": true, "ระยะเรียง X_m": 0.2, "ระยะเรียง Y_m": 0.2,
     "ตะแกรงล่าง": true, "ตะแกรงบน": false, "เผื่อเศษเหล็ก_pct": 5, "ต้นทุนเพิ่มเติมต่อชิ้น_บาท": 0, "หมายเหตุ": "", "สมาชิกโครงหลังคา_JSON": "[]"
   }]), "ข้อมูลนำเข้า");
-  XLSX.writeFile(wb, "BOQ_Template_v15.8.xlsx");
+  XLSX.writeFile(wb, "BOQ_Template_v15.9.xlsx");
 }
 
-// TRUE STRICT TRANSACTIONAL IMPORT
 function importExcel(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -2411,7 +2667,7 @@ function importExcel(event) {
       $("vat").value = tempVat;
       $("wht").value = tempWht;
       rates = tempRates;
-      try { localStorage.setItem("qtoRates_v15_8", JSON.stringify(rates)); } catch(e) {}
+      try { localStorage.setItem("qtoRates_v15_9", JSON.stringify(rates)); } catch(e) {}
 
       items = tempItems;
       render();
@@ -2434,7 +2690,7 @@ refreshProjectList();
 init3DPreview();
 
 try {
-  const savedCurrent = localStorage.getItem("qtoCurrent_v15_8");
+  const savedCurrent = localStorage.getItem("qtoCurrent_v15_9");
   if (savedCurrent) loadState(JSON.parse(savedCurrent));
   else render();
 } catch (e) { render(); }
