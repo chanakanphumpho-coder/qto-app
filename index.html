@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Structural QTO & BOQ Pro - Enterprise Production Edition v15.9 (Strict AI Vision & Validation)</title>
+  <title>Structural QTO & BOQ Pro - Enterprise Production Edition v15.9.1 (Strict AI Vision & Unit Normalization)</title>
   <script>
     tailwind = { config: { darkMode: 'class' } }
   </script>
@@ -45,9 +45,9 @@
       <div>
         <h1 class="text-2xl font-bold flex items-center gap-2">
           🏗️ Structural QTO & BOQ Pro 
-          <span class="text-xs bg-emerald-600 text-white px-2.5 py-1 rounded-md font-normal no-print">v15.9 Strict Enterprise</span>
+          <span class="text-xs bg-emerald-600 text-white px-2.5 py-1 rounded-md font-normal no-print">v15.9.1 Strict Enterprise</span>
         </h1>
-        <p class="text-slate-300 text-sm no-print">ระบบถอดปริมาณและประมาณราคางานโครงสร้าง ค.ส.ล. (v15.9: Strict AI Vision & Unit Normalization) — <span class="text-amber-400">⚠️ ราคาอิงเรตผู้ใช้กำหนด</span></p>
+        <p class="text-slate-300 text-sm no-print">ระบบถอดปริมาณและประมาณราคางานโครงสร้าง ค.ส.ล. (v15.9.1: Strict AI Vision & Unit Normalization) — <span class="text-amber-400">⚠️ ราคาอิงเรตผู้ใช้กำหนด</span></p>
         <div class="hidden print-watermark-warning">
           ⚠️ คำเตือนรายงานพิมพ์: เอกสารนี้เป็นประมาณการเบื้องต้น (Gross Volume อิงเรตผู้ใช้กำหนด) คำนวณตามสูตรระยะทาบและเผื่อเศษ (% Waste) ยังไม่ได้จำลองการตัดเหล็กจริง (Cutting List / BBS) ไม่สามารถใช้แทนแบบก่อสร้างจริงได้
         </div>
@@ -149,7 +149,7 @@
       <!-- Realtime 3D Studio Preview Box -->
       <div class="mb-4 p-3 bg-slate-900 text-slate-100 rounded-xl border border-slate-700 text-center relative overflow-hidden">
         <div class="flex justify-between items-center mb-1">
-          <span class="text-xs font-semibold text-amber-400">✨ พรีวิว 3D Schematic Studio (v15.9)</span>
+          <span class="text-xs font-semibold text-amber-400">✨ พรีวิว 3D Schematic Studio (v15.9.1)</span>
           <span id="previewInfo" class="text-[10px] text-slate-400">หมุน 360° ด้วยเมาส์</span>
         </div>
         <div id="canvas3dContainer" class="w-full h-48 bg-slate-950 rounded-lg border border-slate-800 my-1 relative cursor-grab active:cursor-grabbing shadow-inner overflow-hidden"></div>
@@ -698,25 +698,19 @@ function validateVisionScanResponse(raw) {
     throw new Error("โครงสร้างข้อมูลจาก Vision API ไม่ถูกต้อง (ไม่ใช่ Object)");
   }
 
-  // Strict Schema Check: ตรวจสอบความถูกต้องของโครงสร้างและ Field พื้นฐาน
   if (raw.status && raw.status === "error") {
     throw new Error(raw.message || "ระบบ Vision API ประมวลผลล้มเหลว");
   }
 
-  // Unit Normalization & Validation: ตรวจสอบหน่วยและแปลงเป็นเมตร (m) ตามที่ Backend ส่งมา
-  // หากหน่วยไม่ชัดเจนหรือไม่มีหน่วย Backend ต้องส่งค่าเป็น null พร้อมคำเตือน ห้ามถือค่าดิบเป็นเมตรโดยปริยาย
-  const parseNormalizedMetric = (val, evObj) => {
+  // Unit Normalization & Validation: ฟิลด์ที่ลงท้ายด้วย _m ถือเป็นเมตรที่ Normalize จาก Backend เรียบร้อยแล้ว ห้ามหารซ้ำ
+  const parseNormalizedMetric = (val, fieldName = "") => {
     if (val === null || val === undefined || val === "") return null;
     const num = Number(val);
     if (!Number.isFinite(num)) return null;
-
-    // ตรวจสอบ unit metadata จาก evidence หรือ unitsDetected ถ้ามี
-    if (evObj && evObj.unit) {
-      const u = String(evObj.unit).toLowerCase().trim();
-      if (u === "cm" || u === "เซนติเมตร" || u === "ซม.") return num / 100;
-      if (u === "mm" || u === "มิลลิเมตร" || u === "มม.") return num / 1000;
+    if (fieldName.endsWith("_m")) {
+      return num; // ยึดถือว่าเป็นเมตรตามสัญญา API อย่างเคร่งครัด ห้ามหารซ้ำ
     }
-    return num; // ถือว่าเป็นเมตร (m) เรียบร้อยแล้วหลังจาก normalize โดย backend
+    return num;
   };
 
   const evidenceMap = {};
@@ -727,16 +721,16 @@ function validateVisionScanResponse(raw) {
   return {
     elementType: supportedTypes.includes(raw.elementType) ? raw.elementType : "Footing",
     name: raw.name ? String(raw.name).trim() : "Scanned-Element",
-    width_m: parseNormalizedMetric(raw.width_m, evidenceMap["width_m"]),
-    length_m: parseNormalizedMetric(raw.length_m, evidenceMap["length_m"]),
-    depth_m: parseNormalizedMetric(raw.depth_m, evidenceMap["depth_m"]),
+    width_m: parseNormalizedMetric(raw.width_m, "width_m"),
+    length_m: parseNormalizedMetric(raw.length_m, "length_m"),
+    depth_m: parseNormalizedMetric(raw.depth_m, "depth_m"),
     mainBarSize: supportedBarSizes.includes(raw.mainBarSize) ? raw.mainBarSize : "RB12",
     barCount: sanitizeInteger(raw.barCount, 0, 100, 4),
-    barSpacingX_m: parseNormalizedMetric(raw.barSpacingX_m, evidenceMap["barSpacingX_m"]),
-    barSpacingY_m: parseNormalizedMetric(raw.barSpacingY_m, evidenceMap["barSpacingY_m"]),
+    barSpacingX_m: parseNormalizedMetric(raw.barSpacingX_m, "barSpacingX_m"),
+    barSpacingY_m: parseNormalizedMetric(raw.barSpacingY_m, "barSpacingY_m"),
     stirrupSize: supportedStirrupSizes.includes(raw.stirrupSize) ? raw.stirrupSize : "NONE",
-    stirrupSpacing_m: parseNormalizedMetric(raw.stirrupSpacing_m, evidenceMap["stirrupSpacing_m"]),
-    cover_m: parseNormalizedMetric(raw.cover_m, evidenceMap["cover_m"]),
+    stirrupSpacing_m: parseNormalizedMetric(raw.stirrupSpacing_m, "stirrupSpacing_m"),
+    cover_m: parseNormalizedMetric(raw.cover_m, "cover_m"),
     unitsDetected: Array.isArray(raw.unitsDetected) ? raw.unitsDetected.map(x => String(x)) : [],
     unreadableFields: Array.isArray(raw.unreadableFields) ? raw.unreadableFields.map(x => String(x)) : [],
     warnings: Array.isArray(raw.warnings) ? raw.warnings.map(x => String(x)) : [],
@@ -831,7 +825,6 @@ function openVisionModal(data) {
     const confidenceBadge = ev ? `<span class="px-1.5 py-0.5 rounded text-[10px] ${ev.confidence > 0.8 ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">Conf: ${(ev.confidence * 100).toFixed(0)}%</span>` : '';
     const evidenceText = ev && ev.visibleText ? `<div class="text-[10px] text-slate-400">อ้างอิงจากภาพ: "${safe(ev.visibleText)}"</div>` : '';
 
-    // Fix #1: สร้างฟิลด์ให้ถูกต้องตาม type (select สร้าง <select> พร้อม options, text/number สร้าง <input>)
     let inputControlHtml = "";
     if (f.type === "select") {
       const optionsHtml = f.options.map(opt => `<option value="${opt}" ${String(val) === String(opt) ? 'selected' : ''}>${opt}</option>`).join("");
@@ -840,7 +833,6 @@ function openVisionModal(data) {
       inputControlHtml = `<input type="${f.type === 'number' ? 'number' : 'text'}" id="scan_${f.key}" value="${safe(val)}" ${f.min !== undefined ? `min="${f.min}" max="${f.max}" step="any"` : ''} class="w-full border dark:border-slate-600 dark:bg-slate-900 dark:text-white rounded-lg p-1.5 text-xs">`;
     }
 
-    // Fix #4: Checkbox เริ่มต้นไม่ถูกติ๊กไว้ล่วงหน้า (unchecked by default) ยกเว้นมีค่าและมั่นใจสูง ซึ่งตามโจทย์ต้องการให้ผู้ใช้ตรวจยืนยันเอง จึงเริ่มต้นไม่ติ๊กทั้งหมด
     return `<div class="bg-slate-50 dark:bg-slate-800 p-2.5 rounded-xl border dark:border-slate-700" id="container_${f.key}">
       <div class="flex justify-between items-center mb-1">
         <label class="font-medium text-slate-700 dark:text-slate-300 flex items-center gap-2 cursor-pointer">
@@ -879,13 +871,11 @@ function applyVisionData() {
     { key: "cover_m", min: 0, max: 1, name: "ระยะหุ้ม Cover" }
   ];
 
-  // Reset error displays
   fieldsToValidate.forEach(f => {
     const errEl = $(`err_${f.key}`);
     if (errEl) { errEl.textContent = ""; errEl.classList.add("hidden"); }
   });
 
-  // Fix #3: ตรวจสอบความถูกต้องก่อนนำเข้า หากมีค่าผิดช่วง ห้ามปิด modal และแสดง error ใต้ช่องนั้นทันที
   fieldsToValidate.forEach(f => {
     const chk = $(`chk_${f.key}`);
     if (chk && chk.checked) {
@@ -1121,16 +1111,25 @@ function loadState(state) {
         spacing: sanitizeNumber(i.spacing, 0.001, 10, 0.15, true, `${rowLabel} ระยะเรียงปลอก`),
         cover: sanitizeNumber(i.cover, 0, 1, 0.04, true, `${rowLabel} ระยะหุ้ม`),
         hookRatio: sanitizeNumber(i.hookRatio ?? 10, 0, 100, 10, true, `${rowLabel} ขอเกี่ยว`),
-        roofMembers: type === "Roof Truss" && Array.isArray(i.roofMembers) ? i.roofMembers.map((m, mIdx) => ({
-          name: String(m.name || "สมาชิก"),
-          profile: String(m.profile || "เหล็กกล่อง 50x50x2.3mm"),
-          qty: sanitizeInteger(m.qty, 1, 100000, 1, true, `${rowLabel} สมาชิกที่ ${mIdx+1} qty`),
-          len: sanitizeNumber(m.len, 0.1, 1000, 4, true, `${rowLabel} สมาชิกที่ ${mIdx+1} len`),
-          wpm: sanitizeNumber(m.wpm, 0.1, 10000, 3.33, true, `${rowLabel} สมาชิกที่ ${mIdx+1} wpm`),
-          startX: Number(m.startX), startY: Number(m.startY), startZ: Number(m.startZ),
-          endX: Number(m.endX), endY: Number(m.endY), endZ: Number(m.endZ),
-          hasNodes: true
-        })) : [],
+        roofMembers: type === "Roof Truss" && Array.isArray(i.roofMembers) ? i.roofMembers.map((m, mIdx) => {
+          const sX = Number(m.startX), sY = Number(m.startY), sZ = Number(m.startZ);
+          const eX = Number(m.endX), eY = Number(m.endY), eZ = Number(m.endZ);
+          const hasNodes = [sX, sY, sZ, eX, eY, eZ].every(v => Number.isFinite(v));
+          return {
+            name: String(m.name || "สมาชิก"),
+            profile: String(m.profile || "เหล็กกล่อง 50x50x2.3mm"),
+            qty: sanitizeInteger(m.qty, 1, 100000, 1, true, `${rowLabel} สมาชิกที่ ${mIdx+1} qty`),
+            len: sanitizeNumber(m.len, 0.1, 1000, 4, true, `${rowLabel} สมาชิกที่ ${mIdx+1} len`),
+            wpm: sanitizeNumber(m.wpm, 0.1, 10000, 3.33, true, `${rowLabel} สมาชิกที่ ${mIdx+1} wpm`),
+            startX: hasNodes ? sX : "",
+            startY: hasNodes ? sY : "",
+            startZ: hasNodes ? sZ : "",
+            endX: hasNodes ? eX : "",
+            endY: hasNodes ? eY : "",
+            endZ: hasNodes ? eZ : "",
+            hasNodes
+          };
+        }) : [],
         wastePct: sanitizeNumber(i.wastePct, 0, 100, 5, true, `${rowLabel} เผื่อเศษเหล็ก`)
       };
       const computed = computeItemMetrics(itemParams);
@@ -1240,6 +1239,7 @@ function getPreviewParams() {
   const cover = readNumber("cover", 0.04, 0);
   const hookRatio = readNumber("hookRatio", 10, 0);
   const barCount = Math.floor(readNumber("barCount", 4, 0));
+  const spacing = readNumber("spacing", 0.15, 0.001); // เพิ่ม spacing ป้องกัน NaN ใน 3D Preview
 
   const stirrupSize = $("stirrupSize")?.value || "NONE";
   const extraBarSize = $("extraBarSize")?.value || "NONE";
@@ -1252,16 +1252,14 @@ function getPreviewParams() {
   const addLean = $("addLean")?.checked !== false;
 
   const roofMembers = Array.from(document.querySelectorAll(".roof-member-row")).map(row => {
-    const sX = row.querySelector("input[name='mStartX']")?.value;
-    const sY = row.querySelector("input[name='mStartY']")?.value;
-    const sZ = row.querySelector("input[name='mStartZ']")?.value;
-    const eX = row.querySelector("input[name='mEndX']")?.value;
-    const eY = row.querySelector("input[name='mEndY']")?.value;
-    const eZ = row.querySelector("input[name='mEndZ']")?.value;
+    const sX = Number(row.querySelector("input[name='mStartX']")?.value);
+    const sY = Number(row.querySelector("input[name='mStartY']")?.value);
+    const sZ = Number(row.querySelector("input[name='mStartZ']")?.value);
+    const eX = Number(row.querySelector("input[name='mEndX']")?.value);
+    const eY = Number(row.querySelector("input[name='mEndY']")?.value);
+    const eZ = Number(row.querySelector("input[name='mEndZ']")?.value);
 
-    const coordValues = [sX, sY, sZ, eX, eY, eZ];
-    const filledCount = coordValues.filter(v => v !== "" && v !== undefined && !Number.isNaN(Number(v))).length;
-    const hasNodes = filledCount === 6;
+    const hasNodes = [sX, sY, sZ, eX, eY, eZ].every(v => Number.isFinite(v));
 
     return {
       name: row.querySelector("input[name='mName']")?.value.trim() || "สมาชิก",
@@ -1269,19 +1267,19 @@ function getPreviewParams() {
       qty: Math.max(1, parseInt(row.querySelector("input[name='mQty']")?.value) ?? 1),
       len: Math.max(0.1, parseFloat(row.querySelector("input[name='mLen']")?.value) ?? 3.0),
       wpm: Math.max(0.1, parseFloat(row.querySelector("input[name='mWpm']")?.value) ?? 3.33),
-      startX: sX !== "" && sX !== undefined ? Number(sX) : "",
-      startY: sY !== "" && sY !== undefined ? Number(sY) : "",
-      startZ: sZ !== "" && sZ !== undefined ? Number(sZ) : "",
-      endX: eX !== "" && eX !== undefined ? Number(eX) : "",
-      endY: eY !== "" && eY !== undefined ? Number(eY) : "",
-      endZ: eZ !== "" && eZ !== undefined ? Number(eZ) : "",
+      startX: hasNodes ? sX : "",
+      startY: hasNodes ? sY : "",
+      startZ: hasNodes ? sZ : "",
+      endX: hasNodes ? eX : "",
+      endY: hasNodes ? eY : "",
+      endZ: hasNodes ? eZ : "",
       hasNodes
     };
   });
 
   return {
     type, width, length, depth, rise, stairSteps, precastPanelThick,
-    cover, hookRatio, barCount, stirrupSize, extraBarSize, extraBarCount, mainSize,
+    cover, hookRatio, barCount, spacing, stirrupSize, extraBarSize, extraBarCount, mainSize,
     matSpacingX, matSpacingY, matBottom, matTop, addLean, roofMembers
   };
 }
@@ -1374,7 +1372,7 @@ function createBeamModel(p, matConc, matWire, matRebar, matStirrup, matExtra) {
     let sCount = 0;
     const spacing = Math.max(p.spacing, 0.15);
     for (let z = -len/2 + cover; z <= len/2 - cover; z += spacing) {
-      if (sCount++ > 30) break;
+      if (sCount++ > 50) break;
       const sBox = new THREE.Mesh(new THREE.BoxGeometry(w - 2*cover, h - 2*cover, 0.008), matStirrup);
       sBox.position.set(0, 0, z);
       modelGroup3d.add(sBox);
@@ -1432,7 +1430,7 @@ function createColumnModel(p, matConc, matWire, matRebar, matStirrup) {
     let sCount = 0;
     const spacing = Math.max(p.spacing, 0.15);
     for (let y = -h/2 + cover; y <= h/2 - cover; y += spacing) {
-      if (sCount++ > 30) break;
+      if (sCount++ > 50) break;
       const stirrup = new THREE.Mesh(new THREE.BoxGeometry(w - 2*cover, 0.008, d - 2*cover), matStirrup);
       stirrup.position.set(0, y, 0);
       modelGroup3d.add(stirrup);
@@ -1951,16 +1949,14 @@ $("qtoForm").addEventListener("submit", e => {
       cover: sanitizeNumber($("cover").value, 0, 1, 0.04),
       hookRatio: sanitizeNumber($("hookRatio")?.value, 0, 100, 10),
       roofMembers: type === "Roof Truss" ? Array.from(document.querySelectorAll(".roof-member-row")).map(row => {
-        const sX = row.querySelector("input[name='mStartX']").value;
-        const sY = row.querySelector("input[name='mStartY']").value;
-        const sZ = row.querySelector("input[name='mStartZ']").value;
-        const eX = row.querySelector("input[name='mEndX']").value;
-        const eY = row.querySelector("input[name='mEndY']").value;
-        const eZ = row.querySelector("input[name='mEndZ']").value;
+        const sX = Number(row.querySelector("input[name='mStartX']").value);
+        const sY = Number(row.querySelector("input[name='mStartY']").value);
+        const sZ = Number(row.querySelector("input[name='mStartZ']").value);
+        const eX = Number(row.querySelector("input[name='mEndX']").value);
+        const eY = Number(row.querySelector("input[name='mEndY']").value);
+        const eZ = Number(row.querySelector("input[name='mEndZ']").value);
         
-        const coords = [sX, sY, sZ, eX, eY, eZ];
-        const filledCount = coords.filter(v => v !== "" && v !== undefined && !Number.isNaN(Number(v))).length;
-        const hasNodes = filledCount === 6;
+        const hasNodes = [sX, sY, sZ, eX, eY, eZ].every(v => Number.isFinite(v));
 
         return {
           name: row.querySelector("input[name='mName']").value.trim(),
@@ -1968,12 +1964,12 @@ $("qtoForm").addEventListener("submit", e => {
           qty: sanitizeInteger(row.querySelector("input[name='mQty']").value, 1, 100000, 1, true, "จำนวนสมาชิก"),
           len: sanitizeNumber(row.querySelector("input[name='mLen']").value, 0.1, 1000, 4, true, "ความยาวสมาชิก"),
           wpm: sanitizeNumber(row.querySelector("input[name='mWpm']").value, 0.1, 10000, 3.33, true, "น้ำหนักต่อเมตร"),
-          startX: sX !== "" && sX !== undefined ? Number(sX) : "",
-          startY: sY !== "" && sY !== undefined ? Number(sY) : "",
-          startZ: sZ !== "" && sZ !== undefined ? Number(sZ) : "",
-          endX: eX !== "" && eX !== undefined ? Number(eX) : "",
-          endY: eY !== "" && eY !== undefined ? Number(eY) : "",
-          endZ: eZ !== "" && eZ !== undefined ? Number(eZ) : "",
+          startX: hasNodes ? sX : "",
+          startY: hasNodes ? sY : "",
+          startZ: hasNodes ? sZ : "",
+          endX: hasNodes ? eX : "",
+          endY: hasNodes ? eY : "",
+          endZ: hasNodes ? eZ : "",
           hasNodes
         };
       }) : [],
@@ -2326,7 +2322,7 @@ function exportJSON() {
   const blob = new Blob([JSON.stringify(getState(), null, 2)], { type: "application/json;charset=utf-8" });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `BOQ_${($("projectName").value || "Project").replace(/[/\\?%*:|"<>]/g, "_")}_v15.9.json`;
+  a.download = `BOQ_${($("projectName").value || "Project").replace(/[/\\?%*:|"<>]/g, "_")}_v15.9.1.json`;
   a.click();
 }
 
@@ -2497,7 +2493,7 @@ function exportExcel() {
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(summaryRows), "สรุป BOQ รวม");
 
   const projName = ($("projectName")?.value || "Project").replace(/[/\\?%*:|"<>]/g, "_");
-  XLSX.writeFile(wb, `BOQ_Roundtrip_${projName}_v15.9.xlsx`);
+  XLSX.writeFile(wb, `BOQ_Roundtrip_${projName}_v15.9.1.xlsx`);
 }
 
 function downloadExcelTemplate() {
@@ -2517,7 +2513,7 @@ function downloadExcelTemplate() {
     "ทรายรองพื้น_m": 0.05, "เทคอนกรีตหยาบ": true, "ระยะเรียง X_m": 0.2, "ระยะเรียง Y_m": 0.2,
     "ตะแกรงล่าง": true, "ตะแกรงบน": false, "เผื่อเศษเหล็ก_pct": 5, "ต้นทุนเพิ่มเติมต่อชิ้น_บาท": 0, "หมายเหตุ": "", "สมาชิกโครงหลังคา_JSON": "[]"
   }]), "ข้อมูลนำเข้า");
-  XLSX.writeFile(wb, "BOQ_Template_v15.9.xlsx");
+  XLSX.writeFile(wb, "BOQ_Template_v15.9.1.xlsx");
 }
 
 function importExcel(event) {
@@ -2596,16 +2592,25 @@ function importExcel(event) {
           try {
             const parsed = JSON.parse(roofJsonStr);
             if (!Array.isArray(parsed)) throw new Error("โครงสร้าง JSON ต้องเป็น Array");
-            parsedRoofMembers = parsed.map((m, mIdx) => ({
-              name: String(m.name || "สมาชิก"),
-              profile: String(m.profile || "เหล็กกล่อง 50x50x2.3mm"),
-              qty: sanitizeInteger(m.qty, 1, 100000, 1, true, `${rowLabel} สมาชิก ${mIdx+1} qty`),
-              len: sanitizeNumber(m.len, 0.1, 1000, 4, true, `${rowLabel} สมาชิก ${mIdx+1} len`),
-              wpm: sanitizeNumber(m.wpm, 0.1, 10000, 3.33, true, `${rowLabel} สมาชิก ${mIdx+1} wpm`),
-              startX: Number(m.startX), startY: Number(m.startY), startZ: Number(m.startZ),
-              endX: Number(m.endX), endY: Number(m.endY), endZ: Number(m.endZ),
-              hasNodes: true
-            }));
+            parsedRoofMembers = parsed.map((m, mIdx) => {
+              const sX = Number(m.startX), sY = Number(m.startY), sZ = Number(m.startZ);
+              const eX = Number(m.endX), eY = Number(m.endY), eZ = Number(m.endZ);
+              const hasNodes = [sX, sY, sZ, eX, eY, eZ].every(v => Number.isFinite(v));
+              return {
+                name: String(m.name || "สมาชิก"),
+                profile: String(m.profile || "เหล็กกล่อง 50x50x2.3mm"),
+                qty: sanitizeInteger(m.qty, 1, 100000, 1, true, `${rowLabel} สมาชิก ${mIdx+1} qty`),
+                len: sanitizeNumber(m.len, 0.1, 1000, 4, true, `${rowLabel} สมาชิก ${mIdx+1} len`),
+                wpm: sanitizeNumber(m.wpm, 0.1, 10000, 3.33, true, `${rowLabel} สมาชิก ${mIdx+1} wpm`),
+                startX: hasNodes ? sX : "",
+                startY: hasNodes ? sY : "",
+                startZ: hasNodes ? sZ : "",
+                endX: hasNodes ? eX : "",
+                endY: hasNodes ? eY : "",
+                endZ: hasNodes ? eZ : "",
+                hasNodes
+              };
+            });
           } catch(err) {
             throw new Error(`${rowLabel}: JSON สมาชิกโครงหลังคาไม่ถูกต้อง (${err.message})`);
           }
