@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Structural QTO & BOQ Pro - Ultimate Professional Edition v22</title>
+  <title>Structural QTO & BOQ Pro - Ultimate Professional Edition v23</title>
   <script>
     tailwind = { config: { darkMode: 'class' } }
   </script>
@@ -42,7 +42,7 @@
       <div>
         <h1 class="text-2xl font-bold flex items-center gap-2">
           🏗️ Structural QTO & BOQ Pro 
-          <span class="text-xs bg-emerald-600 text-white px-2.5 py-1 rounded-md font-normal no-print">Ultimate Pro v22</span>
+          <span class="text-xs bg-emerald-600 text-white px-2.5 py-1 rounded-md font-normal no-print">Ultimate Pro v23</span>
         </h1>
         <p class="text-slate-300 text-sm no-print">ระบบถอดปริมาณและประมาณราคางานโครงสร้าง ค.ส.ล. — <span class="text-amber-400">⚠️ เป็นการประมาณการเบื้องต้น (Preliminary Estimate) ไม่ใช่รายการตัดเหล็ก (Cutting List) กรุณาตรวจเทียบ Shop Drawing ทุกครั้งก่อนใช้งานจริง</span></p>
       </div>
@@ -111,28 +111,38 @@
       <div class="mb-4 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border dark:border-slate-700">
         <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">⚡ เลือกสเปกมาตรฐานด่วน (Preset Templates)</label>
         <div class="grid grid-cols-2 gap-2 text-xs">
-          <button type="button" onclick="applyPreset('Footing', 1.0, 1.0, 0.4, 'F-Std')" class="bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 text-blue-600 dark:text-blue-300 p-2 rounded-lg border border-blue-200 dark:border-blue-800 text-left font-medium">
+          <button type="button" onclick="applyPreset('Footing', 1.0, 1.0, 0.4, 'F-Std')" class="bg-blue-50 dark:bg-blue-900/35 hover:bg-blue-100 text-blue-600 dark:text-blue-300 p-2 rounded-lg border border-blue-200 dark:border-blue-800 text-left font-medium">
             ฐานราก 1.0x1.0x0.4m
           </button>
-          <button type="button" onclick="applyPreset('Ground Beam', 0.2, 4.0, 0.4, 'GB-Std')" class="bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 text-blue-600 dark:text-blue-300 p-2 rounded-lg border border-blue-200 dark:border-blue-800 text-left font-medium">
+          <button type="button" onclick="applyPreset('Ground Beam', 0.2, 4.0, 0.4, 'GB-Std')" class="bg-blue-50 dark:bg-blue-900/35 hover:bg-blue-100 text-blue-600 dark:text-blue-300 p-2 rounded-lg border border-blue-200 dark:border-blue-800 text-left font-medium">
             คานคอดิน 0.2x0.4m (ยาว 4ม.)
           </button>
-          <button type="button" onclick="applyPreset('Stub Column', 0.2, 0.8, 0.2, 'SC-Std')" class="bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 text-blue-600 dark:text-blue-300 p-2 rounded-lg border border-blue-200 dark:border-blue-800 text-left font-medium">
+          <button type="button" onclick="applyPreset('Stub Column', 0.2, 0.8, 0.2, 'SC-Std')" class="bg-blue-50 dark:bg-blue-900/35 hover:bg-blue-100 text-blue-600 dark:text-blue-300 p-2 rounded-lg border border-blue-200 dark:border-blue-800 text-left font-medium">
             เสาตอม่อ 0.2x0.2x0.8m
           </button>
-          <button type="button" onclick="applyPreset('Slab on Ground', 4.0, 4.0, 0.10, 'SOG-Std')" class="bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 text-blue-600 dark:text-blue-300 p-2 rounded-lg border border-blue-200 dark:border-blue-800 text-left font-medium">
+          <button type="button" onclick="applyPreset('Slab on Ground', 4.0, 4.0, 0.10, 'SOG-Std')" class="bg-blue-50 dark:bg-blue-900/35 hover:bg-blue-100 text-blue-600 dark:text-blue-300 p-2 rounded-lg border border-blue-200 dark:border-blue-800 text-left font-medium">
             พื้น On Ground 4x4m (หนา 10ซม.)
           </button>
-          <button type="button" onclick="applyPreset('Precast Slab', 4.0, 4.0, 0.05, 'PS-Std')" class="bg-emerald-50 dark:bg-emerald-900/30 hover:bg-emerald-100 text-emerald-600 dark:text-emerald-300 p-2 rounded-lg border border-emerald-200 dark:border-emerald-800 text-left font-medium col-span-2">
+          <button type="button" onclick="applyPreset('Precast Slab', 4.0, 4.0, 0.05, 'PS-Std')" class="bg-emerald-50 dark:bg-emerald-900/35 hover:bg-emerald-100 text-emerald-600 dark:text-emerald-300 p-2 rounded-lg border border-emerald-200 dark:border-emerald-800 text-left font-medium col-span-2">
             พื้นสำเร็จรูป 4x4m (Topping หนา 5ซม.)
           </button>
         </div>
       </div>
 
+      <!-- Cross-Section Visualization Preview Box -->
+      <div class="mb-4 p-3 bg-slate-900 text-slate-100 rounded-xl border border-slate-700 text-center">
+        <div class="flex justify-between items-center mb-1">
+          <span class="text-xs font-semibold text-amber-400">📐 ภาพตัดขวางจำลอง (Cross-Section Preview)</span>
+          <span id="previewInfo" class="text-[10px] text-slate-400">รูปตัดองค์อาคาร</span>
+        </div>
+        <canvas id="crossSectionCanvas" width="280" height="140" class="mx-auto bg-slate-950 rounded-lg border border-slate-800 my-1"></canvas>
+        <p class="text-[10px] text-slate-400">แสดงสัดส่วน กว้าง × ลึก/หนา พร้อมระยะหุ้มคอนกรีตและตำแหน่งเหล็กหลักโดยประมาณ</p>
+      </div>
+
       <form id="qtoForm" class="space-y-3">
         <input type="hidden" id="editIndex" value="-1">
         <label class="block text-sm font-medium">ประเภทองค์อาคาร
-          <select id="type" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+          <select id="type" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" onchange="updateRebarFields()">
             <optgroup label="โครงสร้างใต้ดินและชั้นล่าง">
               <option value="Footing">ฐานราก (Footing)</option>
               <option value="Ground Beam">คานคอดิน (Ground Beam)</option>
@@ -152,22 +162,22 @@
 
         <div class="grid grid-cols-2 gap-3">
           <label class="text-sm">ชื่อองค์อาคาร
-            <input id="name" required placeholder="เช่น GB1, C1" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+            <input id="name" required placeholder="เช่น GB1, C1" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
           </label>
           <label class="text-sm">จำนวน (qty) — (1 ถึง 100,000)
-            <input id="qty" type="number" min="1" max="100000" step="1" value="1" required class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+            <input id="qty" type="number" min="1" max="100000" step="1" value="1" required class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
           </label>
         </div>
 
         <div class="grid grid-cols-3 gap-2">
           <label class="text-xs">กว้าง (m) *
-            <input id="width" type="number" min="0.001" max="100" step="0.01" value="0.20" required class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+            <input id="width" type="number" min="0.001" max="100" step="0.01" value="0.20" required class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
           </label>
           <label class="text-xs">ยาว / ช่วง (m) *
-            <input id="length" type="number" min="0.001" max="1000" step="0.01" value="4.00" required class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+            <input id="length" type="number" min="0.001" max="1000" step="0.01" value="4.00" required class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
           </label>
           <label class="text-xs" id="depthLabel"><span id="depthLabelText">ลึก / หนา (m) *</span>
-            <input id="depth" type="number" min="0.001" max="10" step="0.01" value="0.40" required class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+            <input id="depth" type="number" min="0.001" max="10" step="0.01" value="0.40" required class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
           </label>
         </div>
         <p id="depthHint" class="text-[11px] text-slate-400 hidden">ℹ️ สำหรับพื้นสำเร็จรูป: ความหนานี้คือ <b>ความหนา Topping</b> (เหล็กเสริมที่คำนวณคือเหล็กตะแกรง/Topping ไม่รวมตัวแผ่นสำเร็จรูป)</p>
@@ -197,7 +207,7 @@
               </select>
             </label>
             <label class="text-xs">ขนาดเหล็กหลัก
-              <select id="barSize" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+              <select id="barSize" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" onchange="triggerPreview()">
                 <option value="RB6">RB6</option><option value="RB9">RB9</option>
                 <option value="RB12" selected>RB12</option><option value="RB15">RB15</option>
                 <option value="DB12">DB12</option><option value="DB16">DB16</option>
@@ -208,7 +218,7 @@
 
             <div id="longitudinalFields" class="col-span-2 grid grid-cols-2 gap-3">
               <label class="text-xs">จำนวนเหล็กหลัก (เส้น/ชิ้น) — (0 ถึง 100)
-                <input id="barCount" type="number" min="0" max="100" step="1" value="4" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+                <input id="barCount" type="number" min="0" max="100" step="1" value="4" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
               </label>
             </div>
 
@@ -225,6 +235,23 @@
               </div>
             </div>
 
+            <!-- Special Reinforcement Section -->
+            <div id="specialRebarContainer" class="col-span-2 pt-2 border-t dark:border-slate-800 bg-amber-50/40 dark:bg-amber-950/20 p-2.5 rounded-xl border border-amber-200 dark:border-amber-900/50">
+              <span class="text-xs font-semibold text-amber-600 dark:text-amber-400 block mb-2">⭐ เหล็กเสริมพิเศษ (Special Reinforcement)</span>
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <label class="flex flex-col">เหล็กกันร้าวข้างคาน / เหล็กเสริมมุม
+                  <select id="extraBarSize" class="mt-1 border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-1.5 text-xs">
+                    <option value="NONE">ไม่มี (NONE)</option>
+                    <option value="RB6">RB6</option><option value="RB9">RB9</option><option value="RB12" selected>RB12</option><option value="DB12">DB12</option><option value="DB16">DB16</option>
+                  </select>
+                </label>
+                <label class="flex flex-col">จำนวนเส้นพิเศษ
+                  <input id="extraBarCount" type="number" min="0" max="20" step="1" value="0" class="mt-1 border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-1.5 text-xs">
+                </label>
+              </div>
+              <p class="text-[10px] text-slate-400 mt-1">เช่น เหล็กกันร้าว (Skin Reinforcement) สำหรับคานลึก หรือเหล็กเสริมมุมพิเศษในฐานราก/พื้น</p>
+            </div>
+
             <label class="text-xs">ความยาวเหล็กสต็อก (m) — (1 ถึง 50)
               <input id="stockLength" type="number" min="1" max="50" step="0.1" value="10" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
             </label>
@@ -235,11 +262,57 @@
             </label>
           </div>
 
-          <!-- Roof Truss Manual Weight Field -->
-          <div id="roofTrussFields" class="hidden pt-1">
-            <label class="text-xs block">น้ำหนักโครงหลังคา/ทรัสส์รวม (kg/ชิ้น)
-              <input id="manualSteel" type="number" min="0" max="1000000" step="0.1" value="0" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
-            </label>
+          <!-- Roof Truss Expanded Table Fields -->
+          <div id="roofTrussFields" class="hidden pt-1 space-y-3">
+            <p class="text-xs text-amber-500 font-medium">📋 รายการโครงสร้างหลังคาและอุปกรณ์ยึดตามแบบวิศวกร</p>
+            
+            <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border dark:border-slate-700 space-y-2 text-xs">
+              <div class="font-semibold text-slate-700 dark:text-slate-300">1. จันทัน (Rafter) — เหล็กกล่อง</div>
+              <div class="grid grid-cols-3 gap-2">
+                <input id="rfName" placeholder="ขนาดหน้าตัด เช่น Box 2x1 นิ้ว" class="col-span-3 border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-1.5">
+                <label>จำนวน (ชิ้น): <input id="rfQty" type="number" min="0" value="0" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-1.5"></label>
+                <label>ยาวต่อชิ้น (m): <input id="rfLen" type="number" min="0" step="0.1" value="0" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-1.5"></label>
+                <label>นโยบาย นร. (kg/m): <input id="rfWpm" type="number" min="0" step="0.01" value="3.5" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-1.5"></label>
+              </div>
+            </div>
+
+            <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border dark:border-slate-700 space-y-2 text-xs">
+              <div class="font-semibold text-slate-700 dark:text-slate-300">2. อะเส (Wall Plate / Eave Beam) — เหล็ก I/H หรือกล่อง</div>
+              <div class="grid grid-cols-3 gap-2">
+                <input id="wpName" placeholder="ขนาดหน้าตัด เช่น H-Beam 100" class="col-span-3 border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-1.5">
+                <label>จำนวน (ชิ้น): <input id="wpQty" type="number" min="0" value="0" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-1.5"></label>
+                <label>ยาวต่อชิ้น (m): <input id="wpLen" type="number" min="0" step="0.1" value="0" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-1.5"></label>
+                <label>นร. (kg/m): <input id="wpWpm" type="number" min="0" step="0.01" value="9.3" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-1.5"></label>
+              </div>
+            </div>
+
+            <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border dark:border-slate-700 space-y-2 text-xs">
+              <div class="font-semibold text-slate-700 dark:text-slate-300">3. แป (Purlin) — เหล็ก C/Z</div>
+              <div class="grid grid-cols-3 gap-2">
+                <input id="prName" placeholder="ขนาดหน้าตัด เช่น C-Channel 100" class="col-span-3 border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-1.5">
+                <label>จำนวน (ชิ้น): <input id="prQty" type="number" min="0" value="0" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-1.5"></label>
+                <label>ยาวต่อชิ้น (m): <input id="prLen" type="number" min="0" step="0.1" value="0" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-1.5"></label>
+                <label>นร. (kg/m): <input id="prWpm" type="number" min="0" step="0.01" value="6.5" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-1.5"></label>
+              </div>
+            </div>
+
+            <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border dark:border-slate-700 space-y-2 text-xs">
+              <div class="font-semibold text-slate-700 dark:text-slate-300">4. ค้ำยัน (Bracing / Strut) — เหล็กฉาก/แบน/กล่อง</div>
+              <div class="grid grid-cols-3 gap-2">
+                <input id="brName" placeholder="ขนาดหน้าตัด เช่น Angle 50x50" class="col-span-3 border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-1.5">
+                <label>จำนวน (ชิ้น): <input id="brQty" type="number" min="0" value="0" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-1.5"></label>
+                <label>ยาวต่อชิ้น (m): <input id="brLen" type="number" min="0" step="0.1" value="0" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-1.5"></label>
+                <label>นร. (kg/m): <input id="brWpm" type="number" min="0" step="0.01" value="3.8" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-1.5"></label>
+              </div>
+            </div>
+
+            <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border dark:border-slate-700 space-y-2 text-xs">
+              <div class="font-semibold text-slate-700 dark:text-slate-300">5. เพลทและอุปกรณ์ยึด (Plates & Anchor Bolts)</div>
+              <div class="grid grid-cols-2 gap-2">
+                <label>จำนวนชุด (Sets): <input id="plQty" type="number" min="0" value="0" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-1.5"></label>
+                <label>น้ำหนักต่อชุด (kg/set): <input id="plWps" type="number" min="0" step="0.1" value="2.5" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-1.5"></label>
+              </div>
+            </div>
           </div>
 
           <div class="grid grid-cols-2 gap-3 pt-2 mt-2 border-t dark:border-slate-800">
@@ -251,7 +324,7 @@
 
         <div id="stirrupFields" class="grid grid-cols-2 gap-3 pt-2 border-t dark:border-slate-800">
           <label class="text-xs">เหล็กปลอก
-            <select id="stirrupSize" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+            <select id="stirrupSize" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" onchange="triggerPreview()">
               <option value="NONE">ไม่มี (NONE)</option><option value="RB6" selected>RB6</option><option value="RB9">RB9</option>
             </select>
           </label>
@@ -264,7 +337,7 @@
             <input id="spacing" type="number" min="0.001" max="10" step="0.01" value="0.15" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
           <label class="text-xs">ระยะหุ้มคอนกรีต (m)
-            <input id="cover" type="number" min="0" max="1" step="0.005" value="0.04" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+            <input id="cover" type="number" min="0" max="1" step="0.005" value="0.04" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
           </label>
           <label class="text-xs col-span-2">ขอปลอก (เท่าของ d/ข้าง)
             <input id="hookRatio" type="number" min="0" max="100" value="10" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
@@ -460,7 +533,6 @@ function sanitizeNumber(value, min = 0, max = Infinity, fallback = 0, strict = f
   return n;
 }
 
-// ตรวจสอบวันที่ปฏิทินจริงหลังแปลง (ป้องกันวันที่ไม่มีอยู่จริง เช่น 2025-99-99)
 function excelDateToISO(serial) {
   if (typeof serial === 'number' && !isNaN(serial)) {
     const utc_days = Math.floor(serial - 25569);
@@ -564,9 +636,117 @@ function updateRebarFields() {
   } else {
     $("riseContainer").classList.add("hidden");
   }
+  
+  triggerPreview();
 }
-$("type").addEventListener("change", updateRebarFields);
-updateRebarFields();
+
+function triggerPreview() {
+  const type = $("type").value;
+  const w = parseFloat($("width")?.value) || 0.2;
+  const d = parseFloat($("depth")?.value) || 0.4;
+  const cover = parseFloat($("cover")?.value) || 0.04;
+  const barCount = parseInt($("barCount")?.value) || 4;
+  const barSize = $("barSize")?.value || "RB12";
+  const hasStirrup = $("stirrupSize")?.value !== "NONE";
+  const hasExtra = $("extraBarSize")?.value !== "NONE";
+  
+  const canvas = $("crossSectionCanvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  // Background
+  ctx.fillStyle = "#020617";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+  if (type === "Roof Truss") {
+    ctx.fillStyle = "#fbbf24";
+    ctx.font = "12px Prompt";
+    ctx.textAlign = "center";
+    ctx.fillText("โครงสร้างหลังคา (Roof Truss & Members)", canvas.width/2, canvas.height/2);
+    $("previewInfo").textContent = "Roof Members Preview";
+    return;
+  }
+  
+  $("previewInfo").textContent = `${type} (${w}m × ${d}m)`;
+  
+  // Draw Concrete Section Bounding Box
+  const marginX = 40;
+  const marginY = 20;
+  const maxW = canvas.width - 2 * marginX;
+  const maxH = canvas.height - 2 * marginY;
+  
+  // Aspect ratio scale
+  const scale = Math.min(maxW / Math.max(w, 0.1), maxH / Math.max(d, 0.1));
+  const rectW = w * scale;
+  const rectH = d * scale;
+  const startX = (canvas.width - rectW) / 2;
+  const startY = (canvas.height - rectH) / 2;
+  
+  // Concrete Fill
+  ctx.fillStyle = "#334155";
+  ctx.fillRect(startX, startY, rectW, rectH);
+  ctx.strokeStyle = "#94a3b8";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(startX, startY, rectW, rectH);
+  
+  // Cover Box
+  const cPx = cover * scale;
+  if (rectW > 2 * cPx && rectH > 2 * cPx && hasStirrup) {
+    ctx.strokeStyle = "#38bdf8";
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([3, 3]);
+    ctx.strokeRect(startX + cPx, startY + cPx, rectW - 2 * cPx, rectH - 2 * cPx);
+    ctx.setLineDash([]);
+  }
+  
+  // Draw Main Rebars (dots)
+  ctx.fillStyle = "#facc15";
+  const radius = Math.max(3, Math.min(6, (parseInt(barSize.replace(/\D/g,"")) || 12) / 2));
+  
+  if (isMatType(type)) {
+    // Grid representation for mats
+    ctx.fillText("Grid Mat Reinforcement", canvas.width/2, canvas.height/2);
+  } else {
+    // Perimeter distribution for beams/columns
+    const numBars = Math.max(2, barCount);
+    const topCount = Math.ceil(numBars / 2);
+    const botCount = Math.floor(numBars / 2);
+    
+    // Top bars
+    for (let i = 0; i < topCount; i++) {
+      const bx = topCount === 1 ? startX + rectW/2 : startX + cPx + i * ((rectW - 2*cPx) / (topCount - 1));
+      const by = startY + cPx;
+      ctx.beginPath();
+      ctx.arc(bx, by, radius, 0, 2 * Math.PI);
+      ctx.fill();
+    }
+    // Bottom bars
+    for (let i = 0; i < botCount; i++) {
+      const bx = botCount === 1 ? startX + rectW/2 : startX + cPx + i * ((rectW - 2*cPx) / (botCount - 1));
+      const by = startY + rectH - cPx;
+      ctx.beginPath();
+      ctx.arc(bx, by, radius, 0, 2 * Math.PI);
+      ctx.fill();
+    }
+    
+    // Extra bars / Skin reinforcement display
+    if (hasExtra) {
+      ctx.fillStyle = "#f43f5e";
+      const midY = startY + rectH / 2;
+      ctx.beginPath();
+      ctx.arc(startX + cPx, midY, radius - 1, 0, 2 * Math.PI);
+      ctx.arc(startX + rectW - cPx, midY, radius - 1, 0, 2 * Math.PI);
+      ctx.fill();
+    }
+  }
+  
+  // Dimension labels
+  ctx.fillStyle = "#e2e8f0";
+  ctx.font = "10px Prompt";
+  ctx.textAlign = "center";
+  ctx.fillText(`W: ${w.toFixed(2)}m`, canvas.width / 2, startY + rectH + 14);
+}
 
 function applyPreset(type, w, l, d, defaultName) {
   $("type").value = type;
@@ -575,6 +755,7 @@ function applyPreset(type, w, l, d, defaultName) {
   $("length").value = l;
   $("depth").value = d;
   $("name").value = defaultName;
+  triggerPreview();
 }
 
 function getState() {
@@ -670,6 +851,8 @@ function loadState(state) {
         mainSize,
         stirrupSize,
         barCount: Math.max(0, Math.floor(sanitizeNumber(i?.barCount, 0, 100, 4))),
+        extraBarSize: i?.extraBarSize || "NONE",
+        extraBarCount: Math.max(0, Math.floor(Number(i?.extraBarCount || 0))),
         matSpacingX,
         matSpacingY,
         matBottom: i?.matBottom !== false,
@@ -679,6 +862,13 @@ function loadState(state) {
         spacing: sanitizeNumber(i?.spacing, 0.001, 10, 0.15, true, `รายการที่ ${idx+1} ระยะเรียงปลอก`),
         cover: sanitizeNumber(i?.cover, 0, 1, 0.04, true, `รายการที่ ${idx+1} ระยะหุ้มคอนกรีต`),
         hookRatio: sanitizeNumber(i?.hookRatio, 0, 100, 10),
+        roofMembers: i?.roofMembers || {
+          rfName:"", rfQty:0, rfLen:0, rfWpm:3.5,
+          wpName:"", wpQty:0, wpLen:0, wpWpm:9.3,
+          prName:"", prQty:0, prLen:0, prWpm:6.5,
+          brName:"", brQty:0, brLen:0, brWpm:3.8,
+          plQty:0, plWps:2.5
+        },
         manualSteel: sanitizeNumber(i?.manualSteel, 0, 1000000, 0),
         wastePct: sanitizeNumber(i?.wastePct, 0, 100, 5)
       };
@@ -896,13 +1086,21 @@ function computeItemMetrics(p) {
     sandVolume = w * L * sandBedVal * qty;
   }
 
-  let mainKg=0, stirrupKg=0, laps=0;
+  let mainKg=0, stirrupKg=0, extraKg=0, laps=0;
   let lapLength = 0;
 
   if (type === "Roof Truss") {
-    concrete=0; leanConc=0; form=0; excavation=0; backfill=0; sandVolume=0;
-    mainKg = (p.manualSteel || 0) * qty;
+    concrete=0; leanConc=0; font=0; form=0; excavation=0; backfill=0; sandVolume=0;
+    const rm = p.roofMembers || {};
+    const rfTotal = (Number(rm.rfQty)||0) * (Number(rm.rfLen)||0) * (Number(rm.rfWpm)||3.5);
+    const wpTotal = (Number(rm.wpQty)||0) * (Number(rm.wpLen)||0) * (Number(rm.wpWpm)||9.3);
+    const prTotal = (Number(rm.prQty)||0) * (Number(rm.prLen)||0) * (Number(rm.prWpm)||6.5);
+    const brTotal = (Number(rm.brQty)||0) * (Number(rm.brLen)||0) * (Number(rm.brWpm)||3.8);
+    const plTotal = (Number(rm.plQty)||0) * (Number(rm.plWps)||2.5);
+    const manualSum = Number(p.manualSteel || 0);
+    mainKg = (rfTotal + wpTotal + prTotal + brTotal + plTotal + manualSum) * qty;
     stirrupKg = 0;
+    extraKg = 0;
   } else {
     const mainSize = p.mainSize;
     if (!unitWeight[mainSize]) {
@@ -960,10 +1158,17 @@ function computeItemMetrics(p) {
       const hookLength = 2 * hookRatioVal * stirrupDia;
       stirrupKg = n * (2*(innerW + innerD) + hookLength) * unitWeight[stirrupSize];
     }
+
+    // Special / Extra Bars calculation
+    if (p.extraBarSize && p.extraBarSize !== "NONE" && unitWeight[p.extraBarSize] && (p.extraBarCount || 0) > 0) {
+      const extraCount = Number(p.extraBarCount);
+      const runExtra = calculateRebarNetLength(effectiveLengthForRebar, stock, lapLength);
+      extraKg = extraCount * runExtra.netLength * unitWeight[p.extraBarSize] * qty;
+    }
   }
 
   const wastePct = p.wastePct;
-  const rebarNoWaste = mainKg + stirrupKg;
+  const rebarNoWaste = mainKg + stirrupKg + extraKg;
   const rebarTotal = rebarNoWaste * (1 + wastePct/100);
 
   if (excavation > 0) {
@@ -972,7 +1177,7 @@ function computeItemMetrics(p) {
 
   return {
     concrete, leanConc, form, precastArea, excavation, backfill, sandVolume,
-    mainKg, stirrupKg, rebar: rebarTotal, rebarNoWaste, lapLength, laps
+    mainKg, stirrupKg, extraKg, rebar: rebarTotal, rebarNoWaste, lapLength, laps
   };
 }
 
@@ -1025,12 +1230,22 @@ $("qtoForm").addEventListener("submit", e => {
     const stockLengthVal = type === "Roof Truss" ? 10 : sanitizeNumber($("stockLength").value, 1, 50, 10, true, "ความยาวเหล็กสต็อก");
     const barCountVal = Math.max(0, Math.floor(sanitizeNumber($("barCount").value, 0, 100, 4, true, "จำนวนเหล็กหลัก")));
 
+    const roofMembers = {
+      rfName: $("rfName")?.value || "", rfQty: Number($("rfQty")?.value || 0), rfLen: Number($("rfLen")?.value || 0), rfWpm: Number($("rfWpm")?.value || 3.5),
+      wpName: $("wpName")?.value || "", wpQty: Number($("wpQty")?.value || 0), wpLen: Number($("wpLen")?.value || 0), wpWpm: Number($("wpWpm")?.value || 9.3),
+      prName: $("prName")?.value || "", prQty: Number($("prQty")?.value || 0), prLen: Number($("prLen")?.value || 0), prWpm: Number($("prWpm")?.value || 6.5),
+      brName: $("brName")?.value || "", brQty: Number($("brQty")?.value || 0), brLen: Number($("brLen")?.value || 0), brWpm: Number($("brWpm")?.value || 3.8),
+      plQty: Number($("plQty")?.value || 0), plWps: Number($("plWps")?.value || 2.5)
+    };
+
     const formData = {
       type, qty, width: w, length: L, depth: d, rise,
       excClear: excClearVal, excDepth: excDepthVal, sandBed: sandBedVal,
       addLean: $("addLean").checked,
       grade, stirrupGrade, mainSize,
       barCount: barCountVal,
+      extraBarSize: $("extraBarSize").value,
+      extraBarCount: Number($("extraBarCount").value || 0),
       matSpacingX,
       matSpacingY,
       matBottom: $("matBottom").checked,
@@ -1041,7 +1256,8 @@ $("qtoForm").addEventListener("submit", e => {
       spacing: sanitizeNumber($("spacing").value, 0.001, 10, 0.15, true, "ระยะเรียงปลอก"),
       cover: sanitizeNumber($("cover").value, 0, 1, 0.04, true, "ระยะหุ้มคอนกรีต"),
       hookRatio: sanitizeNumber($("hookRatio").value, 0, 100, 10, true, "ขอปลอก"),
-      manualSteel: sanitizeNumber($("manualSteel").value, 0, 1000000, 0),
+      roofMembers,
+      manualSteel: 0,
       wastePct: wastePctVal
     };
 
@@ -1083,7 +1299,7 @@ function calcTotals() {
       a.roofTrussNet += (i.mainKg || 0);
     } else {
       a.rebar += (i.rebar || 0);
-      a.rebarNet += ((i.mainKg || 0) + (i.stirrupKg || 0));
+      a.rebarNet += ((i.mainKg || 0) + (i.stirrupKg || 0) + (i.extraKg || 0));
     }
 
     a.extra+=i.extraCost||0; a.precast+=i.precastArea||0;
@@ -1106,6 +1322,12 @@ function calcTotals() {
       const stirrupPurchaseKg = (i.stirrupKg || 0) * factor;
       costRebarTotal += stirrupPurchaseKg * stirrupRate;
     }
+
+    if (i.extraBarSize && i.extraBarSize !== "NONE" && i.extraKg) {
+      const extraRate = rates[mainGradeKey] ?? rates.rebar ?? 30;
+      const extraPurchaseKg = (i.extraKg || 0) * factor;
+      costRebarTotal += extraPurchaseKg * extraRate;
+    }
   });
 
   const costConcrete = t.concrete * (rates.concrete||0);
@@ -1121,7 +1343,7 @@ function calcTotals() {
   const material = costConcrete + costLean + costRebar + costRoofTruss + costForm + costPrecast + costExc + costFill;
   
   const laborRebarTotal = items.reduce((sum, i) => {
-    const installedKg = i.type === "Roof Truss" ? (i.mainKg || 0) : ((i.mainKg || 0) + (i.stirrupKg || 0));
+    const installedKg = i.type === "Roof Truss" ? (i.mainKg || 0) : ((i.mainKg || 0) + (i.stirrupKg || 0) + (i.extraKg || 0));
     if (i.type === "Roof Truss") {
       return sum + installedKg * (rates.laborRoofTruss || 0);
     }
@@ -1173,6 +1395,8 @@ window.editItem = id => {
   $("waste").value = target.wastePct !== undefined ? target.wastePct : 5;
   
   if (target.barCount !== undefined) $("barCount").value = target.barCount;
+  if (target.extraBarSize) $("extraBarSize").value = target.extraBarSize;
+  if (target.extraBarCount !== undefined) $("extraBarCount").value = target.extraBarCount;
   if (target.matSpacingX !== undefined) $("matSpacingX").value = target.matSpacingX;
   if (target.matSpacingY !== undefined) $("matSpacingY").value = target.matSpacingY;
   if (target.matBottom !== undefined) $("matBottom").checked = target.matBottom;
@@ -1187,12 +1411,34 @@ window.editItem = id => {
   if (target.excDepth !== undefined) $("excDepth").value = target.excDepth;
   if (target.sandBed !== undefined) $("sandBed").value = target.sandBed;
   if (target.addLean !== undefined) $("addLean").checked = target.addLean;
-  if (target.manualSteel !== undefined) $("manualSteel").value = target.manualSteel;
+  
+  if (target.roofMembers) {
+    const rm = target.roofMembers;
+    if($("rfName")) $("rfName").value = rm.rfName || "";
+    if($("rfQty")) $("rfQty").value = rm.rfQty || 0;
+    if($("rfLen")) $("rfLen").value = rm.rfLen || 0;
+    if($("rfWpm")) $("rfWpm").value = rm.rfWpm || 3.5;
+    if($("wpName")) $("wpName").value = rm.wpName || "";
+    if($("wpQty")) $("wpQty").value = rm.wpQty || 0;
+    if($("wpLen")) $("wpLen").value = rm.wpLen || 0;
+    if($("wpWpm")) $("wpWpm").value = rm.wpWpm || 9.3;
+    if($("prName")) $("prName").value = rm.prName || "";
+    if($("prQty")) $("prQty").value = rm.prQty || 0;
+    if($("prLen")) $("prLen").value = rm.prLen || 0;
+    if($("prWpm")) $("prWpm").value = rm.prWpm || 6.5;
+    if($("brName")) $("brName").value = rm.brName || "";
+    if($("brQty")) $("brQty").value = rm.brQty || 0;
+    if($("brLen")) $("brLen").value = rm.brLen || 0;
+    if($("brWpm")) $("brWpm").value = rm.brWpm || 3.8;
+    if($("plQty")) $("plQty").value = rm.plQty || 0;
+    if($("plWps")) $("plWps").value = rm.plWps || 2.5;
+  }
 
   $("formTitle").textContent = "✏️ แก้ไของค์อาคาร: " + target.name;
   $("submitBtn").textContent = "💾 บันทึกการแก้ไข";
   $("cancelEditBtn").classList.remove("hidden");
   window.scrollTo({top: 0, behavior: 'smooth'});
+  triggerPreview();
 };
 
 function resetForm() {
@@ -1251,10 +1497,15 @@ function getItemDirectCost(i) {
       const stirrupPurchaseKg = (i.stirrupKg || 0) * factor;
       rebarMaterialCost += stirrupPurchaseKg * stirrupRate;
     }
+
+    if (i.extraBarSize && i.extraBarSize !== "NONE" && i.extraKg) {
+      const extraPurchaseKg = (i.extraKg || 0) * factor;
+      rebarMaterialCost += extraPurchaseKg * mainRate;
+    }
   }
 
   const lRebarCost = isTruss ? (rates.laborRoofTruss || 0) : (rates.laborRebar || 0);
-  const installedKg = isTruss ? (i.mainKg || 0) : ((i.mainKg || 0) + (i.stirrupKg || 0));
+  const installedKg = isTruss ? (i.mainKg || 0) : ((i.mainKg || 0) + (i.stirrupKg || 0) + (i.extraKg || 0));
 
   return (i.concrete||0)*(rates.concrete||0) + (i.leanConc||0)*(rates.leanConc||0) +
     rebarMaterialCost + (i.form||0)*(rates.formwork||0) + (i.precastArea||0)*(rates.precastSlab||0) +
@@ -1278,7 +1529,7 @@ function render() {
     const direct = getItemDirectCost(i);
     const areaOrFormText = i.type === 'Precast Slab' ? `แผ่นพื้น ${(i.precastArea||0).toFixed(2)} m² / แบบขอบ ${(i.form||0).toFixed(2)} m²` : (i.form||0).toFixed(2);
     const fillAndSandText = `${(i.backfill||0).toFixed(2)} <span class="text-xs text-slate-400">(${(i.sandVolume||0).toFixed(2)})</span>`;
-    const netRebarKg = i.type === "Roof Truss" ? (i.mainKg||0) : ((i.mainKg||0) + (i.stirrupKg||0));
+    const netRebarKg = i.type === "Roof Truss" ? (i.mainKg||0) : ((i.mainKg||0) + (i.stirrupKg||0) + (i.extraKg||0));
 
     return `<tr class="border-b dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/40">
       <td class="p-2"><b>${safe(i.name)}</b>
@@ -1303,7 +1554,7 @@ function render() {
 
   const categories = [
     { label: "คอนกรีตโครงสร้าง", val: t.costConcrete, color: "bg-blue-500" },
-    { label: "เหล็กเสริม ค.ส.ล. (แยกเกรดอิสระ)", val: t.costRebar, color: "bg-amber-500" },
+    { label: "เหล็กเสริม ค.ส.ล. (รวมเหล็กพิเศษ)", val: t.costRebar, color: "bg-amber-500" },
     { label: "เหล็กโครงหลังคา", val: t.costRoofTruss, color: "bg-yellow-600" },
     { label: "ไม้แบบ / ค้ำยัน", val: t.costForm, color: "bg-emerald-500" },
     { label: "แผ่นพื้นสำเร็จรูป", val: t.costPrecast, color: "bg-teal-500" },
@@ -1355,7 +1606,7 @@ function render() {
   items.forEach(i => {
     const factor = 1 + (i.wastePct || 0)/100;
     if (i.type === "Roof Truss") {
-      const key="โครงหลังคาเหล็ก|ระบุตามน้ำหนักรวม";
+      const key="โครงหลังคาเหล็ก|แยกตามองค์ประกอบ (จันทัน/อะเส/แป/ค้ำยัน/เพลท)";
       if (!trussGroups[key]) trussGroups[key] = { net: 0, purchase: 0 };
       trussGroups[key].net += (i.mainKg || 0);
       trussGroups[key].purchase += (i.rebar || 0);
@@ -1371,6 +1622,13 @@ function render() {
         if (!groups[stirrupKey]) groups[stirrupKey] = { net: 0, purchase: 0 };
         groups[stirrupKey].net += (i.stirrupKg || 0);
         groups[stirrupKey].purchase += (i.stirrupKg || 0) * factor;
+      }
+
+      if (i.extraBarSize && i.extraBarSize!=="NONE" && i.extraKg) {
+        const extraKey=`เหล็กเสริม ค.ส.ล.|${i.grade} ${i.extraBarSize} (เหล็กพิเศษ/กันร้าว)`;
+        if (!groups[extraKey]) groups[extraKey] = { net: 0, purchase: 0 };
+        groups[extraKey].net += (i.extraKg || 0);
+        groups[extraKey].purchase += (i.extraKg || 0) * factor;
       }
     }
   });
@@ -1477,7 +1735,7 @@ function exportExcel() {
     const mainGradeKey = "rebar" + (i.grade && i.grade !== "-" ? i.grade : "SR24");
     const rRebarCost = i.type === "Roof Truss" ? (rates.roofTrussSteel || 0) : (rates[mainGradeKey] ?? rates.rebar ?? 30);
     const lRebarCost = i.type === "Roof Truss" ? (rates.laborRoofTruss || 0) : (rates.laborRebar || 0);
-    const installedKg = i.type === "Roof Truss" ? (i.mainKg || 0) : ((i.mainKg || 0) + (i.stirrupKg || 0));
+    const installedKg = i.type === "Roof Truss" ? (i.mainKg || 0) : ((i.mainKg || 0) + (i.stirrupKg || 0) + (i.extraKg || 0));
     
     let rebarMatCost = 0;
     if (i.type === "Roof Truss") {
@@ -1490,6 +1748,9 @@ function exportExcel() {
         const stirrupRate = rates[stirrupGradeKey] ?? rRebarCost;
         rebarMatCost += (i.stirrupKg || 0) * factor * stirrupRate;
       }
+      if (i.extraBarSize && i.extraBarSize !== "NONE" && i.extraKg) {
+        rebarMatCost += (i.extraKg || 0) * factor * rRebarCost;
+      }
     }
 
     const matCost = (i.concrete||0)*(rates.concrete||0) + (i.leanConc||0)*(rates.leanConc||0) +
@@ -1501,6 +1762,7 @@ function exportExcel() {
       ((i.backfill||0) + (i.sandVolume||0))*(rates.laborFill||0);
 
     const extraCostPerUnit = i.qty > 0 ? (i.extraCost || 0) / i.qty : (i.extraCost || 0);
+    const rm = i.roofMembers || {};
 
     return {
       "ชื่อ":i.name,"ประเภท":i.type,"จำนวน":i.qty,"เกรดเหล็กหลัก":i.grade,"เกรดเหล็กปลอก":i.stirrupGrade||i.grade,
@@ -1514,6 +1776,8 @@ function exportExcel() {
       "ทรายรองพื้น (m3)":Number((i.sandVolume||0).toFixed(4)),
       "เหล็กหลัก/ตะแกรง":i.mainSize,
       "จำนวนเหล็กหลัก":i.barCount ?? 4,
+      "เหล็กพิเศษ/กันร้าว":i.extraBarSize ?? "NONE",
+      "จำนวนเหล็กพิเศษ":i.extraBarCount ?? 0,
       "ระยะเรียง X_m":i.matSpacingX ?? 0.20,
       "ระยะเรียง Y_m":i.matSpacingY ?? 0.20,
       "ตะแกรงล่าง":i.matBottom !== false ? "YES" : "NO",
@@ -1525,20 +1789,25 @@ function exportExcel() {
       "ขอปลอก_เท่าd":i.hookRatio ?? 10,
       "เผื่อเศษ (%)":i.wastePct ?? 5,
       "ความยาวเหล็กสต็อก_m":i.stockLength ?? 10,
-      "น้ำหนักเหล็กหลังคา_kg":i.manualSteel ?? 0,
-      "ระยะขุดเผื่อต่อข้าง_m":i.excClear ?? 0.3,
-      "ความลึกขุด_m":i.excDepth ?? 0.8,
-      "ทรายรองพื้น_m":i.sandBed ?? 0.05,
-      "เทปูนหยาบ":i.addLean !== false ? "YES" : "NO",
-      "ต้นทุนเพิ่มเติมต่อชิ้น (บาท)":Number(extraCostPerUnit.toFixed(2)),
-      "น้ำหนักเหล็กหลัก (kg)":Number((i.mainKg||0).toFixed(4)),
-      "น้ำหนักเหล็กปลอก (kg)":Number((i.stirrupKg||0).toFixed(4)),
-      "เหล็กรวมเผื่อเศษ (kg)":Number((i.rebar||0).toFixed(4)),
-      "ต้นทุนวัสดุ (บาท)":Number((matCost).toFixed(2)),
-      "ค่าแรง (บาท)":Number((laborCost).toFixed(2)),
-      "ต้นทุนเพิ่มเติมรวม (บาท)":Number((i.extraCost||0).toFixed(2)),
-      "ต้นทุนตรงรวม (บาท)":Number((directCost).toFixed(2)),
-      "หมายเหตุ":i.remark||""
+      "จันทัน_ชื่อ": rm.rfName || "", "จันทัน_จำนวน": rm.rfQty || 0, "จันทัน_ยาว": rm.rfLen || 0, "จันทัน_Wpm": rm.rfWpm || 3.5,
+      "อะเส_ชื่อ": rm.wpName || "", "อะเส_จำนวน": rm.wpQty || 0, "อะเส_ยาว": rm.wpLen || 0, "อะเส_Wpm": rm.wpWpm || 9.3,
+      "แป_ชื่อ": rm.prName || "", "แป_จำนวน": rm.prQty || 0, "แป_ยาว": rm.prLen || 0, "แป_Wpm": rm.prWpm || 6.5,
+      "ค้ำยัน_ชื่อ": rm.brName || "", "ค้ำยัน_จำนวน": rm.brQty || 0, "ค้ำยัน_ยาว": rm.brLen || 0, "ค้ำยัน_Wpm": rm.brWpm || 3.8,
+      "เพลท_จำนวนชุด": rm.plQty || 0, "เพลท_นนต่อชุด": rm.plWps || 2.5,
+      "ระยะขุดเผื่อต่อข้าง_m": i.excClear ?? 0.3,
+      "ความลึกขุด_m": i.excDepth ?? 0.8,
+      "ทรายรองพื้น_m": i.sandBed ?? 0.05,
+      "เทปูนหยาบ": i.addLean !== false ? "YES" : "NO",
+      "ต้นทุนเพิ่มเติมต่อชิ้น (บาท)": Number(extraCostPerUnit.toFixed(2)),
+      "น้ำหนักเหล็กหลัก (kg)": Number((i.mainKg||0).toFixed(4)),
+      "น้ำหนักเหล็กปลอก (kg)": Number((i.stirrupKg||0).toFixed(4)),
+      "น้ำหนักเหล็กพิเศษ (kg)": Number((i.extraKg||0).toFixed(4)),
+      "เหล็กรวมเผื่อเศษ (kg)": Number((i.rebar||0).toFixed(4)),
+      "ต้นทุนวัสดุ (บาท)": Number((matCost).toFixed(2)),
+      "ค่าแรง (บาท)": Number((laborCost).toFixed(2)),
+      "ต้นทุนเพิ่มเติมรวม (บาท)": Number((i.extraCost||0).toFixed(2)),
+      "ต้นทุนตรงรวม (บาท)": Number((directCost).toFixed(2)),
+      "หมายเหตุ": i.remark||""
     };
   });
   XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(boq),"BOQ");
@@ -1553,7 +1822,7 @@ function exportExcel() {
     {รายการ:"ปริมาตรขุดดินรวม (m3)",จำนวน:t.exc,หน่วย:"m3"},
     {รายการ:"ปริมาตรถมประมาณรวม (m3)",จำนวน:t.fill,หน่วย:"m3"},
     {รายการ:"ปริมาตรทรายรองพื้นรวม (m3)",จำนวน:t.sand,หน่วย:"m3"},
-    {รายการ:"เหล็กเสริม ค.ส.ล. ติดตั้งสุทธิ (kg)",จำนวน:t.rebarNet,หน่วย:"kg"},
+    {รายการ:"เหล็กเสริม ค.ส.ล. ติดตั้งสุทธิ (รวมพิเศษ) (kg)",จำนวน:t.rebarNet,หน่วย:"kg"},
     {รายการ:"เหล็กเสริม ค.ส.ล. จัดซื้อรวม (kg)",จำนวน:t.rebar,หน่วย:"kg"},
     {รายการ:"เหล็กโครงหลังคา จัดซื้อรวม (kg)",จำนวน:t.roofTrussSteel,หน่วย:"kg"},
     {รายการ:"ค่าวัสดุ (บาท)",จำนวน:t.material,หน่วย:"บาท"},
@@ -1607,6 +1876,8 @@ function downloadExcelTemplate() {
     "ระยะยกบันได_m": 0,
     "เหล็กหลัก/ตะแกรง": "RB12",
     "จำนวนเหล็กหลัก": 4,
+    "เหล็กพิเศษ/กันร้าว": "RB9",
+    "จำนวนเหล็กพิเศษ": 2,
     "ระยะเรียง X_m": 0.20,
     "ระยะเรียง Y_m": 0.20,
     "ตะแกรงล่าง": "YES",
@@ -1618,13 +1889,17 @@ function downloadExcelTemplate() {
     "ขอปลอก_เท่าd": 10,
     "เผื่อเศษ (%)": 5,
     "ความยาวเหล็กสต็อก_m": 10,
-    "น้ำหนักเหล็กหลังคา_kg": 0,
+    "จันทัน_ชื่อ": "Box 2x1", "จันทัน_จำนวน": 10, "จันทัน_ยาว": 4.0, "จันทัน_Wpm": 3.5,
+    "อะเส_ชื่อ": "H-Beam 100", "อะเส_จำนวน": 2, "อะเส_ยาว": 12.0, "อะเส_Wpm": 9.3,
+    "แป_ชื่อ": "C-Channel", "แป_จำนวน": 16, "แป_ยาว": 6.0, "แป_Wpm": 6.5,
+    "ค้ำยัน_ชื่อ": "Angle 50", "ค้ำยัน_จำนวน": 4, "ค้ำยัน_ยาว": 3.0, "ค้ำยัน_Wpm": 3.8,
+    "เพลท_จำนวนชุด": 8, "เพลท_นนต่อชุด": 2.5,
     "ระยะขุดเผื่อต่อข้าง_m": 0.3,
     "ความลึกขุด_m": 0.8,
     "ทรายรองพื้น_m": 0.05,
     "เทปูนหยาบ": "YES",
     "ต้นทุนเพิ่มเติมต่อชิ้น (บาท)": 0,
-    "หมายเหตุ": "คานคอดินมาตรฐาน"
+    "หมายเหตุ": "คานคอดินมาตรฐานเสริมเหล็กกันร้าว"
   }];
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(sampleBOQ), "BOQ");
 
@@ -1636,7 +1911,6 @@ function downloadExcelTemplate() {
   XLSX.writeFile(wb, "BOQ_Template_Standard.xlsx");
 }
 
-// นำเข้า Excel พร้อมระบบดักจับและสะสม Error รายแถว และรองรับ NONE สำหรับเหล็กปลอกทุกประเภท
 function importExcel(event) {
   if (!window.XLSX) return alert("ไลบรารี XLSX ไม่พร้อมใช้งาน");
   const file = event.target.files[0];
@@ -1731,13 +2005,13 @@ function importExcel(event) {
             throw new Error(`เหล็กปลอก "${stirrupSize}" ไม่ถูกต้อง`);
           }
 
+          const extraBarSize = String(row["เหล็กพิเศษ/กันร้าว"] || "NONE").trim();
+          const extraBarCount = Number(row["จำนวนเหล็กพิเศษ"] || 0);
+
           const stockLength = itemType === "Roof Truss" ? 10 : sanitizeNumber(row["ความยาวเหล็กสต็อก_m"], 1, 50, 10, true, "ความยาวเหล็กสต็อก_m");
           
           const barCountInput = row["จำนวนเหล็กหลัก"];
           const barCountNum = barCountInput === undefined || barCountInput === "" ? 4 : Number(barCountInput);
-          if (itemType !== "Roof Truss" && !isMatType(itemType) && (!Number.isSafeInteger(barCountNum) || barCountNum < 0 || barCountNum > 100)) {
-            throw new Error(`จำนวนเหล็กหลักต้องอยู่ระหว่าง 0 ถึง 100 เส้น`);
-          }
 
           const needsMatSpacing = isMatType(itemType);
           const rawMatX = row["ระยะเรียง X_m"] ?? 0.20;
@@ -1762,7 +2036,15 @@ function importExcel(event) {
           const cover = sanitizeNumber(row["ระยะหุ้ม_m"], 0, 1, 0.04, false);
           const lapRatio = sanitizeNumber(row["ระยะทาบ_เท่าd"], 1, 200, 60, false);
           const hookRatio = sanitizeNumber(row["ขอปลอก_เท่าd"], 0, 100, 10, false);
-          const manualSteel = sanitizeNumber(row["น้ำหนักเหล็กหลังคา_kg"], 0, 1000000, 0, false);
+          
+          const roofMembers = {
+            rfName: row["จันทัน_ชื่อ"] || "", rfQty: Number(row["จันทัน_จำนวน"] || 0), rfLen: Number(row["จันทัน_ยาว"] || 0), rfWpm: Number(row["จันทัน_Wpm"] || 3.5),
+            wpName: row["อะเส_ชื่อ"] || "", wpQty: Number(row["อะเส_จำนวน"] || 0), wpLen: Number(row["อะเส_ยาว"] || 0), wpWpm: Number(row["อะเส_Wpm"] || 9.3),
+            prName: row["แป_ชื่อ"] || "", prQty: Number(row["แป_จำนวน"] || 0), prLen: Number(row["แป_ยาว"] || 0), prWpm: Number(row["แป_Wpm"] || 6.5),
+            brName: row["ค้ำยัน_ชื่อ"] || "", brQty: Number(row["ค้ำยัน_จำนวน"] || 0), brLen: Number(row["ค้ำยัน_ยาว"] || 0), brWpm: Number(row["ค้ำยัน_Wpm"] || 3.8),
+            plQty: Number(row["เพลท_จำนวนชุด"] || 0), plWps: Number(row["เพลท_นนต่อชุด"] || 2.5)
+          };
+
           const excClear = sanitizeNumber(row["ระยะขุดเผื่อต่อข้าง_m"], 0, 10, 0.3, false);
           const excDepth = sanitizeNumber(row["ความลึกขุด_m"], 0, 50, 0.8, false);
           const sandBed = sanitizeNumber(row["ทรายรองพื้น_m"], 0, 5, 0.05, false);
@@ -1774,9 +2056,9 @@ function importExcel(event) {
           const itemParams = {
             type: itemType, qty, width: w, length: L, depth: d, rise,
             excClear, excDepth, sandBed, addLean, grade, stirrupGrade, mainSize,
-            barCount: barCountNum, matSpacingX, matSpacingY, matBottom, matTop,
+            barCount: barCountNum, extraBarSize, extraBarCount, matSpacingX, matSpacingY, matBottom, matTop,
             stockLength, lapRatio, stirrupSize, spacing, cover, hookRatio,
-            manualSteel, wastePct: waste
+            roofMembers, manualSteel: 0, wastePct: waste
           };
 
           const computed = computeItemMetrics(itemParams);
@@ -1845,6 +2127,9 @@ try {
   console.error(e);
   render();
 }
+
+// Initial preview draw on load
+setTimeout(triggerPreview, 200);
 </script>
 </body>
 </html>
