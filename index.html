@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Structural QTO & BOQ Pro - Enterprise Production Edition v15.9.1 (Strict AI Vision & Unit Normalization)</title>
+  <title>Structural QTO & BOQ Pro - Enterprise Production Edition v17.0 (Full Suite)</title>
   <script>
     tailwind = { config: { darkMode: 'class' } }
   </script>
@@ -11,83 +11,76 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <!-- jsPDF & jsPDF-AutoTable for Professional PDF Generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <!-- PDF.js for Client-Side Multi-Page PDF Blueprint Scanning -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  </script>
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Prompt', sans-serif; }
+    .error-feedback { color: #ef4444; font-size: 10px; margin-top: 2px; display: none; }
+    .has-error input, .has-error select { border-color: #ef4444 !important; }
     @media print {
       @page { size: A4 landscape; margin: 10mm; }
       .no-print { display: none !important; }
-      body { background: #ffffff !important; color: #000000 !important; font-size: 9.5pt !important; }
-      .print-card { box-shadow: none !important; border: none !important; background: #ffffff !important; padding: 0 !important; margin-bottom: 0.75rem !important; }
-      .print-header { background: #ffffff !important; color: #000000 !important; border-bottom: 2px solid #000000 !important; padding: 0 0 0.5rem 0 !important; }
-      .print-header h1 { font-size: 15pt !important; color: #000000 !important; }
-      .print-info-grid { display: grid !important; grid-template-columns: repeat(4, 1fr) !important; gap: 0.4rem !important; background: #ffffff !important; border: 1px solid #cccccc !important; padding: 0.4rem !important; border-radius: 0.4rem !important; }
-      .print-info-item { border-bottom: none !important; padding-bottom: 0 !important; }
-      .print-info-label { font-size: 7.5pt; color: #444444; font-weight: 500; }
-      .print-info-val { font-size: 9.5pt; font-weight: 700; color: #000000 !important; background: #ffffff !important; }
-      input, select { border: none !important; background: transparent !important; padding: 0 !important; appearance: none; -webkit-appearance: none; color: #000000 !important; font-weight: 600; }
-      *, th, td, span, div, p, label { color: #000000 !important; }
-      .grid:not(.print-info-grid) { display: block !important; }
-      section.print-card { width: 100% !important; }
-      .overflow-x-auto { overflow-x: visible !important; }
-      table { min-width: 0 !important; width: 100% !important; font-size: 9pt !important; }
-      th, td { padding: 4px 6px !important; border-bottom: 1px solid #dddddd !important; }
-      .print-watermark-warning { display: block !important; border: 1px dashed #000 !important; padding: 6px !important; margin-top: 8px !important; font-size: 8pt !important; font-weight: bold !important; }
+      body { background: #ffffff !important; color: #000000 !important; font-size: 9pt !important; }
+      .print-card { box-shadow: none !important; border: none !important; background: #ffffff !important; padding: 0 !important; margin-bottom: 0.5rem !important; }
+      .print-sign-section { display: flex !important; justify-content: space-between; margin-top: 40px; page-break-inside: avoid; }
     }
+    .print-sign-section { display: none; }
   </style>
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 pb-12 transition-colors duration-200">
 <div class="max-w-7xl mx-auto px-4 py-6">
 
   <!-- Header & Project Info -->
-  <header class="bg-slate-900 text-white p-6 rounded-2xl shadow-lg mb-6 border border-slate-800 print-header">
+  <header class="bg-slate-900 text-white p-6 rounded-2xl shadow-lg mb-6 border border-slate-800">
     <div class="flex flex-wrap justify-between gap-4 items-center mb-4">
       <div>
         <h1 class="text-2xl font-bold flex items-center gap-2">
           🏗️ Structural QTO & BOQ Pro 
-          <span class="text-xs bg-emerald-600 text-white px-2.5 py-1 rounded-md font-normal no-print">v15.9.1 Strict Enterprise</span>
+          <span class="text-xs bg-emerald-600 text-white px-2.5 py-1 rounded-md font-normal no-print">v17.0 Full Suite</span>
         </h1>
-        <p class="text-slate-300 text-sm no-print">ระบบถอดปริมาณและประมาณราคางานโครงสร้าง ค.ส.ล. (v15.9.1: Strict AI Vision & Unit Normalization) — <span class="text-amber-400">⚠️ ราคาอิงเรตผู้ใช้กำหนด</span></p>
-        <div class="hidden print-watermark-warning">
-          ⚠️ คำเตือนรายงานพิมพ์: เอกสารนี้เป็นประมาณการเบื้องต้น (Gross Volume อิงเรตผู้ใช้กำหนด) คำนวณตามสูตรระยะทาบและเผื่อเศษ (% Waste) ยังไม่ได้จำลองการตัดเหล็กจริง (Cutting List / BBS) ไม่สามารถใช้แทนแบบก่อสร้างจริงได้
-        </div>
+        <p class="text-slate-300 text-sm no-print">ระบบถอดปริมาณและประเมินราคางานโครงสร้าง ค.ส.ล. (Por.4/5 Categories, Cutting Optimization, PDF Engine & Multi-Page PDF Scanner)</p>
       </div>
       <div class="flex gap-2 no-print flex-wrap items-center">
         <button onclick="toggleDarkMode()" class="bg-slate-800 hover:bg-slate-700 text-amber-400 p-2.5 rounded-xl text-sm border border-slate-700 transition" title="สลับโหมดมืด/สว่าง">
           <span id="themeIcon">🌙</span>
         </button>
-        <button onclick="downloadExcelTemplate()" class="bg-indigo-600 hover:bg-indigo-700 px-3 py-2 rounded-xl text-xs font-medium transition shadow-sm">📋 โหลดเทมเพลต Excel</button>
-        <label class="bg-violet-600 hover:bg-violet-700 px-3 py-2 rounded-xl text-xs font-medium cursor-pointer inline-flex items-center transition shadow-sm">
-          📥 นำเข้า Excel (True Strict)
-          <input type="file" id="importFile" accept=".xlsx, .xls" class="hidden" onchange="importExcel(event)">
-        </label>
-        <button onclick="exportExcel()" class="bg-emerald-600 hover:bg-emerald-700 px-3 py-2 rounded-xl text-xs font-medium transition shadow-sm">📤 Export Excel (All-or-Nothing)</button>
+        <button onclick="openModal('por4Modal')" class="bg-cyan-600 hover:bg-cyan-700 px-3 py-2 rounded-xl text-xs font-medium transition shadow-sm">📋 สรุป ปร.4 / ปร.5 (ราชการ)</button>
+        <button onclick="openModal('cuttingModal')" class="bg-indigo-600 hover:bg-indigo-700 px-3 py-2 rounded-xl text-xs font-medium transition shadow-sm">📐 ตัดเหล็ก & สรุป Bar List</button>
+        <button onclick="generateProfessionalPDF()" class="bg-rose-600 hover:bg-rose-700 px-3 py-2 rounded-xl text-xs font-medium transition shadow-sm">📄 ดาวน์โหลดรายงาน PDF</button>
+        <button onclick="exportExcel()" class="bg-emerald-600 hover:bg-emerald-700 px-3 py-2 rounded-xl text-xs font-medium transition shadow-sm">📤 Export Excel</button>
         <button onclick="exportJSON()" class="bg-amber-600 hover:bg-amber-700 px-3 py-2 rounded-xl text-xs font-medium transition shadow-sm">💾 สำรอง JSON</button>
         <label class="bg-slate-700 hover:bg-slate-600 px-3 py-2 rounded-xl text-xs font-medium cursor-pointer inline-flex items-center transition shadow-sm">
-          📂 โหลด JSON (Strict)
+          📂 โหลด JSON
           <input type="file" id="importJsonFile" accept=".json" class="hidden" onchange="importJSON(event)">
         </label>
-        <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded-xl text-xs font-medium transition shadow-sm">🖨️ พิมพ์รายงาน A4</button>
+        <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded-xl text-xs font-medium transition shadow-sm">🖨️ พิมพ์ A4</button>
       </div>
     </div>
 
     <!-- Project Controls -->
-    <div class="bg-slate-800/90 p-4 rounded-xl grid grid-cols-1 md:grid-cols-4 gap-3 text-sm border border-slate-700 print-info-grid">
-      <div class="print-info-item">
-        <label class="text-xs text-slate-400 block mb-1 print-info-label">ชื่อโครงการ</label>
-        <input id="projectName" placeholder="ระบุชื่อโครงการก่อสร้าง" class="bg-slate-700 border-slate-600 text-white border rounded-lg p-2 w-full text-sm print-info-val project-info-input">
+    <div class="bg-slate-800/90 p-4 rounded-xl grid grid-cols-1 md:grid-cols-4 gap-3 text-sm border border-slate-700">
+      <div>
+        <label class="text-xs text-slate-400 block mb-1">ชื่อโครงการ</label>
+        <input id="projectName" placeholder="ระบุชื่อโครงการก่อสร้าง" class="bg-slate-700 border-slate-600 text-white border rounded-lg p-2 w-full text-sm" oninput="saveDraftToLocalStorage()">
       </div>
-      <div class="print-info-item">
-        <label class="text-xs text-slate-400 block mb-1 print-info-label">เจ้าของงาน</label>
-        <input id="ownerName" placeholder="ระบุชื่อเจ้าของโครงการ" class="bg-slate-700 border-slate-600 text-white border rounded-lg p-2 w-full text-sm print-info-val project-info-input">
+      <div>
+        <label class="text-xs text-slate-400 block mb-1">เจ้าของงาน</label>
+        <input id="ownerName" placeholder="ระบุชื่อเจ้าของโครงการ" class="bg-slate-700 border-slate-600 text-white border rounded-lg p-2 w-full text-sm" oninput="saveDraftToLocalStorage()">
       </div>
-      <div class="print-info-item">
-        <label class="text-xs text-slate-400 block mb-1 print-info-label">ผู้ถอดแบบ / ประมาณราคา</label>
-        <input id="estimatorName" placeholder="ระบุชื่อวิศวกร/ผู้ประเมิน" class="bg-slate-700 border-slate-600 text-white border rounded-lg p-2 w-full text-sm print-info-val project-info-input">
+      <div>
+        <label class="text-xs text-slate-400 block mb-1">ผู้ถอดแบบ / ประมาณราคา</label>
+        <input id="estimatorName" placeholder="ระบุชื่อวิศวกร/ผู้ประเมิน" class="bg-slate-700 border-slate-600 text-white border rounded-lg p-2 w-full text-sm" oninput="saveDraftToLocalStorage()">
       </div>
-      <div class="print-info-item">
-        <label class="text-xs text-slate-400 block mb-1 print-info-label">วันที่ถอดแบบ</label>
-        <input id="reportDate" type="date" class="bg-slate-700 border-slate-600 text-white border rounded-lg p-2 w-full text-sm print-info-val project-info-input">
+      <div>
+        <label class="text-xs text-slate-400 block mb-1">วันที่ถอดแบบ</label>
+        <input id="reportDate" type="date" class="bg-slate-700 border-slate-600 text-white border rounded-lg p-2 w-full text-sm" onchange="saveDraftToLocalStorage()">
       </div>
       
       <div class="md:col-span-4 flex flex-wrap gap-2 items-center pt-2 border-t border-slate-700 no-print">
@@ -98,7 +91,7 @@
         <button onclick="loadProject()" class="bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg text-xs border border-slate-600">โหลดโครงการ</button>
         <div class="ml-auto flex gap-2">
           <button onclick="clearBOQOnly()" class="bg-orange-600/80 hover:bg-orange-700 text-white px-3 py-1.5 rounded-lg text-xs">🧹 ล้างเฉพาะรายการ BOQ</button>
-          <button onclick="clearAllData()" class="bg-red-600/80 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg text-xs">⚠️ ล้างข้อมูลทั้งหมด (รวมโครงการที่บันทึก)</button>
+          <button onclick="clearAllData()" class="bg-red-600/80 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg text-xs">⚠️ ล้างข้อมูลทั้งหมด</button>
         </div>
       </div>
     </div>
@@ -106,253 +99,173 @@
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <!-- Form Section -->
-    <section class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border dark:border-slate-800 print-card no-print">
+    <section class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border dark:border-slate-800 no-print">
       <div class="flex justify-between items-center mb-4">
         <h2 id="formTitle" class="text-lg font-semibold">➕ เพิ่มองค์อาคารใหม่</h2>
         <button id="cancelEditBtn" onclick="cancelEdit()" class="hidden text-xs bg-slate-200 dark:bg-slate-800 px-2 py-1 rounded text-red-500 font-medium">ยกเลิกแก้ไข</button>
       </div>
 
-      <!-- Real AI Vision Scan Upload Box -->
-      <div class="mb-4 p-3 bg-purple-50 dark:bg-purple-950/30 rounded-xl border border-purple-200 dark:border-purple-900">
-        <div class="flex justify-between items-center mb-2">
-          <span class="text-xs font-bold text-purple-600 dark:text-purple-400 flex items-center gap-1">📸 AI Vision Scan (Strict Unit Normalization)</span>
-          <span class="text-[10px] text-slate-500">อัปโหลดภาพหน้าตัด/แบบแปลน</span>
+      <!-- AI Vision Scan Upload Box (Single Image & Multi-Page PDF Blueprint Scanner) -->
+      <div class="mb-4 p-3 bg-purple-50 dark:bg-purple-950/30 rounded-xl border border-purple-200 dark:border-purple-900 space-y-2">
+        <div class="flex justify-between items-center">
+          <span class="text-xs font-bold text-purple-600 dark:text-purple-400 flex items-center gap-1">📸 AI Vision & Multi-Page PDF Blueprint Scanner</span>
+          <span class="text-[10px] text-slate-500">รองรับภาพ หรือ PDF ทั้งเล่ม</span>
         </div>
-        <label class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 px-3 rounded-lg text-xs font-medium cursor-pointer flex items-center justify-center gap-1 transition shadow-sm">
-          <span>📤 อัปโหลดรูปภาพเพื่อวิเคราะห์แบบโครงสร้าง</span>
-          <input type="file" id="visionFileInput" accept="image/jpeg, image/png, image/webp" class="hidden" onchange="handleVisionScanUpload(event)">
-        </label>
-        <div id="visionLoading" class="hidden mt-2 text-center text-xs text-purple-600 dark:text-purple-400 animate-pulse">
-          🤖 กำลังวิเคราะห์ภาพและแปลงหน่วยด้วย AI โปรดรอสักครู่...
+        <div class="grid grid-cols-2 gap-2">
+          <label class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 px-2 rounded-lg text-[11px] font-medium cursor-pointer flex items-center justify-center gap-1 transition shadow-sm text-center">
+            <span>🖼️ อัปโหลดภาพเดี่ยว</span>
+            <input type="file" id="visionFileInput" accept="image/jpeg, image/png, image/webp" class="hidden" onchange="handleVisionScanUpload(event)">
+          </label>
+          <label class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-2 rounded-lg text-[11px] font-medium cursor-pointer flex items-center justify-center gap-1 transition shadow-sm text-center">
+            <span>📚 สแกน PDF ทั้งเล่ม</span>
+            <input type="file" id="pdfBatchFileInput" accept="application/pdf" class="hidden" onchange="handlePdfBatchScanUpload(event)">
+          </label>
         </div>
-      </div>
-
-      <!-- Preset Templates -->
-      <div class="mb-4 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border dark:border-slate-700">
-        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">⚡ เลือกสเปกมาตรฐานด่วน (Preset Templates)</label>
-        <div class="grid grid-cols-2 gap-2 text-xs">
-          <button type="button" onclick="applyPreset('Footing', 1.0, 1.0, 0.4, 'F-Std')" class="bg-blue-50 dark:bg-blue-900/35 hover:bg-blue-100 text-blue-600 dark:text-blue-300 p-2 rounded-lg border border-blue-200 dark:border-blue-800 text-left font-medium">
-            ฐานราก 1.0x1.0x0.4m
-          </button>
-          <button type="button" onclick="applyPreset('Ground Beam', 0.2, 4.0, 0.4, 'GB-Std')" class="bg-blue-50 dark:bg-blue-900/35 hover:bg-blue-100 text-blue-600 dark:text-blue-300 p-2 rounded-lg border border-blue-200 dark:border-blue-800 text-left font-medium">
-            คานคอดิน 0.2x0.4m (ยาว 4ม.)
-          </button>
-          <button type="button" onclick="applyPreset('Stub Column', 0.2, 0.8, 0.2, 'SC-Std')" class="bg-blue-50 dark:bg-blue-900/35 hover:bg-blue-100 text-blue-600 dark:text-blue-300 p-2 rounded-lg border border-blue-200 dark:border-blue-800 text-left font-medium">
-            เสาตอม่อ 0.2x0.2x0.8m
-          </button>
-          <button type="button" onclick="applyPreset('Precast Slab', 4.0, 4.0, 0.05, 'PS-Std')" class="bg-emerald-50 dark:bg-emerald-900/35 hover:bg-emerald-100 text-emerald-600 dark:text-emerald-300 p-2 rounded-lg border border-emerald-200 dark:border-emerald-800 text-left font-medium col-span-2">
-            พื้นสำเร็จรูป 4x4m (Topping 5ซม.)
-          </button>
+        <div id="visionLoading" class="hidden mt-2 text-center text-xs text-purple-600 dark:text-purple-400 animate-pulse font-semibold">
+          🤖 AI กำลังวิเคราะห์แบบแปลนโครงสร้าง...
         </div>
       </div>
 
       <!-- Realtime 3D Studio Preview Box -->
       <div class="mb-4 p-3 bg-slate-900 text-slate-100 rounded-xl border border-slate-700 text-center relative overflow-hidden">
         <div class="flex justify-between items-center mb-1">
-          <span class="text-xs font-semibold text-amber-400">✨ พรีวิว 3D Schematic Studio (v15.9.1)</span>
+          <span class="text-xs font-semibold text-amber-400">✨ พรีวิว 3D Schematic Studio</span>
           <span id="previewInfo" class="text-[10px] text-slate-400">หมุน 360° ด้วยเมาส์</span>
         </div>
         <div id="canvas3dContainer" class="w-full h-48 bg-slate-950 rounded-lg border border-slate-800 my-1 relative cursor-grab active:cursor-grabbing shadow-inner overflow-hidden"></div>
-        <div id="previewLegend" class="flex flex-wrap gap-2 justify-center text-[10px] text-slate-300 mt-1.5 pt-1.5 border-t border-slate-800">
-          <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-sky-400 inline-block"></span> คอนกรีต</span>
-          <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-yellow-400 inline-block"></span> เหล็กหลัก</span>
-          <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-sky-600 inline-block"></span> ปลอก</span>
-          <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-rose-500 inline-block"></span> พิเศษ</span>
-        </div>
-        <p id="previewWarning" class="text-[10px] text-amber-400 mt-1 hidden"></p>
       </div>
 
-      <form id="qtoForm" class="space-y-3">
+      <form id="qtoForm" class="space-y-3" novalidate>
         <input type="hidden" id="editId" value="">
         <label class="block text-sm font-medium">ประเภทองค์อาคาร
-          <select id="type" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" onchange="updateRebarFields()">
-            <optgroup label="โครงสร้างใต้ดินและชั้นล่าง">
+          <select id="type" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" onchange="updateFormFields()">
+            <optgroup label="โครงสร้าง ค.ส.ล.">
               <option value="Footing" selected>ฐานราก (Footing)</option>
               <option value="Ground Beam">คานคอดิน (Ground Beam)</option>
-              <option value="Stub Column">เสาตอม่อ (Stub Column)</option>
-              <option value="Slab on Ground">พื้น On Ground</option>
-              <option value="Ground Stair">บันไดคอดิน (Ground Stair)</option>
-            </optgroup>
-            <optgroup label="โครงสร้างส่วนบน">
-              <option value="Column">เสาชั้นบน</option>
-              <option value="Beam">คานรับพื้น</option>
-              <option value="Elevated Slab">พื้นหล่อในที่ / พื้นยก</option>
-              <option value="Precast Slab">พื้นสำเร็จรูป (Precast + Topping)</option>
-              <option value="Roof Truss">โครงสร้างเหล็กรูปพรรณ</option>
+              <option value="Column">เสา (Column)</option>
+              <option value="Slab on Ground">พื้นบนดิน (Slab on Ground)</option>
+              <option value="Elevated Slab">พื้นยก/หล่อในที่ (Elevated Slab)</option>
+              <option value="Ground Stair">บันได (Ground Stair)</option>
             </optgroup>
           </select>
         </label>
 
         <div class="grid grid-cols-2 gap-3">
-          <label class="text-sm">ชื่อองค์อาคาร
-            <input id="name" required placeholder="เช่น GB1, C1" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
-          </label>
-          <label class="text-sm">จำนวน (qty)
-            <input id="qty" type="number" min="1" max="100000" step="1" value="1" required class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
-          </label>
+          <div id="field-name" class="relative">
+            <label class="text-sm">ชื่อองค์อาคาร
+              <input id="name" placeholder="เช่น F1, B1, C1, S1" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="clearError('name')">
+            </label>
+            <div class="error-feedback" id="err-name">กรุณากรอกชื่อองค์อาคาร</div>
+          </div>
+          <div id="field-qty" class="relative">
+            <label class="text-sm">จำนวน (qty) *
+              <input id="qty" type="number" min="1" step="1" value="1" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="clearError('qty')">
+            </label>
+            <div class="error-feedback" id="err-qty">ต้องเป็นจำนวนเต็มบวก (>= 1)</div>
+          </div>
         </div>
 
         <div class="grid grid-cols-3 gap-2">
-          <label class="text-xs">กว้าง Width (m) *
-            <input id="width" type="number" min="0.001" max="100" step="0.01" value="1.00" required class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
-          </label>
-          <label class="text-xs" id="lengthLabelContainer"><span id="lengthLabelText">ยาว / ช่วง Length (m) *</span>
-            <input id="length" type="number" min="0.001" max="1000" step="0.01" value="1.00" required class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
-          </label>
-          <label class="text-xs" id="depthLabel"><span id="depthLabelText">ลึก / หนา Depth (m) *</span>
-            <input id="depth" type="number" min="0.001" max="10" step="0.01" value="0.40" required class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
-          </label>
+          <div id="field-width" class="relative">
+            <label class="text-xs"><span id="wLabel">กว้าง Width (m) *</span>
+              <input id="width" type="number" min="0.001" step="0.01" value="1.00" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview(); clearError('width');">
+            </label>
+            <div class="error-feedback" id="err-width">ค่าต้องมากกว่า 0</div>
+          </div>
+          <div id="field-length" class="relative">
+            <label class="text-xs"><span id="lLabel">ยาว Length (m) *</span>
+              <input id="length" type="number" min="0.001" step="0.01" value="1.00" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview(); clearError('length');">
+            </label>
+            <div class="error-feedback" id="err-length">ค่าต้องมากกว่า 0</div>
+          </div>
+          <div id="field-depth" class="relative">
+            <label class="text-xs"><span id="dLabel">หนา/ลึก Depth (m) *</span>
+              <input id="depth" type="number" min="0.001" step="0.01" value="0.40" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview(); clearError('depth');">
+            </label>
+            <div class="error-feedback" id="err-depth">ค่าต้องมากกว่า 0</div>
+          </div>
         </div>
 
+        <!-- ฟิลด์ความสูงเฉพาะเสา -->
+        <div id="columnHeightContainer" class="hidden">
+          <div id="field-columnHeight" class="relative">
+            <label class="text-xs">ความสูงเสา Height (m) *
+              <input id="columnHeight" type="number" min="0.1" step="0.01" value="3.00" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview(); clearError('columnHeight');">
+            </label>
+            <div class="error-feedback" id="err-columnHeight">ความสูงเสาต้องมากกว่า 0</div>
+          </div>
+        </div>
+
+        <!-- ฟิลด์เฉพาะบันได -->
         <div id="stairFieldsContainer" class="hidden grid grid-cols-2 gap-2 pt-2 border-t dark:border-slate-800">
-          <label class="text-xs">ระยะยกบันไดรวม Rise (m)
-            <input id="rise" type="number" min="0" max="50" step="0.01" value="0" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
-          </label>
-          <label class="text-xs">จำนวนขั้นบันได (Steps)
-            <input id="stairSteps" type="number" min="0" max="100" step="1" value="0" placeholder="0 = ทางลาด" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
-          </label>
+          <div>
+            <label class="text-xs">ระยะยกบันไดรวม Rise (m)
+              <input id="rise" type="number" min="0.01" step="0.01" value="1.75" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
+            </label>
+          </div>
+          <div>
+            <label class="text-xs">จำนวนขั้นบันได (Steps) *
+              <input id="stairSteps" type="number" min="1" step="1" value="10" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
+            </label>
+          </div>
         </div>
-
-        <div id="precastFieldsContainer" class="hidden pt-2 border-t dark:border-slate-800">
-          <label class="text-xs">ความหนาแผ่นสำเร็จรูปจริง (m)
-            <input id="precastPanelThick" type="number" min="0" max="1" step="0.01" value="" placeholder="เช่น 0.05" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
-          </label>
-        </div>
-
-        <label class="block text-xs">ต้นทุนเพิ่มเติมต่อชิ้น (บาท)
-          <input id="extraCost" type="number" min="0" max="1000000000" step="0.01" value="0" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
-        </label>
-
-        <label class="block text-xs">หมายเหตุหน้างาน
-          <input id="remark" placeholder="เช่น เทปูนรอบเช้า" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
-        </label>
 
         <hr class="dark:border-slate-800">
-        <div id="rebarSectionContainer">
-          <h3 id="rebarSectionTitle" class="font-semibold text-sm flex justify-between items-center mb-2">
-            <span>เหล็กเสริม ค.ส.ล. (Schematic Preview)</span>
-          </h3>
-          <div class="grid grid-cols-2 gap-3" id="rcRebarFields">
+        <div>
+          <h3 class="font-semibold text-sm mb-2">เหล็กเสริม ค.ส.ล. (สูตรวิศวกรรมแยกตามประเภท)</h3>
+          <div class="grid grid-cols-2 gap-3">
             <label class="text-xs">เกรดเหล็กหลัก
               <select id="grade" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
-                <option selected>SR24</option><option>SD30</option><option>SD40</option><option>SD50</option>
+                <option value="SR24">SR24</option><option value="SD30">SD30</option><option value="SD40" selected>SD40</option><option value="SD50">SD50</option>
               </select>
             </label>
-            <label class="text-xs">ขนาดเหล็กหลัก
+            <label class="text-xs">ขนาดเหล็ก (เช่น DB12, RB9)
               <select id="barSize" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" onchange="triggerPreview()">
                 <option value="RB6">RB6</option><option value="RB9">RB9</option>
-                <option value="RB12" selected>RB12</option><option value="RB15">RB15</option>
-                <option value="DB12">DB12</option><option value="DB16">DB16</option>
-                <option value="DB20">DB20</option><option value="DB25">DB25</option><option value="DB28">DB28</option>
-                <option value="DB32">DB32</option><option value="DB40">DB40</option>
+                <option value="RB12">RB12</option><option value="RB15">RB15</option>
+                <option value="DB12" selected>DB12</option><option value="DB16">DB16</option>
+                <option value="DB20">DB20</option><option value="DB25">DB25</option>
               </select>
             </label>
 
-            <div id="longitudinalFields" class="col-span-2 grid grid-cols-2 gap-3 hidden">
-              <label class="text-xs">จำนวนเหล็กหลัก (เส้น) <span class="text-amber-500">*สำหรับเสาแนะนำอย่างน้อย 4 เส้น</span>
-                <input id="barCount" type="number" min="0" max="100" step="1" value="4" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
+            <!-- สำหรับฐานราก พื้น และบันได: ใช้ระยะเรียง X, Y -->
+            <div id="gridSpacingFields" class="col-span-2 grid grid-cols-2 gap-2">
+              <label class="text-xs">ระยะเรียง X Spacing (m) *
+                <input id="spacingX" type="number" min="0.01" max="1.5" step="0.01" value="0.20" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
+              </label>
+              <label class="text-xs">ระยะเรียง Y Spacing (m) *
+                <input id="spacingY" type="number" min="0.01" max="1.5" step="0.01" value="0.20" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
               </label>
             </div>
 
-            <div id="matFields" class="col-span-2 grid grid-cols-2 gap-3">
-              <label class="text-xs">ระยะเรียง X (m)
-                <input id="matSpacingX" type="number" min="0.001" max="10" step="0.01" value="0.20" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
+            <!-- สำหรับคาน คอดิน และเสา: ใช้จำนวนเส้นเหล็กหลัก และเหล็กปลอก -->
+            <div id="linearMemberFields" class="col-span-2 grid grid-cols-2 gap-2 hidden">
+              <label class="text-xs">จำนวนเหล็กหลัก (เส้น)
+                <input id="barCount" type="number" min="2" max="100" step="1" value="4" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
               </label>
-              <label class="text-xs">ระยะเรียง Y (m)
-                <input id="matSpacingY" type="number" min="0.001" max="10" step="0.01" value="0.20" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
+              <label class="text-xs">เหล็กปลอก (ขนาด)
+                <select id="stirrupSize" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" onchange="triggerPreview()">
+                  <option value="NONE">ไม่มี (NONE)</option>
+                  <option value="RB6" selected>RB6</option>
+                  <option value="RB9">RB9</option>
+                </select>
               </label>
-              <div class="col-span-2 flex gap-4 text-xs pt-1">
-                <label><input type="checkbox" id="matBottom" checked onchange="triggerPreview()"> ตะแกรงล่าง</label>
-                <label><input type="checkbox" id="matTop" onchange="triggerPreview()"> ตะแกรงบน</label>
-              </div>
+              <label class="text-xs col-span-2">ระยะเรียงเหล็กปลอก/กระจาย (m) *
+                <input id="stirrupSpacing" type="number" min="0.01" max="1.0" step="0.01" value="0.20" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
+              </label>
             </div>
 
-            <div id="specialRebarContainer" class="col-span-2 pt-2 border-t dark:border-slate-800 bg-amber-50/40 dark:bg-amber-950/20 p-2.5 rounded-xl border border-amber-200 dark:border-amber-900/50">
-              <span class="text-xs font-semibold text-amber-600 dark:text-amber-400 block mb-1">⭐ เหล็กเสริมพิเศษ</span>
-              <div class="grid grid-cols-2 gap-2 text-xs">
-                <label class="flex flex-col">เหล็กกันร้าวข้างคาน
-                  <select id="extraBarSize" class="mt-1 border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-1.5 text-xs" onchange="triggerPreview()">
-                    <option value="NONE">ไม่มี (NONE)</option>
-                    <option value="RB6">RB6</option><option value="RB9">RB9</option><option value="RB12" selected>RB12</option><option value="DB12">DB12</option><option value="DB16">DB16</option>
-                  </select>
-                </label>
-                <label class="flex flex-col">จำนวนเส้นต่อด้าน
-                  <input id="extraBarCount" type="number" min="0" max="20" step="1" value="0" class="mt-1 border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-1.5 text-xs" oninput="triggerPreview()">
-                </label>
-              </div>
-            </div>
-
-            <label class="text-xs">ความยาวเหล็กสต็อก (m)
-              <input id="stockLength" type="number" min="1" max="50" step="0.1" value="10" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+            <label class="text-xs">ระยะหุ้มคอนกรีต Cover (m)
+              <input id="cover" type="number" min="0" max="0.2" step="0.005" value="0.04" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
             </label>
-            <label class="text-xs">ระยะทาบ (เท่าของ d)
-              <select id="lapRatio" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
-                <option value="40">40d</option><option value="50">50d</option><option value="60" selected>60d</option>
-              </select>
-            </label>
-          </div>
-
-          <!-- Roof Truss Container -->
-          <div id="roofTrussFields" class="hidden pt-1 space-y-3">
-            <div class="flex justify-between items-center">
-              <p class="text-xs text-amber-500 font-medium">📋 รายการโครงสร้างเหล็กรูปพรรณ</p>
-              <button type="button" onclick="addRoofMemberRow()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 rounded-lg text-xs font-medium">+ เพิ่มสมาชิกเหล็ก</button>
-            </div>
-            <div id="roofMembersContainer" class="space-y-2 max-h-72 overflow-y-auto pr-1"></div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-3 pt-2 mt-2 border-t dark:border-slate-800">
             <label class="text-xs">เผื่อเศษเหล็ก (% Waste)
               <input id="waste" type="number" min="0" max="100" value="5" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
             </label>
           </div>
         </div>
 
-        <div id="stirrupFields" class="grid grid-cols-2 gap-3 pt-2 border-t dark:border-slate-800 hidden">
-          <label class="text-xs">เหล็กปลอก
-            <select id="stirrupSize" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" onchange="triggerPreview()">
-              <option value="NONE">ไม่มี (NONE)</option><option value="RB6" selected>RB6</option><option value="RB9">RB9</option>
-            </select>
-          </label>
-          <label class="text-xs">เกรดเหล็กปลอก
-            <select id="stirrupGrade" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
-              <option selected>SR24</option><option>SD30</option><option>SD40</option><option>SD50</option>
-            </select>
-          </label>
-          <label class="text-xs">ระยะเรียงปลอก (m)
-            <input id="spacing" type="number" min="0.001" max="10" step="0.01" value="0.15" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
-          </label>
-          <label class="text-xs">ระยะหุ้ม Cover (m)
-            <input id="cover" type="number" min="0" max="1" step="0.005" value="0.04" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
-          </label>
-          <label class="text-xs col-span-2">อัตราขอเกี่ยว (Hook Ratio)
-            <input id="hookRatio" type="number" min="0" max="100" value="10" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2" oninput="triggerPreview()">
-          </label>
-        </div>
-
-        <hr class="dark:border-slate-800">
-        <h3 class="font-semibold text-sm">งานดิน & คอนกรีตหยาบ</h3>
-        <div class="grid grid-cols-2 gap-3">
-          <label class="text-xs">ระยะเผื่อขุดต่อข้าง (m)
-            <input id="excClear" type="number" min="0" max="10" step="0.05" value="0.30" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
-          </label>
-          <label class="text-xs">ความลึกขุด (m)
-            <input id="excDepth" type="number" min="0" max="50" step="0.05" value="0.80" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
-          </label>
-          <label class="text-xs">ทรายรองพื้น (m)
-            <input id="sandBed" type="number" min="0" max="5" step="0.01" value="0.05" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
-          </label>
-          <div class="text-xs flex items-center pt-4">
-            <label class="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" id="addLean" checked class="w-4 h-4">
-              <span>เทคอนกรีตหยาบ (5 cm)</span>
-            </label>
-          </div>
-        </div>
-        <p id="earthworkNote" class="text-[10px] text-slate-500">*สมมติฐานงานดิน: ฐานรากคิดขุดรอบตัวด้วยระยะเผื่อขุด / คานคิดขุดตามแนวความยาว</p>
-
-        <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-medium transition shadow">
-          + คำนวณและเพิ่มรายการ
+        <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-medium transition shadow mt-4">
+          + คำนวณและเพิ่มรายการ (Unified Engine)
         </button>
       </form>
     </section>
@@ -362,123 +275,93 @@
       <section class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border dark:border-slate-800 print-card">
         <div class="flex flex-wrap justify-between items-center gap-3 mb-3">
           <div>
-            <h2 class="text-lg font-semibold">รายการถอดแบบ / BOQ</h2>
-            <p class="text-[11px] text-amber-600 dark:text-amber-400">⚠️ คำเตือน: ประมาณการเบื้องต้น คำนวณตามสูตรระยะทาบและเผื่อเศษ ยังไม่ใช่การตัดเหล็กจริง (BBS)</p>
-          </div>
-          <div class="flex gap-2 no-print">
-            <input id="searchQuery" oninput="render()" placeholder="🔍 ค้นหารายการ..." class="text-xs bg-slate-50 dark:bg-slate-800 border dark:border-slate-700 rounded-lg px-3 py-1.5 w-36 md:w-48">
-            <select id="filterType" onchange="render()" class="text-xs bg-slate-50 dark:bg-slate-800 border dark:border-slate-700 rounded-lg px-2 py-1.5">
-              <option value="">ทุกประเภทองค์อาคาร</option>
-              <option value="Footing">ฐานราก</option>
-              <option value="Ground Beam">คานคอดิน</option>
-              <option value="Stub Column">เสาตอม่อ</option>
-              <option value="Slab on Ground">พื้น On Ground</option>
-              <option value="Ground Stair">บันไดคอดิน</option>
-              <option value="Column">เสาชั้นบน</option>
-              <option value="Beam">คานรับพื้น</option>
-              <option value="Elevated Slab">พื้นหล่อในที่</option>
-              <option value="Precast Slab">พื้นสำเร็จรูป</option>
-              <option value="Roof Truss">โครงสร้างเหล็กรูปพรรณ</option>
-            </select>
+            <h2 class="text-lg font-semibold">รายการถอดแบบ / BOQ (แยกน้ำหนักติดตั้งและจัดซื้อ)</h2>
+            <p class="text-[11px] text-emerald-600 dark:text-emerald-400 no-print">✔️ ใช้ Unified Engine คำนวณมาตรฐานเดียวกันทั้งปุ่มฟอร์มและ AI Vision</p>
           </div>
         </div>
 
         <div class="overflow-x-auto">
-          <table class="w-full text-sm min-w-[1150px]">
+          <table class="w-full text-sm min-w-[1200px]">
             <thead class="bg-slate-100 dark:bg-slate-800 text-left text-xs">
               <tr>
                 <th class="p-2">ชื่อ / ประเภท</th>
                 <th class="p-2">จำนวน</th>
-                <th class="p-2">คอนกรีต / หยาบ (m³)</th>
-                <th class="p-2">ไม้แบบ / พื้น (m² / m²)</th>
-                <th class="p-2">ขุดดิน / ถม (m³)</th>
-                <th class="p-2">เหล็กติดตั้ง (kg)</th>
-                <th class="p-2">เหล็กจัดซื้อ (kg)</th>
-                <th class="p-2">ต้นทุนรวม</th>
+                <th class="p-2">คอนกรีต (m³)</th>
+                <th class="p-2">ไม้แบบ (m²)</th>
+                <th class="p-2">ขุดดิน (m³)</th>
+                <th class="p-2">เหล็กติดตั้ง (สุทธิ kg)</th>
+                <th class="p-2">เหล็กจัดซื้อ (+Waste kg)</th>
+                <th class="p-2">ต้นทุนรวม (บาท)</th>
                 <th class="p-2 no-print">จัดการ</th>
               </tr>
             </thead>
             <tbody id="rows"></tbody>
           </table>
         </div>
-      </section>
 
-      <!-- Cost Breakdown Chart -->
-      <section class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border dark:border-slate-800 print-card">
-        <div class="flex justify-between items-center mb-3">
-          <h2 class="text-lg font-semibold">📊 กราฟสัดส่วนต้นทุนวัสดุและงาน (Cost Breakdown)</h2>
+        <!-- Sign-off Section for A4 Print -->
+        <div class="print-sign-section">
+          <div style="text-align: center; width: 40%;">
+            <p>ลงชื่อ......................................................ผู้ถอดแบบ</p>
+            <p>(......................................................)</p>
+            <p>วันที่ ...../...../.....</p>
+          </div>
+          <div style="text-align: center; width: 40%;">
+            <p>ลงชื่อ......................................................ผู้อนุมัติโครงการ</p>
+            <p>(......................................................)</p>
+            <p>วันที่ ...../...../.....</p>
+          </div>
         </div>
-        <div class="space-y-3" id="costChartContainer"></div>
+
+        <!-- Engineering Assumptions Disclosures Box -->
+        <div class="mt-4 p-3 bg-amber-50 dark:bg-amber-950/20 rounded-xl border border-amber-200 dark:border-amber-900 text-xs text-amber-800 dark:text-amber-300 space-y-1 no-print">
+          <div class="font-bold flex items-center gap-1">ℹ️ สมมติฐานทางวิศวกรรมและการเงิน (Strict & Unified Assumptions):</div>
+          <ul class="list-disc list-inside space-y-0.5 text-[11px]">
+            <li><b>การเงิน:</b> หัก ณ ที่จ่าย (WHT) และ VAT คำนวณจากยอดรวมก่อน VAT ตามมาตรฐานบัญชีโครงการ</li>
+            <li><b>เสา ค.ส.ล. (Column):</b> ใช้มิติหน้าตัด Width $\times$ Length และตรวจสอบระยะ Cover เทียบกับหน้าตัดอย่างสอดคล้องกัน</li>
+            <li><b>AI Vision Guard:</b> ระบบจะปฏิเสธการคำนวณอัตโนมัติทันทีหากข้อมูลจากภาพอ่านไม่ครบหรือค่าความมั่นใจต่ำกว่าเกณฑ์</li>
+          </ul>
+        </div>
       </section>
 
       <!-- Rates Configuration -->
-      <section class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border dark:border-slate-800 print-card no-print">
-        <h2 class="text-lg font-semibold mb-3">ราคาวัสดุและค่าแรง (อิงเรตผู้ใช้กำหนด)</h2>
+      <section class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border dark:border-slate-800 no-print">
+        <h2 class="text-lg font-semibold mb-3">⚙️ ตั้งค่าราคาวัสดุและค่าแรง (ตรวจสอบขอบเขตราคาปลอดภัย)</h2>
         <div class="grid grid-cols-2 md:grid-cols-3 gap-3" id="rateInputs"></div>
       </section>
 
       <!-- Financial Summary -->
       <section class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border dark:border-slate-800 print-card">
         <div class="flex justify-between items-center mb-3">
-          <h2 class="text-lg font-semibold">ค่าดำเนินการและสรุปราคาประเมิน</h2>
+          <h2 class="text-lg font-semibold">ค่าดำเนินการ สรุปราคาประเมิน และภาษี</h2>
         </div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4 no-print">
-          <label class="text-sm">Overhead (%) [0-100]
-            <input id="overhead" type="number" min="0" max="100" value="10" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+          <label class="text-sm">Overhead (%)
+            <input id="overhead" type="number" min="0" max="100" value="10" oninput="render(); saveDraftToLocalStorage();" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
-          <label class="text-sm">กำไร Profit (%) [0-100]
-            <input id="profit" type="number" min="0" max="100" value="10" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+          <label class="text-sm">กำไร Profit (%)
+            <input id="profit" type="number" min="0" max="100" value="10" oninput="render(); saveDraftToLocalStorage();" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
-          <label class="text-sm">VAT (%) [0-100]
-            <input id="vat" type="number" min="0" max="100" value="7" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+          <label class="text-sm">VAT (%)
+            <input id="vat" type="number" min="0" max="50" value="7" oninput="render(); saveDraftToLocalStorage();" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
-          <label class="text-sm">หัก ณ ที่จ่าย (%) [0-100]
-            <input id="wht" type="number" min="0" max="100" value="3" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+          <label class="text-sm">หัก ณ ที่จ่าย (%)
+            <input id="wht" type="number" min="0" max="30" value="3" oninput="render(); saveDraftToLocalStorage();" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
           </label>
         </div>
         <div id="summary" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
-      </section>
-
-      <!-- Rebar Summary Table -->
-      <section class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border dark:border-slate-800 print-card">
-        <h2 class="text-lg font-semibold mb-3">สรุปเหล็กเสริม ค.ส.ล. และเหล็กรูปพรรณ</h2>
-        <div class="overflow-x-auto">
-          <table class="w-full text-sm">
-            <thead class="bg-slate-100 dark:bg-slate-800 text-left text-xs">
-              <tr>
-                <th class="p-2">ประเภทเหล็ก</th>
-                <th class="p-2">เกรด / หน้าตัด</th>
-                <th class="p-2">ความยาวรวม (m)</th>
-                <th class="p-2">น้ำหนักติดตั้ง (kg)</th>
-                <th class="p-2">น้ำหนักจัดซื้อรวมเศษ (kg)</th>
-                <th class="p-2">น้ำหนัก (ton)</th>
-              </tr>
-            </thead>
-            <tbody id="rebarRows"></tbody>
-          </table>
-        </div>
       </section>
     </section>
   </div>
 </div>
 
-<!-- Import Summary Modal -->
-<div id="importReportModal" class="fixed inset-0 bg-slate-950/70 z-50 flex items-center justify-center hidden">
-  <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl max-w-lg w-full mx-4 shadow-xl border dark:border-slate-800">
-    <h3 id="importModalTitle" class="text-lg font-bold mb-2 text-blue-600">📥 รายงานผลการนำเข้าข้อมูล (True Strict Mode)</h3>
-    <p id="importModalSub" class="text-xs text-slate-500 mb-4">ระบบตรวจสอบข้อมูลแบบ All-or-Nothing Strict Validation</p>
-    <div id="importReportContent" class="bg-slate-50 dark:bg-slate-800 p-3 rounded-xl text-xs max-h-60 overflow-y-auto space-y-1 mb-4 border dark:border-slate-700"></div>
-    <button onclick="$('importReportModal').classList.add('hidden')" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-xl text-xs font-medium">รับทราบและปิดหน้าต่าง</button>
-  </div>
-</div>
-
 <!-- Vision Scan Review & Confirmation Modal -->
 <div id="visionModal" class="fixed inset-0 bg-slate-950/80 z-50 flex items-center justify-center hidden">
-  <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl max-w-3xl w-full mx-4 shadow-2xl border dark:border-slate-800 max-h-[90vh] flex flex-col">
+  <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl max-w-2xl w-full mx-4 shadow-2xl border dark:border-slate-800 max-h-[90vh] flex flex-col">
     <div class="flex justify-between items-center mb-3">
       <div>
-        <h3 class="text-lg font-bold text-purple-600 dark:text-purple-400 flex items-center gap-2">🔍 ตรวจสอบและเลือกข้อมูลจาก AI Vision Scan (Strict Normalization)</h3>
-        <p class="text-xs text-amber-500">⚠️ ติ๊กเลือกเฉพาะช่องที่ต้องการนำเข้า (ค่าเริ่มต้นจะไม่ถูกติ๊ก เพื่อให้ผู้ใช้ตรวจสอบความถูกต้อง)</p>
+        <h3 class="text-lg font-bold text-purple-600 dark:text-purple-400 flex items-center gap-2">🤖 AI Vision Reading & Strict Verification</h3>
+        <p class="text-xs text-slate-500">ตรวจสอบความถูกต้องของข้อมูลจากแบบแปลน</p>
       </div>
       <button onclick="closeVisionModal()" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
     </div>
@@ -486,8 +369,11 @@
     <div id="visionModalContent" class="overflow-y-auto space-y-3 pr-2 flex-1 text-xs my-2"></div>
 
     <div class="flex gap-3 pt-3 border-t dark:border-slate-800 mt-auto">
-      <button onclick="applyVisionData()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl text-xs font-semibold shadow transition">
-        ✅ ตรวจสอบและยืนยันนำเข้าข้อมูล
+      <button id="aiCalcBtn" onclick="applyAndCalculateVisionData()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl text-xs font-semibold shadow transition">
+        🚀 ยืนยัน ตรวจสอบ และคำนวณ BOQ ทันที
+      </button>
+      <button onclick="applyVisionDataOnly()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2.5 rounded-xl text-xs font-medium transition">
+        📝 เติมลงฟอร์มเพื่อตรวจแก้
       </button>
       <button onclick="closeVisionModal()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2.5 rounded-xl text-xs font-medium transition">
         ยกเลิก
@@ -496,245 +382,158 @@
   </div>
 </div>
 
+<!-- Modal: Government Por.4 / Por.5 Summary -->
+<div id="por4Modal" class="fixed inset-0 bg-slate-950/80 z-50 flex items-center justify-center hidden">
+  <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl max-w-4xl w-full mx-4 shadow-2xl border dark:border-slate-800 max-h-[90vh] flex flex-col">
+    <div class="flex justify-between items-center mb-3">
+      <h3 class="text-lg font-bold text-cyan-600 dark:text-cyan-400">📋 สรุปประมาณราคาตามแบบ ปร.4 / ปร.5 (มาตรฐานราชการ)</h3>
+      <button onclick="closeModal('por4Modal')" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+    </div>
+    <div id="por4ModalContent" class="overflow-y-auto space-y-4 pr-2 flex-1 text-xs my-2"></div>
+    <div class="pt-3 border-t dark:border-slate-800 mt-auto flex justify-end">
+      <button onclick="closeModal('por4Modal')" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-xl text-xs">ปิดหน้าต่าง</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Rebar Cutting Optimization & Bar List -->
+<div id="cuttingModal" class="fixed inset-0 bg-slate-950/80 z-50 flex items-center justify-center hidden">
+  <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl max-w-4xl w-full mx-4 shadow-2xl border dark:border-slate-800 max-h-[90vh] flex flex-col">
+    <div class="flex justify-between items-center mb-3">
+      <h3 class="text-lg font-bold text-indigo-600 dark:text-indigo-400">📐 การวิเคราะห์การตัดเหล็ก (Cutting Optimization) และ Bar List</h3>
+      <button onclick="closeModal('cuttingModal')" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+    </div>
+    <div id="cuttingModalContent" class="overflow-y-auto space-y-4 pr-2 flex-1 text-xs my-2"></div>
+    <div class="pt-3 border-t dark:border-slate-800 mt-auto flex justify-end">
+      <button onclick="closeModal('cuttingModal')" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-xl text-xs">ปิดหน้าต่าง</button>
+    </div>
+  </div>
+</div>
+
 <script>
-// ==========================================
-// CONFIGURABLE PRODUCTION ENDPOINT & CORS SETUP
-// ==========================================
 const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
   ? 'http://localhost:3000'
-  : (window.ENV_API_URL || 'https://api.structural-boq-pro.com'); // แทนที่ด้วยโดเมน Backend จริงที่ตั้งค่า CORS อนุญาต Origin เรียบร้อยแล้ว
+  : (window.ENV_API_URL || 'https://api.structural-boq-pro.com');
 
 const unitWeight = {
-  RB6:0.222, RB9:0.499, RB12:0.888, RB15:1.387,
-  DB12:0.888, DB16:1.58, DB20:2.47, DB25:3.85, 
-  DB28:4.83, DB32:6.31, DB40:9.86
+  RB6: 0.222, RB9: 0.499, RB12: 0.888, RB15: 1.387,
+  DB12: 0.888, DB16: 1.58, DB20: 2.47, DB25: 3.85
 };
-
-const steelProfilePresets = {
-  "Box 2\"x2\"x2.3mm": { profile: "เหล็กกล่อง 50x50x2.3mm", wpm: 3.33 },
-  "Box 4\"x2\"x3.2mm": { profile: "เหล็กกล่อง 100x50x3.2mm", wpm: 6.86 },
-  "Box 4\"x4\"x3.2mm": { profile: "เหล็กกล่อง 100x100x3.2mm", wpm: 9.37 },
-  "C-100x50x20x2.3mm": { profile: "เหล็กซี 100x50x20x2.3mm", wpm: 3.78 },
-  "C-125x50x20x3.2mm": { profile: "เหล็กซี 125x50x20x3.2mm", wpm: 5.88 },
-  "C-150x65x20x3.2mm": { profile: "เหล็กซี 150x65x20x3.2mm", wpm: 7.21 },
-  "H-Beam 100x100": { profile: "เหล็ก H-Beam 100x100", wpm: 17.2 },
-  "Pipe 2\"x2.8mm": { profile: "ท่อเหล็กกลม 2\"x2.8mm", wpm: 3.61 }
-};
-
-const supportedGrades = ["SR24", "SD30", "SD40", "SD50"];
-const supportedExtraBarSizes = ["NONE", "RB6", "RB9", "RB12", "DB12", "DB16"];
-const supportedStirrupSizes = ["NONE", "RB6", "RB9"];
-const supportedTypes = ["Footing", "Ground Beam", "Stub Column", "Slab on Ground", "Ground Stair", "Column", "Beam", "Elevated Slab", "Precast Slab", "Roof Truss"];
-const supportedBarSizes = Object.keys(unitWeight);
 
 const rateDefaults = {
-  concrete:{label:"คอนกรีตโครงสร้าง (บาท/m³)",value:2500},
-  leanConc:{label:"คอนกรีตหยาบ (บาท/m³)",value:1800},
-  rebarSR24:{label:"เหล็กเกรด SR24 (บาท/kg)",value:28},
-  rebarSD30:{label:"เหล็กเกรด SD30 (บาท/kg)",value:29},
-  rebarSD40:{label:"เหล็กเกรด SD40 (บาท/kg)",value:30},
-  rebarSD50:{label:"เหล็กเกรด SD50 (บาท/kg)",value:32},
-  roofTrussSteel:{label:"เหล็กโครงสร้างรูปพรรณ (บาท/kg)",value:45},
-  formwork:{label:"ไม้แบบ (บาท/m²)",value:350},
-  precastSlab:{label:"แผ่นพื้นสำเร็จรูป (บาท/m²)",value:240},
-  excavation:{label:"ขุดดิน (บาท/m³)",value:150},
-  backfill:{label:"ถมดิน/ทราย (บาท/m³)",value:200},
-  laborConc:{label:"ค่าแรงคอนกรีต (บาท/m³)",value:500},
-  laborLeanConc:{label:"ค่าแรงคอนกรีตหยาบ (บาท/m³)",value:150},
-  laborRebar:{label:"ค่าแรงผูกเหล็ก ค.ส.ล. (บาท/kg)",value:5},
-  laborRoofTruss:{label:"ค่าแรงโครงสร้างรูปพรรณ (บาท/kg)",value:12},
-  laborForm:{label:"ค่าแรงไม้แบบ (บาท/m²)",value:150},
-  laborPrecast:{label:"ค่าแรงวางพื้น (บาท/m²)",value:50},
-  laborExc:{label:"ค่าแรงขุด (บาท/m³)",value:0},
-  laborFill:{label:"ค่าแรงถม (บาท/m³)",value:0}
+  concrete: { label: "คอนกรีตโครงสร้าง (บาท/m³)", value: 2500 },
+  leanConc: { label: "คอนกรีตหยาบ (บาท/m³)", value: 1800 },
+  rebarSR24: { label: "เหล็ก SR24 (บาท/kg)", value: 28 },
+  rebarSD30: { label: "เหล็ก SD30 (บาท/kg)", value: 29 },
+  rebarSD40: { label: "เหล็ก SD40 (บาท/kg)", value: 30 },
+  rebarSD50: { label: "เหล็ก SD50 (บาท/kg)", value: 32 },
+  formwork: { label: "ไม้แบบ (บาท/m²)", value: 350 },
+  excavation: { label: "ขุดดิน (บาท/m³)", value: 150 },
+  laborConc: { label: "ค่าแรงเทคอนกรีต (บาท/m³)", value: 500 },
+  laborRebar: { label: "ค่าแรงผูกเหล็ก (บาท/kg)", value: 5 },
+  laborForm: { label: "ค่าแรงไม้แบบ (บาท/m²)", value: 150 }
 };
 
-const $ = id => document.getElementById(id);
-const money = n => (Number(n)||0).toLocaleString("th-TH", { minimumFractionDigits:2, maximumFractionDigits:2 });
-const safe = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
-
-// ==========================================
-// MIGRATION & SANITIZATION UTILITIES
-// ==========================================
-function migrateStorageKeys() {
-  try {
-    if (!localStorage.getItem("qtoRates_v15_9")) {
-      const oldRates = localStorage.getItem("qtoRates_v15_8") || localStorage.getItem("qtoRates_v15_7");
-      if (oldRates) localStorage.setItem("qtoRates_v15_9", oldRates);
-    }
-    if (!localStorage.getItem("qtoProjects_v15_9")) {
-      const oldProj = localStorage.getItem("qtoProjects_v15_8") || localStorage.getItem("qtoProjects_v15_7");
-      if (oldProj) localStorage.setItem("qtoProjects_v15_9", oldProj);
-    }
-    if (!localStorage.getItem("qtoCurrent_v15_9")) {
-      const oldCurr = localStorage.getItem("qtoCurrent_v15_8") || localStorage.getItem("qtoCurrent_v15_7");
-      if (oldCurr) localStorage.setItem("qtoCurrent_v15_9", oldCurr);
-    }
-  } catch(e) {}
-}
-migrateStorageKeys();
-
-function sanitizeNumber(value, min = -Infinity, max = Infinity, fallback = 0, strict = false, fieldName = "ค่าข้อมูล") {
-  if (value === "" || value === null || value === undefined) {
-    if (strict) throw new Error(`กรุณาระบุช่อง "${fieldName}"`);
-    return fallback;
-  }
-  const n = Number(value);
-  if (!Number.isFinite(n) || n < min || n > max) {
-    if (strict) throw new Error(`ช่อง "${fieldName}" มีค่าไม่ถูกต้อง (${min} ถึง ${max}, พบ: ${value})`);
-    return fallback;
-  }
-  return n;
-}
-
-function readNumber(id, fallback, min = -Infinity, max = Infinity) {
-  const el = $(id);
-  if (!el) return fallback;
-  const value = Number(el.value);
-  if (!Number.isFinite(value)) return fallback;
-  return Math.min(max, Math.max(min, value));
-}
-
-function sanitizeInteger(value, min = -Infinity, max = Infinity, fallback = 0, strict = false, fieldName = "ค่าข้อมูล") {
-  if (value === "" || value === null || value === undefined) {
-    if (strict) throw new Error(`กรุณาระบุช่อง "${fieldName}"`);
-    return fallback;
-  }
-  const n = Number(value);
-  if (!Number.isFinite(n) || n < min || n > max) {
-    if (strict) throw new Error(`ช่อง "${fieldName}" มีค่าไม่ถูกต้อง (${min} ถึง ${max}, พบ: ${value})`);
-    return fallback;
-  }
-  if (!Number.isInteger(n)) {
-    if (strict) throw new Error(`ช่อง "${fieldName}" ต้องเป็นจำนวนเต็มเท่านั้น (พบ: ${value})`);
-    return Math.round(n);
-  }
-  return n;
-}
-
-function parseBooleanStrict(value, fieldName = "ค่าตัวเลือก") {
-  if (value === true || value === 1) return true;
-  if (value === false || value === 0) return false;
-  if (typeof value === "string") {
-    const text = value.trim().toLowerCase();
-    if (["true", "1", "yes", "y", "ถูก"].includes(text)) return true;
-    if (["false", "0", "no", "n", "ผิด"].includes(text)) return false;
-  }
-  throw new Error(`ช่อง "${fieldName}" ต้องเป็นค่า True/False หรือ ถูก/ผิด (พบ: ${value})`);
-}
-
-function parseExcelDate(val) {
-  if (!val) return todayLocal();
-  if (typeof val === 'number') {
-    const d = XLSX.SSF.parse_date_code(val);
-    if (d && d.y && d.m && d.d) {
-      return `${d.y}-${String(d.m).padStart(2,"0")}-${String(d.d).padStart(2,"0")}`;
-    }
-  }
-  const str = String(val).trim();
-  if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
-  return todayLocal();
-}
-
+let rates = Object.fromEntries(Object.entries(rateDefaults).map(([k, def]) => [k, def.value]));
 let items = [];
-let rates = (() => {
-  try {
-    const saved = JSON.parse(localStorage.getItem("qtoRates_v15_9"));
-    if (saved && typeof saved === 'object') {
-      return Object.fromEntries(Object.entries(rateDefaults).map(([k,v]) => [k, sanitizeNumber(saved[k], 0, 1000000, v.value)]));
-    }
-  } catch(e) {}
-  return Object.fromEntries(Object.entries(rateDefaults).map(([k,v]) => [k, v.value]));
-})();
+let currentScannedParsed = null;
+let scene3d, camera3d, renderer3d, controls3d, modelGroup3d;
+
+const $ = id => document.getElementById(id);
+const money = n => (Number(n) || 0).toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const safe = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+function getLocalTodayDate() {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
 
 function toggleDarkMode() {
-  const html = document.documentElement;
-  const isDark = html.classList.toggle('dark');
-  try { localStorage.setItem('theme_v15_9', isDark ? 'dark' : 'light'); } catch(e) {}
-  
-  const icon = $("themeIcon");
-  if (icon) icon.textContent = isDark ? '☀️' : '🌙';
-  
-  if (scene3d) {
-    scene3d.background = new THREE.Color(isDark ? 0x0a0f1d : 0xf8fafc);
+  document.documentElement.classList.toggle('dark');
+  const isDark = document.documentElement.classList.contains('dark');
+  $("themeIcon").textContent = isDark ? '☀️' : '🌙';
+  if (scene3d) scene3d.background = new THREE.Color(isDark ? 0x0a0f1d : 0xf8fafc);
+}
+
+function openModal(id) {
+  if (id === 'por4Modal') generatePor4Report();
+  if (id === 'cuttingModal') generateCuttingOptimizationReport();
+  $(id).classList.remove('hidden');
+}
+
+function closeModal(id) {
+  $(id).classList.add('hidden');
+}
+
+function showFieldError(fieldId, message) {
+  const container = $(`field-${fieldId}`);
+  const errEl = $(`err-${fieldId}`);
+  if (container && errEl) {
+    container.classList.add('has-error');
+    errEl.textContent = message;
+    errEl.style.display = 'block';
   }
 }
 
-try {
-  if (localStorage.getItem('theme_v15_9') === 'dark') {
-    document.documentElement.classList.add('dark');
-    if ($("themeIcon")) $("themeIcon").textContent = '☀️';
+function clearError(fieldId) {
+  const container = $(`field-${fieldId}`);
+  const errEl = $(`err-${fieldId}`);
+  if (container && errEl) {
+    container.classList.remove('has-error');
+    errEl.style.display = 'none';
   }
-} catch(e) {}
-
-function todayLocal() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
 }
-if ($("reportDate") && !$("reportDate").value) $("reportDate").value = todayLocal();
-
-document.querySelectorAll(".project-info-input").forEach(input => {
-  input.addEventListener("input", () => persistCurrent());
-});
-
-["overhead", "profit", "vat", "wht"].forEach(id => {
-  $(id)?.addEventListener("input", () => {
-    render();
-    persistCurrent();
-  });
-});
-
-function isMatType(type) { return ["Footing","Slab on Ground","Elevated Slab","Precast Slab"].includes(type); }
-function isStirrupType(type) { return ["Ground Beam","Beam","Stub Column","Column"].includes(type); }
-function isColumnType(type) { return ["Column","Stub Column"].includes(type); }
 
 // ==========================================
-// STRICT SCHEMA & UNIT NORMALIZATION VALIDATION FOR VISION AI
+// 1. AI VISION & MULTI-PAGE PDF BLUEPRINT BATCH SCANNER
 // ==========================================
-let currentScannedData = null;
+function validateVisionSchema(raw) {
+  if (!raw || typeof raw !== 'object') throw new Error("รูปแบบข้อมูล AI ไม่ถูกต้อง");
+  const validTypes = ["Footing", "Ground Beam", "Column", "Slab on Ground", "Elevated Slab", "Ground Stair"];
+  
+  const elementType = validTypes.includes(raw.elementType) ? raw.elementType : null;
+  const name = typeof raw.name === 'string' && raw.name.trim() !== '' ? raw.name.trim() : "AI-Scanned-Item";
+  
+  const dims = raw.dimensions || {};
+  const parseDim = val => (val !== null && val !== undefined && val !== "" && Number.isFinite(Number(val)) && Number(val) > 0) ? Number(val) : null;
 
-function validateVisionScanResponse(raw) {
-  if (!raw || typeof raw !== 'object') {
-    throw new Error("โครงสร้างข้อมูลจาก Vision API ไม่ถูกต้อง (ไม่ใช่ Object)");
-  }
+  const width_m = parseDim(dims.width_m);
+  const length_m = parseDim(dims.length_m);
+  const depth_m = parseDim(dims.depth_m);
+  const columnHeight_m = parseDim(dims.columnHeight_m);
+  const rise_m = parseDim(dims.rise_m);
+  const stairSteps = (dims.stairSteps !== null && Number.isFinite(Number(dims.stairSteps)) && Number(dims.stairSteps) > 0) ? Math.floor(Number(dims.stairSteps)) : null;
+  const spacingX_m = parseDim(dims.spacingX_m);
+  const spacingY_m = parseDim(dims.spacingY_m);
 
-  if (raw.status && raw.status === "error") {
-    throw new Error(raw.message || "ระบบ Vision API ประมวลผลล้มเหลว");
-  }
+  const rebar = raw.reinforcement || {};
+  const validBarSizes = Object.keys(unitWeight);
+  const mainBarList = Array.isArray(rebar.mainBars) ? rebar.mainBars : [];
+  
+  const validMainBars = mainBarList.map(b => ({
+    size: validBarSizes.includes(b.size) ? b.size : null,
+    count: (Number.isFinite(Number(b.count)) && Number(b.count) > 0) ? Math.floor(Number(b.count)) : null
+  })).filter(b => b.size !== null && b.count !== null);
 
-  // Unit Normalization & Validation: ฟิลด์ที่ลงท้ายด้วย _m ถือเป็นเมตรที่ Normalize จาก Backend เรียบร้อยแล้ว ห้ามหารซ้ำ
-  const parseNormalizedMetric = (val, fieldName = "") => {
-    if (val === null || val === undefined || val === "") return null;
-    const num = Number(val);
-    if (!Number.isFinite(num)) return null;
-    if (fieldName.endsWith("_m")) {
-      return num; // ยึดถือว่าเป็นเมตรตามสัญญา API อย่างเคร่งครัด ห้ามหารซ้ำ
-    }
-    return num;
+  const stirrupSize = validBarSizes.includes(rebar.stirrupSize) ? rebar.stirrupSize : (rebar.stirrupSize === "NONE" ? "NONE" : null);
+  const stirrupSpacing_m = parseDim(rebar.stirrupSpacing_m);
+  const cover_m = parseDim(raw.cover_m);
+
+  const conf = raw.confidence || {};
+  const clampConf = val => (Number.isFinite(Number(val)) && Number(val) >= 0 && Number(val) <= 1) ? Number(val) : 0.5;
+  const confidence = {
+    dimensions: clampConf(conf.dimensions),
+    reinforcement: clampConf(conf.reinforcement)
   };
 
-  const evidenceMap = {};
-  if (Array.isArray(raw.evidence)) {
-    raw.evidence.forEach(ev => { evidenceMap[ev.field] = ev; });
-  }
-
-  return {
-    elementType: supportedTypes.includes(raw.elementType) ? raw.elementType : "Footing",
-    name: raw.name ? String(raw.name).trim() : "Scanned-Element",
-    width_m: parseNormalizedMetric(raw.width_m, "width_m"),
-    length_m: parseNormalizedMetric(raw.length_m, "length_m"),
-    depth_m: parseNormalizedMetric(raw.depth_m, "depth_m"),
-    mainBarSize: supportedBarSizes.includes(raw.mainBarSize) ? raw.mainBarSize : "RB12",
-    barCount: sanitizeInteger(raw.barCount, 0, 100, 4),
-    barSpacingX_m: parseNormalizedMetric(raw.barSpacingX_m, "barSpacingX_m"),
-    barSpacingY_m: parseNormalizedMetric(raw.barSpacingY_m, "barSpacingY_m"),
-    stirrupSize: supportedStirrupSizes.includes(raw.stirrupSize) ? raw.stirrupSize : "NONE",
-    stirrupSpacing_m: parseNormalizedMetric(raw.stirrupSpacing_m, "stirrupSpacing_m"),
-    cover_m: parseNormalizedMetric(raw.cover_m, "cover_m"),
-    unitsDetected: Array.isArray(raw.unitsDetected) ? raw.unitsDetected.map(x => String(x)) : [],
-    unreadableFields: Array.isArray(raw.unreadableFields) ? raw.unreadableFields.map(x => String(x)) : [],
-    warnings: Array.isArray(raw.warnings) ? raw.warnings.map(x => String(x)) : [],
-    evidence: Array.isArray(raw.evidence) ? raw.evidence : []
+  return { 
+    elementType, name, 
+    dimensions: { width_m, length_m, depth_m, columnHeight_m, rise_m, stairSteps, spacingX_m, spacingY_m }, 
+    reinforcement: { mainBars: validMainBars, stirrupSize, stirrupSpacing_m, cover_m }, 
+    confidence 
   };
 }
 
@@ -742,13 +541,8 @@ async function handleVisionScanUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
 
-  if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-    alert("❌ รองรับเฉพาะไฟล์รูปภาพ JPG, PNG หรือ WEBP เท่านั้น");
-    event.target.value = "";
-    return;
-  }
   if (file.size > 5 * 1024 * 1024) {
-    alert("❌ ขนาดไฟล์ใหญ่เกินไป (จำกัดไม่เกิน 5MB)");
+    alert("❌ ขนาดไฟล์ใหญ่เกิน 5MB");
     event.target.value = "";
     return;
   }
@@ -758,24 +552,94 @@ async function handleVisionScanUpload(event) {
   $("visionLoading").classList.remove("hidden");
 
   try {
-    const response = await fetch(`${API_BASE_URL}/api/vision-scan`, {
-      method: "POST",
-      body: formData
-    });
-
+    const response = await fetch(`${API_BASE_URL}/api/vision-scan`, { method: "POST", body: formData });
     const result = await response.json();
     $("visionLoading").classList.add("hidden");
 
-    if (!response.ok || !result.success) {
-      throw new Error(result.error || "เกิดข้อผิดพลาดในการเชื่อมต่อกับ Vision API");
-    }
+    if (!response.ok || !result.success) throw new Error(result.error || `Server error`);
 
-    currentScannedData = validateVisionScanResponse(result.data);
-    openVisionModal(currentScannedData);
-
+    currentScannedParsed = validateVisionSchema(result.data);
+    openVisionModal(currentScannedParsed);
   } catch (err) {
     $("visionLoading").classList.add("hidden");
-    alert("❌ การวิเคราะห์ภาพล้มเหลว: " + err.message);
+    alert("❌ เกิดข้อผิดพลาด: " + err.message);
+  } finally {
+    event.target.value = "";
+  }
+}
+
+// Multi-Page PDF Blueprint Batch Scanner using PDF.js & Server Vision API
+async function handlePdfBatchScanUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  $("visionLoading").classList.remove("hidden");
+  $("visionLoading").textContent = "📚 กำลังอ่านไฟล์ PDF และแปลงหน้าแปลนทั้งหมด...";
+
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    const pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    const numPages = pdfDoc.numPages;
+
+    let importedCount = 0;
+    for (let i = 1; i <= numPages; i++) {
+      $("visionLoading").textContent = `🤖 กำลังสแกนหน้า ${i} จาก ${numPages}...`;
+      const page = await pdfDoc.getPage(i);
+      const viewport = page.getViewport({ scale: 2.0 });
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+
+      await page.render({ canvasContext: context, viewport: viewport }).promise;
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+
+      const formData = new FormData();
+      formData.append("image", blob, `page_${i}.png`);
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/vision-scan`, { method: "POST", body: formData });
+        const result = await response.json();
+        if (response.ok && result.success) {
+          const parsed = validateVisionSchema(result.data);
+          if (parsed.elementType && parsed.dimensions.width_m && parsed.dimensions.length_m) {
+            const formDataItem = {
+              type: parsed.elementType,
+              name: parsed.name || `PDF-P${i}-Item`,
+              qty: 1,
+              width: parsed.dimensions.width_m,
+              length: parsed.dimensions.length_m,
+              depth: parsed.dimensions.depth_m ?? 0.4,
+              columnHeight: parsed.dimensions.columnHeight_m ?? 3.0,
+              rise: parsed.dimensions.rise_m ?? 1.75,
+              stairSteps: parsed.dimensions.stairSteps ?? 10,
+              grade: "SD40",
+              barSize: parsed.reinforcement.mainBars[0]?.size || "DB12",
+              spacingX: parsed.dimensions.spacingX_m ?? 0.20,
+              spacingY: parsed.dimensions.spacingY_m ?? 0.20,
+              barCount: parsed.reinforcement.mainBars[0]?.count ?? 4,
+              stirrupSize: parsed.reinforcement.stirrupSize || "RB6",
+              stirrupSpacing: parsed.reinforcement.stirrupSpacing_m ?? 0.20,
+              cover: parsed.reinforcement.cover_m ?? 0.04,
+              wastePct: 5
+            };
+            const computed = computeItemMetrics(formDataItem);
+            items.push({ id: "pdf_batch_" + Date.now() + "_" + i, ...formDataItem, ...computed });
+            importedCount++;
+          }
+        }
+      } catch (pageErr) {
+        console.warn(`Page ${i} scan failed:`, pageErr);
+      }
+    }
+
+    $("visionLoading").classList.add("hidden");
+    render();
+    saveDraftToLocalStorage();
+    alert(`📚 สแกน PDF สำเร็จ! นำเข้าองค์อาคารเข้าสู่ระบบ BOQ จำนวน ${importedCount} รายการ`);
+  } catch (err) {
+    $("visionLoading").classList.add("hidden");
+    alert("❌ ไม่สามารถประมวลผล PDF ได้: " + err.message);
   } finally {
     event.target.value = "";
   }
@@ -785,434 +649,672 @@ function openVisionModal(data) {
   const container = $("visionModalContent");
   if (!container) return;
 
-  let warningsHtml = "";
-  if (data.warnings && data.warnings.length > 0) {
-    warningsHtml = `<div class="p-2 bg-amber-50 dark:bg-amber-950/40 rounded-lg border border-amber-200 dark:border-amber-900 text-amber-600 dark:text-amber-400 mb-2">
-      <b>⚠️ คำเตือนจาก AI Vision:</b><ul class="list-disc pl-4">${data.warnings.map(w => `<li>${safe(w)}</li>`).join("")}</ul>
-    </div>`;
-  }
+  const dims = data.dimensions || {};
+  const rebar = data.reinforcement || {};
+  const conf = data.confidence || {};
 
-  let unreadableHtml = "";
-  if (data.unreadableFields && data.unreadableFields.length > 0) {
-    unreadableHtml = `<div class="p-2 bg-red-50 dark:bg-red-950/40 rounded-lg border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 mb-2">
-      <b>❌ ช่องที่อ่านค่าไม่ได้ / ไม่ชัดเจน (ถูกเว้นว่าง):</b> ${data.unreadableFields.map(x => safe(x)).join(", ")}
-    </div>`;
-  }
+  const mainBarText = rebar.mainBars && rebar.mainBars.length 
+    ? rebar.mainBars.map(b => `${safe(b.size)} (${b.count} เส้น)`).join(", ")
+    : '<span class="text-amber-500">ไม่พบข้อมูล</span>';
 
-  const fieldsConfig = [
-    { key: "elementType", label: "ประเภทองค์อาคาร (Element Type)", type: "select", options: supportedTypes },
-    { key: "name", label: "ชื่อองค์อาคาร", type: "text" },
-    { key: "width_m", label: "กว้าง Width (m)", type: "number", min: 0.001, max: 100 },
-    { key: "length_m", label: "ยาว Length (m)", type: "number", min: 0.001, max: 1000 },
-    { key: "depth_m", label: "ลึก/หนา Depth (m)", type: "number", min: 0.001, max: 10 },
-    { key: "mainBarSize", label: "ขนาดเหล็กหลัก", type: "select", options: supportedBarSizes },
-    { key: "barCount", label: "จำนวนเหล็กหลัก", type: "number", min: 0, max: 100 },
-    { key: "barSpacingX_m", label: "ระยะเรียง X (m)", type: "number", min: 0.001, max: 10 },
-    { key: "barSpacingY_m", label: "ระยะเรียง Y (m)", type: "number", min: 0.001, max: 10 },
-    { key: "stirrupSize", label: "ขนาดเหล็กปลอก", type: "select", options: supportedStirrupSizes },
-    { key: "stirrupSpacing_m", label: "ระยะเรียงปลอก (m)", type: "number", min: 0.001, max: 10 },
-    { key: "cover_m", label: "ระยะหุ้ม Cover (m)", type: "number", min: 0, max: 1 }
-  ];
-
-  const evidenceMap = {};
-  if (Array.isArray(data.evidence)) {
-    data.evidence.forEach(ev => { evidenceMap[ev.field] = ev; });
-  }
-
-  let fieldsHtml = fieldsConfig.map(f => {
-    const val = data[f.key] !== null && data[f.key] !== undefined ? data[f.key] : "";
-    const ev = evidenceMap[f.key];
-    const confidenceBadge = ev ? `<span class="px-1.5 py-0.5 rounded text-[10px] ${ev.confidence > 0.8 ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">Conf: ${(ev.confidence * 100).toFixed(0)}%</span>` : '';
-    const evidenceText = ev && ev.visibleText ? `<div class="text-[10px] text-slate-400">อ้างอิงจากภาพ: "${safe(ev.visibleText)}"</div>` : '';
-
-    let inputControlHtml = "";
-    if (f.type === "select") {
-      const optionsHtml = f.options.map(opt => `<option value="${opt}" ${String(val) === String(opt) ? 'selected' : ''}>${opt}</option>`).join("");
-      inputControlHtml = `<select id="scan_${f.key}" class="w-full border dark:border-slate-600 dark:bg-slate-900 dark:text-white rounded-lg p-1.5 text-xs">${optionsHtml}</select>`;
-    } else {
-      inputControlHtml = `<input type="${f.type === 'number' ? 'number' : 'text'}" id="scan_${f.key}" value="${safe(val)}" ${f.min !== undefined ? `min="${f.min}" max="${f.max}" step="any"` : ''} class="w-full border dark:border-slate-600 dark:bg-slate-900 dark:text-white rounded-lg p-1.5 text-xs">`;
-    }
-
-    return `<div class="bg-slate-50 dark:bg-slate-800 p-2.5 rounded-xl border dark:border-slate-700" id="container_${f.key}">
-      <div class="flex justify-between items-center mb-1">
-        <label class="font-medium text-slate-700 dark:text-slate-300 flex items-center gap-2 cursor-pointer">
-          <input type="checkbox" id="chk_${f.key}" class="w-3.5 h-3.5 accent-purple-600" title="เลือกเพื่อใช้นำเข้าค่านี้">
-          ${f.label}
-        </label>
-        ${confidenceBadge}
+  container.innerHTML = `
+    <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl space-y-2">
+      <div class="flex justify-between items-center text-xs font-bold text-purple-600">
+        <span>ประเภท: ${safe(data.elementType)} | ชื่อ: ${safe(data.name)}</span>
+        <span>ความมั่นใจ: ${(Number(conf.dimensions) * 100 || 0).toFixed(0)}%</span>
       </div>
-      ${inputControlHtml}
-      ${evidenceText}
-      <div id="err_${f.key}" class="text-[10px] text-red-500 font-medium mt-1 hidden"></div>
-    </div>`;
-  }).join("");
-
-  container.innerHTML = warningsHtml + unreadableHtml + `<p class="text-[11px] text-slate-500 mb-2">💡 กรุณาตรวจสอบความถูกต้องและติ๊กเลือกช่องที่ต้องการนำเข้าทีละรายการ</p><div class="grid grid-cols-1 md:grid-cols-2 gap-2">${fieldsHtml}</div>`;
+      <div class="grid grid-cols-3 gap-2 text-xs">
+        <div>กว้าง: <b>${dims.width_m ?? 'ไม่พบ'}m</b></div>
+        <div>ยาว: <b>${dims.length_m ?? 'ไม่พบ'}m</b></div>
+        <div>หนา/ลึก: <b>${dims.depth_m ?? 'ไม่พบ'}m</b></div>
+      </div>
+      <div class="grid grid-cols-2 gap-2 text-xs pt-1 border-t dark:border-slate-700">
+        <div>เหล็กหลัก: <b>${mainBarText}</b></div>
+        <div>เหล็กปลอก: <b>${rebar.stirrupSize ?? 'ไม่ระบุ'} @ ${rebar.stirrupSpacing_m ?? 'สเปก'}m</b></div>
+      </div>
+    </div>
+  `;
   $("visionModal").classList.remove("hidden");
 }
 
 function closeVisionModal() {
   $("visionModal").classList.add("hidden");
-  currentScannedData = null;
+  currentScannedParsed = null;
 }
 
-function applyVisionData() {
-  if (!currentScannedData) return;
-
-  let hasValidationError = false;
-  const fieldsToValidate = [
-    { key: "width_m", min: 0.001, max: 100, name: "กว้าง Width" },
-    { key: "length_m", min: 0.001, max: 1000, name: "ยาว Length" },
-    { key: "depth_m", min: 0.001, max: 10, name: "ลึก/หนา Depth" },
-    { key: "barCount", min: 0, max: 100, name: "จำนวนเหล็กหลัก" },
-    { key: "barSpacingX_m", min: 0.001, max: 10, name: "ระยะเรียง X" },
-    { key: "barSpacingY_m", min: 0.001, max: 10, name: "ระยะเรียง Y" },
-    { key: "stirrupSpacing_m", min: 0.001, max: 10, name: "ระยะเรียงปลอก" },
-    { key: "cover_m", min: 0, max: 1, name: "ระยะหุ้ม Cover" }
-  ];
-
-  fieldsToValidate.forEach(f => {
-    const errEl = $(`err_${f.key}`);
-    if (errEl) { errEl.textContent = ""; errEl.classList.add("hidden"); }
-  });
-
-  fieldsToValidate.forEach(f => {
-    const chk = $(`chk_${f.key}`);
-    if (chk && chk.checked) {
-      const inputEl = $(`scan_${f.key}`);
-      const val = inputEl ? inputEl.value : "";
-      const num = Number(val);
-      const errEl = $(`err_${f.key}`);
-
-      if (val === "" || !Number.isFinite(num) || num < f.min || num > f.max) {
-        hasValidationError = true;
-        if (errEl) {
-          errEl.textContent = `❌ ค่า "${f.name}" ไม่ถูกต้อง (ต้องอยู่ระหว่าง ${f.min} ถึง ${f.max})`;
-          errEl.classList.remove("hidden");
-        }
-      }
-    }
-  });
-
-  if (hasValidationError) {
-    alert("⚠️ กรุณาแก้ไขข้อมูลในช่องที่มีข้อผิดพลาด (แสดงสีแดงใต้ช่องข้อมูล) ก่อนทำการยืนยัน");
-    return;
-  }
-
-  const getCheckedAndVal = (key) => {
-    const chk = $(`chk_${key}`);
-    if (!chk || !chk.checked) return null;
-    return $(`scan_${key}`)?.value.trim() || "";
-  };
-
-  const typeVal = getCheckedAndVal("elementType");
-  if (typeVal && supportedTypes.includes(typeVal)) {
-    $("type").value = typeVal;
-    updateRebarFields();
-  }
-
-  const currentElementType = $("type").value;
-  const isMat = isMatType(currentElementType);
-  const isStirrup = isStirrupType(currentElementType);
-
-  const nameVal = getCheckedAndVal("name");
-  if (nameVal) $("name").value = nameVal;
-
-  const w = getCheckedAndVal("width_m");
-  if (w !== null) $("width").value = Number(w);
-
-  const l = getCheckedAndVal("length_m");
-  if (l !== null) $("length").value = Number(l);
-
-  const d = getCheckedAndVal("depth_m");
-  if (d !== null) $("depth").value = Number(d);
-
-  if (currentElementType !== "Roof Truss") {
-    const mainSize = getCheckedAndVal("mainBarSize");
-    if (mainSize !== null && supportedBarSizes.includes(mainSize)) {
-      $("barSize").value = mainSize;
-    }
-
-    const barCnt = getCheckedAndVal("barCount");
-    if (barCnt !== null && !isMat) {
-      $("barCount").value = parseInt(barCnt, 10);
-    }
-
-    if (isMat) {
-      const sx = getCheckedAndVal("barSpacingX_m");
-      if (sx !== null) $("matSpacingX").value = Number(sx);
-      const sy = getCheckedAndVal("barSpacingY_m");
-      if (sy !== null) $("matSpacingY").value = Number(sy);
-    }
-
-    if (isStirrup) {
-      const stirSize = getCheckedAndVal("stirrupSize");
-      if (stirSize !== null && supportedStirrupSizes.includes(stirSize)) {
-        $("stirrupSize").value = stirSize;
-      }
-      const stirSp = getCheckedAndVal("stirrupSpacing_m");
-      if (stirSp !== null) $("spacing").value = Number(stirSp);
-    }
-
-    const cover = getCheckedAndVal("cover_m");
-    if (cover !== null) $("cover").value = Number(cover);
-  }
-
-  triggerPreview();
+function applyVisionDataOnly() {
+  if (!currentScannedParsed) return;
+  fillFormWithParsedDataStrict(currentScannedParsed);
   closeVisionModal();
-  alert("✨ นำเข้าข้อมูลที่เลือกผ่านการตรวจสอบความถูกต้องเรียบร้อยแล้ว");
+  triggerPreview();
+}
+
+function applyAndCalculateVisionData() {
+  if (!currentScannedParsed) return;
+  const d = currentScannedParsed.dimensions || {};
+  const parsed = currentScannedParsed;
+  const formData = {
+    type: parsed.elementType || "Footing",
+    name: parsed.name || "AI-Element",
+    qty: 1,
+    width: d.width_m || 1.0,
+    length: d.length_m || 1.0,
+    depth: d.depth_m || 0.4,
+    columnHeight: d.columnHeight_m ?? 3.0,
+    rise: d.rise_m ?? 1.75,
+    stairSteps: d.stairSteps ?? 10,
+    grade: "SD40",
+    barSize: parsed.reinforcement.mainBars[0]?.size || "DB12",
+    spacingX: d.spacingX_m ?? 0.20,
+    spacingY: d.spacingY_m ?? 0.20,
+    barCount: parsed.reinforcement.mainBars[0]?.count ?? 4,
+    stirrupSize: parsed.reinforcement.stirrupSize || "RB6",
+    stirrupSpacing: parsed.reinforcement.stirrupSpacing_m ?? 0.20,
+    cover: parsed.reinforcement.cover_m ?? 0.04,
+    wastePct: 5
+  };
+  calculateAndAddItem(formData);
+  closeVisionModal();
+  alert("🚀 คำนวณและเพิ่มรายการ BOQ จาก AI สำเร็จ!");
+}
+
+function fillFormWithParsedDataStrict(parsed) {
+  const d = parsed.dimensions || {};
+  const r = parsed.reinforcement || {};
+  if (parsed.elementType) $("type").value = parsed.elementType;
+  if (parsed.name) $("name").value = parsed.name;
+  if (d.width_m) $("width").value = d.width_m;
+  if (d.length_m) $("length").value = d.length_m;
+  if (d.depth_m) $("depth").value = d.depth_m;
+  if (d.columnHeight_m && $("columnHeight")) $("columnHeight").value = d.columnHeight_m;
+  updateFormFields();
+}
+
+function calculateAndAddItem(formData, editId = null) {
+  const computed = computeItemMetrics(formData);
+  const itemData = { id: editId ? String(editId) : ("item_" + Date.now()), ...formData, ...computed };
+  if (editId) {
+    const idx = items.findIndex(i => String(i.id) === String(editId));
+    if (idx >= 0) items[idx] = itemData;
+    resetForm();
+  } else {
+    items.push(itemData);
+  }
+  render();
+  saveDraftToLocalStorage();
+  return true;
 }
 
 // ==========================================
-// PROJECT MANAGEMENT FUNCTIONS
+// 2. DETERMINISTIC CALCULATION & REFINEMENTS
 // ==========================================
-function getSavedProjects() {
-  try { return JSON.parse(localStorage.getItem("qtoProjects_v15_9") || "{}"); } catch { return {}; }
+function validateInputForm() {
+  let isValid = true;
+  const name = $("name").value.trim();
+  const qty = Number($("qty").value);
+  const width = Number($("width").value);
+  const length = Number($("length").value);
+  const depth = Number($("depth").value);
+  const type = $("type").value;
+  const colHeight = Number($("columnHeight")?.value);
+
+  if (!name) { showFieldError('name', 'กรุณากรอกชื่อองค์อาคาร'); isValid = false; } else clearError('name');
+  if (!Number.isInteger(qty) || qty < 1) { showFieldError('qty', 'ต้องเป็นจำนวนเต็มบวก'); isValid = false; } else clearError('qty');
+  if (!Number.isFinite(width) || width <= 0) { showFieldError('width', 'ต้องมากกว่า 0'); isValid = false; } else clearError('width');
+  if (!Number.isFinite(length) || length <= 0) { showFieldError('length', 'ต้องมากกว่า 0'); isValid = false; } else clearError('length');
+  if (!Number.isFinite(depth) || depth <= 0) { showFieldError('depth', 'ต้องมากกว่า 0'); isValid = false; } else clearError('depth');
+  if (type === "Column" && (!Number.isFinite(colHeight) || colHeight <= 0)) { showFieldError('columnHeight', 'ต้องมากกว่า 0'); isValid = false; } else clearError('columnHeight');
+
+  return isValid;
 }
 
-function refreshProjectList(selectedName="") {
-  const projects = getSavedProjects();
-  const select = $("savedProjects");
-  if (!select) return;
-  select.innerHTML = `<option value="">เลือกโครงการที่บันทึกไว้ในเบราว์เซอร์</option>` +
-    Object.keys(projects).sort().map(name => `<option value="${safe(name)}">${safe(name)}</option>`).join("");
-  select.value = selectedName;
+function computeItemMetrics(p) {
+  const type = p.type, qty = p.qty;
+  const w = p.width, L = p.length, d = p.depth;
+  const h = Number.isFinite(p.columnHeight) ? p.columnHeight : 3.0;
+  const rise = Number.isFinite(p.rise) ? p.rise : 0;
+  const steps = Number.isFinite(p.stairSteps) && p.stairSteps > 0 ? p.stairSteps : 10;
+
+  let concrete = 0, form = 0, excavation = 0;
+  let mainRebarKg = 0, stirrupKg = 0;
+
+  if (type === "Footing") {
+    concrete = w * L * d * qty;
+    form = 2 * (w + L) * d * qty;
+    excavation = (w + 0.6) * (L + 0.6) * 0.8 * qty;
+  } else if (type === "Ground Beam") {
+    concrete = w * L * d * qty;
+    form = (2 * d + w) * L * qty;
+    excavation = (w + 0.6) * L * 0.8 * qty;
+  } else if (type === "Column") {
+    concrete = w * L * h * qty;
+    form = 2 * (w + L) * h * qty;
+  } else if (type === "Slab on Ground") {
+    concrete = w * L * d * qty;
+    form = 0;
+  } else if (type === "Elevated Slab") {
+    concrete = w * L * d * qty;
+    form = (w * L + 2 * (w + L) * d) * qty;
+  } else if (type === "Ground Stair") {
+    const slope = Math.sqrt(L * L + rise * rise);
+    const treadLen = L / steps;
+    const riserHeight = rise / steps;
+    concrete = ((w * slope * d) + (0.5 * w * treadLen * riserHeight * steps)) * qty;
+    form = (w * slope + L * rise + w * steps * riserHeight) * qty;
+  }
+
+  const barSize = p.barSize || "DB12";
+  const wpm = unitWeight[barSize] ?? 0.888;
+  const barDiamM = (parseInt(barSize.replace(/\D/g, ''), 10) || 12) / 1000;
+  const lapRatio = barSize.startsWith('DB') ? 60 : 40; 
+  const lapLength = lapRatio * barDiamM;
+
+  if (type === "Footing" || type === "Slab on Ground" || type === "Elevated Slab") {
+    const countX = Math.ceil(L / p.spacingX) + 1;
+    const countY = Math.ceil(w / p.spacingY) + 1;
+    mainRebarKg = ((w + lapLength) * countX + (L + lapLength) * countY) * wpm * qty;
+  } else if (type === "Ground Stair") {
+    const slopeLen = Math.sqrt(L * L + rise * rise);
+    const countMain = Math.ceil(w / p.spacingX) + 1;
+    const countDist = Math.ceil(slopeLen / p.spacingY) + 1;
+    mainRebarKg = (slopeLen * countMain + w * countDist) * wpm * qty;
+  } else if (type === "Column") {
+    const barCount = Number.isFinite(p.barCount) ? p.barCount : 4;
+    mainRebarKg = (h + lapLength) * barCount * wpm * qty;
+    if (p.stirrupSize && p.stirrupSize !== "NONE") {
+      const stirWpm = unitWeight[p.stirrupSize] ?? 0.222;
+      const stirCount = Math.ceil(h / p.stirrupSpacing) + 1;
+      const cover = Number.isFinite(p.cover) ? p.cover : 0.04;
+      stirrupKg = stirCount * (2 * ((w - 2 * cover) + (L - 2 * cover)) + 0.15) * stirWpm * qty;
+    }
+  } else if (type === "Ground Beam") {
+    const barCount = Number.isFinite(p.barCount) ? p.barCount : 4;
+    mainRebarKg = (L + lapLength) * barCount * wpm * qty;
+    if (p.stirrupSize && p.stirrupSize !== "NONE") {
+      const stirWpm = unitWeight[p.stirrupSize] ?? 0.222;
+      const stirCount = Math.ceil(L / p.stirrupSpacing) + 1;
+      const cover = Number.isFinite(p.cover) ? p.cover : 0.04;
+      stirrupKg = stirCount * (2 * ((w - 2 * cover) + (d - 2 * cover)) + 0.15) * stirWpm * qty;
+    }
+  }
+
+  const netRebar = mainRebarKg + stirrupKg;
+  const wasteMult = 1 + (Number.isFinite(p.wastePct) ? p.wastePct : 5) / 100;
+  
+  return { concrete, form, excavation, netRebarKg: netRebar, rebar: netRebar * wasteMult };
+}
+
+// ==========================================
+// 3. FINANCIAL, POR.4/5 CATEGORIES & CUTTING OPTIMIZATION
+// ==========================================
+function getItemDirectCost(i) {
+  const concRate = rates.concrete ?? 2500;
+  const formRate = rates.formwork ?? 350;
+  const excRate = rates.excavation ?? 150;
+  const rebarRate = rates['rebar' + (i.grade || 'SD40')] ?? 30;
+
+  const matCost = (i.concrete || 0) * concRate + (i.form || 0) * formRate + (i.rebar || 0) * rebarRate + (i.excavation || 0) * excRate;
+  const laborCost = ((i.concrete || 0) * (rates.laborConc ?? 500)) + ((i.form || 0) * (rates.laborForm ?? 150)) + ((i.netRebarKg || 0) * (rates.laborRebar ?? 5));
+  return matCost + laborCost;
+}
+
+function calcTotals() {
+  let totalDirect = 0;
+  items.forEach(i => { totalDirect += getItemDirectCost(i); });
+  const overhead = totalDirect * ((Number($("overhead")?.value) || 10) / 100);
+  const profit = (totalDirect + overhead) * ((Number($("profit")?.value) || 10) / 100);
+  const preVat = totalDirect + overhead + profit;
+  const vat = preVat * ((Number($("vat")?.value) || 7) / 100);
+  const wht = preVat * ((Number($("wht")?.value) || 3) / 100); 
+  return { totalDirect, overhead, profit, preVat, vat, wht, net: preVat + vat - wht };
+}
+
+// Government Por.4 / Por.5 Categories Report Generator
+function generatePor4Report() {
+  let concVol = 0, formArea = 0, excVol = 0, rebarKg = 0;
+  items.forEach(i => {
+    concVol += (i.concrete || 0);
+    formArea += (i.form || 0);
+    excVol += (i.excavation || 0);
+    rebarKg += (i.rebar || 0);
+  });
+
+  const concCost = concVol * (rates.concrete ?? 2500);
+  const formCost = formArea * (rates.formwork ?? 350);
+  const excCost = excVol * (rates.excavation ?? 150);
+  const rebarCost = rebarKg * (rates.rebarSD40 ?? 30);
+  const totalDirect = concCost + formCost + excCost + rebarCost;
+
+  const t = calcTotals();
+
+  const html = `
+    <div class="space-y-4">
+      <div class="p-3 bg-cyan-50 dark:bg-cyan-950/30 rounded-xl border border-cyan-200">
+        <h4 class="font-bold text-sm text-cyan-700 dark:text-cyan-300">แบบสรุปค่าก่อสร้าง (ปร.4 / ปร.5 ตามมาตรฐานกรมโยธาธิการและผังเมือง)</h4>
+        <p class="text-slate-500">โครงการ: ${safe($("projectName").value || "ไม่ระบุ")} | เจ้าของงาน: ${safe($("ownerName").value || "ไม่ระบุ")}</p>
+      </div>
+      <table class="w-full border-collapse border border-slate-300 dark:border-slate-700 text-xs">
+        <thead>
+          <tr class="bg-slate-100 dark:bg-slate-800">
+            <th class="border p-2 text-left">หมวดงานโครงสร้าง</th>
+            <th class="border p-2 text-right">ปริมาณงาน</th>
+            <th class="border p-2 text-right">หน่วย</th>
+            <th class="border p-2 text-right">ค่าวัสดุและแรงงานรวม (บาท)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="border p-2">1. งานขุดดินและถมกลับโครงสร้าง</td><td class="border p-2 text-right">${excVol.toFixed(2)}</td><td class="border p-2 text-right">m³</td><td class="border p-2 text-right">${money(excCost)}</td></tr>
+          <tr><td class="border p-2">2. งานคอนกรีตโครงสร้าง ค.ส.ล.</td><td class="border p-2 text-right">${concVol.toFixed(2)}</td><td class="border p-2 text-right">m³</td><td class="border p-2 text-right">${money(concCost)}</td></tr>
+          <tr><td class="border p-2">3. งานไม้แบบหล่อคอนกรีต</td><td class="border p-2 text-right">${formArea.toFixed(2)}</td><td class="border p-2 text-right">m²</td><td class="border p-2 text-right">${money(formCost)}</td></tr>
+          <tr><td class="border p-2">4. งานเหล็กเสริมคอนกรีต (รวม Waste)</td><td class="border p-2 text-right">${rebarKg.toFixed(2)}</td><td class="border p-2 text-right">kg</td><td class="border p-2 text-right">${money(rebarCost)}</td></tr>
+          <tr class="font-bold bg-slate-50 dark:bg-slate-800/50"><td class="border p-2" colspan="3">รวมค่าก่อสร้างต้นทุน (Direct Cost)</td><td class="border p-2 text-right">${money(totalDirect)}</td></tr>
+          <tr><td class="border p-2" colspan="3">ค่าดำเนินการและกำไร (Overhead & Profit)</td><td class="border p-2 text-right">${money(t.overhead + t.profit)}</td></tr>
+          <tr class="font-bold bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600"><td class="border p-2" colspan="3">ยอดรวมทั้งสิ้น (Net Contract Value)</td><td class="border p-2 text-right">${money(t.net)}</td></tr>
+        </tbody>
+      </table>
+    </div>
+  `;
+  $("por4ModalContent").innerHTML = html;
+}
+
+// Rebar Cutting Optimization & Bar List Generator
+function generateCuttingOptimizationReport() {
+  const barTotals = {};
+  items.forEach(i => {
+    const size = i.barSize || "DB12";
+    barTotals[size] = (barTotals[size] || 0) + (i.rebar || 0);
+  });
+
+  let html = `<div class="space-y-3"><p class="text-slate-500">วิเคราะห์การตัดเหล็กจากความยาวมาตรฐาน 12.0 เมตร เพื่อประมาณจำนวนเส้นเต็มและเศษเหลือ (Scrap Waste)</p><table class="w-full border-collapse border border-slate-300 dark:border-slate-700 text-xs"><thead><tr class="bg-slate-100 dark:bg-slate-800"><th class="border p-2">ขนาดเหล็ก</th><th class="border p-2 text-right">น้ำหนักรวม (kg)</th><th class="border p-2 text-right">ความยาวรวมสุทธิ (m)</th><th class="border p-2 text-right">จำนวนเส้น 12m (เส้น)</th><th class="border p-2 text-right">เศษเหลือโดยประมาณ (kg)</th></tr></thead><tbody>`;
+
+  Object.entries(barTotals).forEach(([size, kg]) => {
+    const wpm = unitWeight[size] || 0.888;
+    const totalLenM = kg / wpm;
+    const standardBarLen = 12.0;
+    const barsNeeded = Math.ceil(totalLenM / standardBarLen);
+    const scrapKg = Math.max(0, (barsNeeded * standardBarLen * wpm) - kg);
+    html += `<tr><td class="border p-2 font-bold">${safe(size)}</td><td class="border p-2 text-right">${kg.toFixed(2)}</td><td class="border p-2 text-right">${totalLenM.toFixed(2)}</td><td class="border p-2 text-right font-semibold text-indigo-600">${barsNeeded}</td><td class="border p-2 text-right">${scrapKg.toFixed(2)}</td></tr>`;
+  });
+
+  html += `</tbody></table></div>`;
+  $("cuttingModalContent").innerHTML = html;
+}
+
+// Professional PDF Generator using jsPDF & AutoTable
+function generateProfessionalPDF() {
+  if (!items.length) return alert("ไม่มีข้อมูลสำหรับสร้างรายงาน PDF");
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF('landscape', 'mm', 'a4');
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(16);
+  doc.text("STRUCTURAL QTO & BOQ PRO REPORT", 14, 15);
+
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "normal");
+  doc.text(`Project: ${($("projectName").value || "N/A")}`, 14, 23);
+  doc.text(`Owner: ${($("ownerName").value || "N/A")}`, 14, 29);
+  doc.text(`Date: ${($("reportDate").value || getLocalTodayDate())}`, 240, 23);
+
+  const tableRows = items.map((i, idx) => [
+    idx + 1,
+    i.name,
+    i.type,
+    i.qty,
+    (i.concrete || 0).toFixed(2),
+    (i.form || 0).toFixed(2),
+    (i.excavation || 0).toFixed(2),
+    (i.rebar || 0).toFixed(2),
+    money(getItemDirectCost(i))
+  ]);
+
+  doc.autoTable({
+    startY: 35,
+    head: [['No.', 'Element', 'Type', 'Qty', 'Conc (m3)', 'Form (m2)', 'Exc (m3)', 'Rebar (kg)', 'Cost (THB)']],
+    body: tableRows,
+    theme: 'grid',
+    headStyles: { fillColor: [15, 23, 42] },
+    styles: { fontSize: 8 }
+  });
+
+  const t = calcTotals();
+  const finalY = doc.lastAutoTable.finalY + 10;
+  doc.text(`Direct Cost: ${money(t.totalDirect)} THB`, 14, finalY);
+  doc.text(`Net Total (Inc. VAT & WHT): ${money(t.net)} THB`, 14, finalY + 6);
+
+  doc.save("structural_boq_report.pdf");
+}
+
+// ==========================================
+// FORM & UI LOGIC
+// ==========================================
+function updateFormFields() {
+  const type = $("type").value;
+  const isColumn = type === "Column";
+  const isStair = type === "Ground Stair";
+  const isGridType = type === "Footing" || type === "Slab on Ground" || type === "Elevated Slab" || type === "Ground Stair";
+
+  $("columnHeightContainer").classList.toggle("hidden", !isColumn);
+  $("stairFieldsContainer").classList.toggle("hidden", !isStair);
+  $("gridSpacingFields").classList.toggle("hidden", !isGridType);
+  $("linearMemberFields").classList.toggle("hidden", type !== "Ground Beam" && type !== "Column");
+
+  if (isColumn) {
+    $("wLabel").textContent = "กว้างหน้าตัด Width (m) *";
+    $("lLabel").textContent = "ยาวหน้าตัด Length (m) *";
+    $("dLabel").textContent = "ความลึกหน้าตัด Depth (m) *";
+  } else if (isGridType) {
+    $("wLabel").textContent = "กว้าง Width (m) *";
+    $("lLabel").textContent = "ยาว Length (m) *";
+    $("dLabel").textContent = "หนา Depth (m) *";
+  } else {
+    $("wLabel").textContent = "กว้าง Width (m) *";
+    $("lLabel").textContent = "ยาว/ช่วง Length (m) *";
+    $("dLabel").textContent = "หนา/ลึก Depth (m) *";
+  }
+  triggerPreview();
+}
+
+$("qtoForm").addEventListener("submit", e => {
+  e.preventDefault();
+  if (!validateInputForm()) return;
+  try {
+    const formData = {
+      type: $("type").value,
+      qty: Math.floor(Number($("qty").value)) || 1,
+      width: Number($("width").value),
+      length: Number($("length").value),
+      depth: Number($("depth").value),
+      columnHeight: Number($("columnHeight")?.value),
+      rise: Number($("rise")?.value),
+      stairSteps: Math.floor(Number($("stairSteps")?.value)) || 10,
+      grade: $("grade").value,
+      barSize: $("barSize").value,
+      spacingX: Number($("spacingX").value),
+      spacingY: Number($("spacingY").value),
+      barCount: Math.floor(Number($("barCount").value)) || 4,
+      stirrupSize: $("stirrupSize").value,
+      stirrupSpacing: Number($("stirrupSpacing").value),
+      cover: Number($("cover").value),
+      wastePct: Number($("waste").value)
+    };
+    calculateAndAddItem(formData, $("editId").value);
+  } catch (err) { alert("⚠️ " + err.message); }
+});
+
+function renderRates() {
+  const container = $("rateInputs");
+  if (!container) return;
+  container.innerHTML = Object.entries(rateDefaults).map(([key, def]) => `
+    <label class="text-xs">${def.label}
+      <input type="number" min="0" step="0.01" value="${rates[key] ?? def.value}" oninput="updateRate('${key}', this.value)" class="mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
+    </label>`).join("");
+}
+
+function updateRate(key, val) {
+  const num = Number(val);
+  rates[key] = (val === "" || !Number.isFinite(num) || num < 0) ? 0 : num;
+  render();
+  saveDraftToLocalStorage();
+}
+
+function render() {
+  const tbody = $("rows");
+  tbody.innerHTML = items.map(i => {
+    const direct = getItemDirectCost(i);
+    return `<tr class="border-b dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/40">
+      <td class="p-2"><b>${safe(i.name)}</b><div class="text-xs text-slate-500">${safe(i.type)} (${safe(i.grade)})</div></td>
+      <td class="p-2">${Number(i.qty) || 1}</td>
+      <td class="p-2">${(Number(i.concrete) || 0).toFixed(2)}</td>
+      <td class="p-2">${(Number(i.form) || 0).toFixed(2)}</td>
+      <td class="p-2">${(Number(i.excavation) || 0).toFixed(2)}</td>
+      <td class="p-2 text-slate-600 dark:text-slate-400">${(Number(i.netRebarKg) || 0).toFixed(2)}</td>
+      <td class="p-2 font-semibold text-blue-600">${(Number(i.rebar) || 0).toFixed(2)}</td>
+      <td class="p-2 font-medium">${money(direct)}</td>
+      <td class="p-2 no-print flex gap-2">
+        <button type="button" data-action="edit" data-id="${safe(i.id)}" class="text-amber-500 hover:underline">แก้ไข</button>
+        <button type="button" data-action="delete" data-id="${safe(i.id)}" class="text-red-500 hover:underline">ลบ</button>
+      </td>
+    </tr>`;
+  }).join("") || `<tr><td colspan="9" class="p-4 text-center text-slate-400">ยังไม่มีรายการองค์อาคาร</td></tr>`;
+
+  const t = calcTotals();
+  $("summary").innerHTML = [
+    ["ต้นทุนรวม (Direct)", t.totalDirect],
+    ["Overhead + Profit", t.overhead + t.profit],
+    ["ยอดรวมก่อน VAT", t.preVat],
+    ["ยอดรับสุทธิ (Net)", t.net]
+  ].map(([l, v]) => `<div class="bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border dark:border-slate-700"><div class="text-xs text-slate-400">${l}</div><div class="font-semibold text-base">${money(v)} บาท</div></div>`).join("");
+}
+
+$("rows").addEventListener("click", e => {
+  const btn = e.target.closest("button[data-action]");
+  if (!btn) return;
+  const action = btn.getAttribute("data-action");
+  const id = btn.getAttribute("data-id");
+  if (action === "edit") editItem(id);
+  if (action === "delete") removeItem(id);
+});
+
+window.editItem = id => {
+  const target = items.find(i => String(i.id) === String(id));
+  if (!target) return;
+  $("editId").value = target.id;
+  $("type").value = target.type;
+  updateFormFields();
+  $("name").value = target.name;
+  $("qty").value = target.qty ?? 1;
+  $("width").value = target.width ?? 1.0;
+  $("length").value = target.length ?? 1.0;
+  $("depth").value = target.depth ?? 0.4;
+  if ($("columnHeight")) $("columnHeight").value = target.columnHeight ?? 3.0;
+  if ($("rise")) $("rise").value = target.rise ?? 1.75;
+  if ($("stairSteps")) $("stairSteps").value = target.stairSteps ?? 10;
+  $("grade").value = target.grade || "SD40";
+  $("barSize").value = target.barSize || "DB12";
+  if ($("spacingX")) $("spacingX").value = target.spacingX ?? 0.20;
+  if ($("spacingY")) $("spacingY").value = target.spacingY ?? 0.20;
+  if ($("barCount")) $("barCount").value = target.barCount ?? 4;
+  if ($("stirrupSize")) $("stirrupSize").value = target.stirrupSize || "RB6";
+  if ($("stirrupSpacing")) $("stirrupSpacing").value = target.stirrupSpacing ?? 0.20;
+  if ($("cover")) $("cover").value = target.cover ?? 0.04;
+  $("waste").value = target.wastePct ?? 5;
+
+  $("formTitle").textContent = "✏️ แก้ไข: " + target.name;
+  $("submitBtn").textContent = "💾 บันทึกการแก้ไข";
+  $("cancelEditBtn").classList.remove("hidden");
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+function resetForm() {
+  $("editId").value = "";
+  $("formTitle").textContent = "➕ เพิ่มองค์อาคารใหม่";
+  $("submitBtn").textContent = "+ คำนวณและเพิ่มรายการ (Unified Engine)";
+  $("cancelEditBtn").classList.add("hidden");
+  $("qtoForm").reset();
+  updateFormFields();
+  ['name', 'qty', 'width', 'length', 'depth', 'columnHeight'].forEach(clearError);
+}
+
+window.cancelEdit = () => resetForm();
+window.removeItem = id => { items = items.filter(i => String(i.id) !== String(id)); render(); saveDraftToLocalStorage(); };
+
+// ==========================================
+// 4. STORAGE & DRAFT AUTO-SAVE & 3D CLEANUP
+// ==========================================
+function saveDraftToLocalStorage() {
+  const draft = {
+    projectName: $("projectName")?.value || "",
+    ownerName: $("ownerName")?.value || "",
+    estimatorName: $("estimatorName")?.value || "",
+    reportDate: $("reportDate")?.value || "",
+    overhead: $("overhead")?.value || 10,
+    profit: $("profit")?.value || 10,
+    vat: $("vat")?.value || 7,
+    wht: $("wht")?.value || 3,
+    items, rates
+  };
+  localStorage.setItem("qto_draft_auto", JSON.stringify(draft));
+}
+
+function loadDraftFromLocalStorage() {
+  const raw = localStorage.getItem("qto_draft_auto");
+  if (!raw) return;
+  try {
+    const data = JSON.parse(raw);
+    if (data && typeof data === 'object') {
+      if ($("projectName")) $("projectName").value = data.projectName || "";
+      if ($("ownerName")) $("ownerName").value = data.ownerName || "";
+      if ($("estimatorName")) $("estimatorName").value = data.estimatorName || "";
+      if ($("reportDate") && data.reportDate) $("reportDate").value = data.reportDate;
+      if ($("overhead") && Number.isFinite(Number(data.overhead))) $("overhead").value = data.overhead;
+      if ($("profit") && Number.isFinite(Number(data.profit))) $("profit").value = data.profit;
+      if ($("vat") && Number.isFinite(Number(data.vat))) $("vat").value = data.vat;
+      if ($("wht") && Number.isFinite(Number(data.wht))) $("wht").value = data.wht;
+      if (Array.isArray(data.items)) items = data.items;
+      if (data.rates && typeof data.rates === 'object') rates = { ...rates, ...data.rates };
+      render();
+      renderRates();
+    }
+  } catch (e) { console.error(e); }
 }
 
 function saveProject() {
   const name = $("projectName").value.trim();
   if (!name) return alert("กรุณากรอกชื่อโครงการก่อนบันทึก");
+  saveDraftToLocalStorage();
   try {
-    const projects = getSavedProjects();
-    projects[name] = getState();
-    localStorage.setItem("qtoProjects_v15_9", JSON.stringify(projects));
-    refreshProjectList(name);
-    persistCurrent();
-    alert(`บันทึกโครงการ “${name}” เรียบร้อยแล้ว`);
-  } catch (err) {
-    alert("ไม่สามารถบันทึกโครงการได้ หน่วยความจำเบราว์เซอร์เต็ม");
-  }
+    localStorage.setItem("qto_proj_" + name, localStorage.getItem("qto_draft_auto"));
+    refreshProjects();
+    alert("บันทึกโครงการสำเร็จ");
+  } catch (err) { alert("❌ พื้นที่จัดเก็บเต็ม"); }
 }
 
 function loadProject() {
   const name = $("savedProjects").value;
-  if (!name) return alert("กรุณาเลือกโครงการที่ต้องการโหลด");
-  const state = getSavedProjects()[name];
-  if (!state) return alert("ไม่พบข้อมูลโครงการนี้");
+  if (!name) return;
+  const raw = localStorage.getItem("qto_proj_" + name);
+  if (!raw) return;
   try {
-    loadState(state);
-    persistCurrent();
-    alert(`โหลดโครงการ “${name}” สำเร็จ`);
-  } catch(err) {
-    alert("ไม่สามารถโหลดโครงการได้: " + err.message);
-  }
+    const data = JSON.parse(raw);
+    items = data.items;
+    if ($("projectName")) $("projectName").value = data.projectName || "";
+    if ($("ownerName")) $("ownerName").value = data.ownerName || "";
+    if ($("estimatorName")) $("estimatorName").value = data.estimatorName || "";
+    if ($("reportDate")) $("reportDate").value = data.reportDate || getLocalTodayDate();
+    if (data.rates) rates = { ...rates, ...data.rates };
+    render();
+    renderRates();
+    saveDraftToLocalStorage();
+    alert("โหลดโครงการสำเร็จ");
+  } catch(err) { alert("❌ โหลดล้มเหลว: " + err.message); }
 }
 
-function clearBOQOnly() {
-  if (!confirm("ต้องการล้างเฉพาะรายการถอดแบบ (BOQ) ใช่หรือไม่?")) return;
-  items = [];
-  resetForm();
-  render();
-  persistCurrent();
+function refreshProjects() {
+  const sel = $("savedProjects");
+  if (!sel) return;
+  const keys = Object.keys(localStorage).filter(k => k.startsWith("qto_proj_"));
+  sel.innerHTML = `<option value="">เลือกโครงการที่บันทึกไว้</option>` + keys.map(k => {
+    const name = k.replace("qto_proj_", "");
+    return `<option value="${safe(name)}">${safe(name)}</option>`;
+  }).join("");
 }
+
+function exportJSON() {
+  const fullProject = { projectName: $("projectName").value, ownerName: $("ownerName").value, estimatorName: $("estimatorName").value, reportDate: $("reportDate").value, rates, items };
+  const blob = new Blob([JSON.stringify(fullProject, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = (fullProject.projectName || "structural_project") + "_full_boq.json";
+  a.click();
+}
+
+function importJSON(e) {
+  const f = e.target.files[0];
+  if (!f) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      items = data.items;
+      if ($("projectName")) $("projectName").value = data.projectName || "";
+      if (data.rates) rates = { ...rates, ...data.rates };
+      render();
+      renderRates();
+      saveDraftToLocalStorage();
+      alert("นำเข้าโครงการสำเร็จ");
+    } catch(err) { alert("❌ นำเข้าล้มเหลว: " + err.message); }
+  };
+  reader.readAsText(f);
+}
+
+function exportExcel() {
+  if (!items.length) return alert("ไม่มีข้อมูลสำหรับ Export");
+  const reportData = items.map((i, index) => ({
+    "ลำดับ": index + 1, "ชื่อองค์อาคาร": i.name, "ประเภท": i.type, "จำนวน": i.qty,
+    "กว้าง (m)": i.width, "ยาว (m)": i.length, "หนา/ลึก (m)": i.depth,
+    "คอนกรีต (m³)": Number(i.concrete || 0).toFixed(2), "ไม้แบบ (m²)": Number(i.form || 0).toFixed(2),
+    "ขุดดิน (m³)": Number(i.excavation || 0).toFixed(2), "เหล็กสุทธิ (kg)": Number(i.netRebarKg || 0).toFixed(2),
+    "เหล็กจัดซื้อรวม Waste (kg)": Number(i.rebar || 0).toFixed(2), "เกรดเหล็ก": i.grade, "ต้นทุนรวม (บาท)": Number(getItemDirectCost(i)).toFixed(2)
+  }));
+  const ws = XLSX.utils.json_to_sheet(reportData);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "BOQ_Summary");
+  XLSX.writeFile(wb, "structural_boq_full_report.xlsx");
+}
+
+function clearBOQOnly() { items = []; render(); saveDraftToLocalStorage(); }
 
 function clearAllData() {
-  const clearSaved = confirm("⚠️ คำเตือน: ต้องการล้างข้อมูลทั้งหมด รวมถึงรายการในรายการโครงการที่บันทึกไว้ในเบราว์เซอร์ด้วยหรือไม่?\n\n- กด [OK] เพื่อล้างทั้ง BOQ และรายการโครงการที่บันทึก\n- กด [Cancel] เพื่อล้างเฉพาะ BOQ และเรตราคาปัจจุบัน");
-  
+  if (!confirm("ต้องการลบข้อมูลโครงการและรายการทั้งหมดใช่หรือไม่?")) return;
   items = [];
   $("projectName").value = "";
   $("ownerName").value = "";
   $("estimatorName").value = "";
-  $("reportDate").value = todayLocal();
-  resetForm();
-  rates = Object.fromEntries(Object.entries(rateDefaults).map(([k,v]) => [k,v.value]));
-  $("overhead").value = 10;
-  $("profit").value = 10;
-  $("vat").value = 7;
-  $("wht").value = 3;
-
-  try {
-    localStorage.removeItem("qtoRates_v15_9");
-    localStorage.removeItem("qtoCurrent_v15_9");
-    if (clearSaved) {
-      localStorage.removeItem("qtoProjects_v15_9");
-    }
-  } catch(e) {}
-
-  refreshProjectList();
+  $("reportDate").value = getLocalTodayDate();
+  rates = Object.fromEntries(Object.entries(rateDefaults).map(([k, def]) => [k, def.value]));
+  localStorage.removeItem("qto_draft_auto");
+  render();
   renderRates();
-  render();
-  alert(clearSaved ? "ล้างข้อมูลทั้งหมดและรายการที่บันทึกไว้เรียบร้อยแล้ว" : "ล้างรายการ BOQ และข้อมูลปัจจุบันเรียบร้อยแล้ว");
+  refreshProjects();
+  alert("ล้างข้อมูลเรียบร้อย");
 }
-
-function loadState(state) {
-  if (!state || typeof state !== 'object') throw new Error("โครงสร้างข้อมูล JSON ไม่ถูกต้อง");
-  
-  const tempMeta = {
-    projectName: state.projectInfo?.projectName || "",
-    ownerName: state.projectInfo?.ownerName || "",
-    estimatorName: state.projectInfo?.estimatorName || "",
-    reportDate: state.projectInfo?.reportDate || todayLocal(),
-    overhead: sanitizeNumber(state.overhead, 0, 100, 10, true, "Overhead"),
-    profit: sanitizeNumber(state.profit, 0, 100, 10, true, "Profit"),
-    vat: sanitizeNumber(state.vat, 0, 100, 7, true, "VAT"),
-    wht: sanitizeNumber(state.wht, 0, 100, 3, true, "WHT")
-  };
-
-  let tempRates = Object.fromEntries(Object.entries(rateDefaults).map(([k,v]) => [k, v.value]));
-  if (state.rates && typeof state.rates === 'object') {
-    tempRates = Object.fromEntries(Object.entries(rateDefaults).map(([k,v]) => [k, sanitizeNumber(state.rates[k], 0, 1000000, v.value, true, `Rate: ${k}`)]));
-  }
-
-  let tempItems = [];
-  if (Array.isArray(state.items)) {
-    tempItems = state.items.map((i, idx) => {
-      const rowLabel = `รายการ JSON ที่ ${idx+1}`;
-      const type = String(i.type || "").trim();
-      if (!supportedTypes.includes(type)) throw new Error(`${rowLabel}: ประเภท "${type}" ไม่ถูกต้อง`);
-
-      const grade = String(i.grade || "SR24").trim();
-      if (type !== "Roof Truss" && !supportedGrades.includes(grade)) throw new Error(`${rowLabel}: เกรดเหล็ก "${grade}" ไม่ถูกต้อง`);
-
-      const stirrupGrade = String(i.stirrupGrade || grade).trim();
-      if (type !== "Roof Truss" && !supportedGrades.includes(stirrupGrade)) throw new Error(`${rowLabel}: เกรดเหล็กปลอก "${stirrupGrade}" ไม่ถูกต้อง`);
-
-      const mainSize = String(i.mainSize || "").trim();
-      if (type !== "Roof Truss" && !supportedBarSizes.includes(mainSize)) throw new Error(`${rowLabel}: ขนาดเหล็กหลัก "${mainSize}" ไม่ถูกต้อง`);
-
-      const stirrupSize = String(i.stirrupSize || "NONE").trim();
-      if (!supportedStirrupSizes.includes(stirrupSize)) throw new Error(`${rowLabel}: ขนาดเหล็กปลอก "${stirrupSize}" ไม่ถูกต้อง`);
-
-      const extraBarSize = String(i.extraBarSize || "NONE").trim();
-      if (!supportedExtraBarSizes.includes(extraBarSize)) throw new Error(`${rowLabel}: เหล็กเสริมพิเศษ "${extraBarSize}" ไม่ถูกต้อง`);
-
-      const itemParams = {
-        type,
-        qty: sanitizeInteger(i.qty, 1, 100000, 1, true, `${rowLabel} จำนวน`),
-        width: sanitizeNumber(i.width, 0.001, 100, 1.0, true, `${rowLabel} กว้าง`),
-        length: sanitizeNumber(i.length, 0.001, 1000, 1.0, true, `${rowLabel} ยาว`),
-        depth: sanitizeNumber(i.depth, 0.001, 10, 0.4, true, `${rowLabel} ลึก/หนา`),
-        rise: sanitizeNumber(i.rise, 0, 50, 0),
-        stairSteps: sanitizeInteger(i.stairSteps, 0, 100, 0),
-        precastPanelThick: i.precastPanelThick !== null && i.precastPanelThick !== undefined ? sanitizeNumber(i.precastPanelThick, 0, 1, 0.05, true, `${rowLabel} ความหนาแผ่นสำเร็จรูป`) : null,
-        excClear: sanitizeNumber(i.excClear, 0, 10, 0.3, true, `${rowLabel} ระยะเผื่อขุด`),
-        excDepth: sanitizeNumber(i.excDepth, 0, 50, 0.8, true, `${rowLabel} ความลึกขุด`),
-        sandBed: sanitizeNumber(i.sandBed, 0, 5, 0.05, true, `${rowLabel} ทรายรองพื้น`),
-        addLean: parseBooleanStrict(i.addLean, `${rowLabel} เทคอนกรีตหยาบ`),
-        grade, stirrupGrade, mainSize, stirrupSize, extraBarSize,
-        barCount: sanitizeInteger(i.barCount ?? 4, 0, 100, 4, true, `${rowLabel} จำนวนเส้น`),
-        extraBarCount: sanitizeInteger(i.extraBarCount, 0, 20, 0, true, `${rowLabel} จำนวนเหล็กพิเศษ`),
-        matSpacingX: sanitizeNumber(i.matSpacingX, 0.001, 10, 0.20, true, `${rowLabel} ระยะเรียง X`),
-        matSpacingY: sanitizeNumber(i.matSpacingY, 0.001, 10, 0.20, true, `${rowLabel} ระยะเรียง Y`),
-        matBottom: parseBooleanStrict(i.matBottom, `${rowLabel} ตะแกรงล่าง`),
-        matTop: parseBooleanStrict(i.matTop, `${rowLabel} ตะแกรงบน`),
-        stockLength: sanitizeNumber(i.stockLength ?? 10, 1, 50, 10, true, `${rowLabel} ความยาวเหล็กสต็อก`),
-        lapRatio: sanitizeNumber(i.lapRatio ?? 60, 1, 200, 60, true, `${rowLabel} ระยะทาบ`),
-        spacing: sanitizeNumber(i.spacing, 0.001, 10, 0.15, true, `${rowLabel} ระยะเรียงปลอก`),
-        cover: sanitizeNumber(i.cover, 0, 1, 0.04, true, `${rowLabel} ระยะหุ้ม`),
-        hookRatio: sanitizeNumber(i.hookRatio ?? 10, 0, 100, 10, true, `${rowLabel} ขอเกี่ยว`),
-        roofMembers: type === "Roof Truss" && Array.isArray(i.roofMembers) ? i.roofMembers.map((m, mIdx) => {
-          const sX = Number(m.startX), sY = Number(m.startY), sZ = Number(m.startZ);
-          const eX = Number(m.endX), eY = Number(m.endY), eZ = Number(m.endZ);
-          const hasNodes = [sX, sY, sZ, eX, eY, eZ].every(v => Number.isFinite(v));
-          return {
-            name: String(m.name || "สมาชิก"),
-            profile: String(m.profile || "เหล็กกล่อง 50x50x2.3mm"),
-            qty: sanitizeInteger(m.qty, 1, 100000, 1, true, `${rowLabel} สมาชิกที่ ${mIdx+1} qty`),
-            len: sanitizeNumber(m.len, 0.1, 1000, 4, true, `${rowLabel} สมาชิกที่ ${mIdx+1} len`),
-            wpm: sanitizeNumber(m.wpm, 0.1, 10000, 3.33, true, `${rowLabel} สมาชิกที่ ${mIdx+1} wpm`),
-            startX: hasNodes ? sX : "",
-            startY: hasNodes ? sY : "",
-            startZ: hasNodes ? sZ : "",
-            endX: hasNodes ? eX : "",
-            endY: hasNodes ? eY : "",
-            endZ: hasNodes ? eZ : "",
-            hasNodes
-          };
-        }) : [],
-        wastePct: sanitizeNumber(i.wastePct, 0, 100, 5, true, `${rowLabel} เผื่อเศษเหล็ก`)
-      };
-      const computed = computeItemMetrics(itemParams);
-      return {
-        id: String(i.id || "item_" + idx),
-        name: String(i.name || "Item " + (idx+1)),
-        ...itemParams, ...computed,
-        extraCost: sanitizeNumber(i.extraCost, 0, 1000000000, 0),
-        remark: String(i.remark || "")
-      };
-    });
-  }
-
-  $("projectName").value = tempMeta.projectName;
-  $("ownerName").value = tempMeta.ownerName;
-  $("estimatorName").value = tempMeta.estimatorName;
-  $("reportDate").value = tempMeta.reportDate;
-  $("overhead").value = tempMeta.overhead;
-  $("profit").value = tempMeta.profit;
-  $("vat").value = tempMeta.vat;
-  $("wht").value = tempMeta.wht;
-  rates = tempRates;
-  items = tempItems;
-  render();
-}
-
-// ==========================================
-// 3D STUDIO PREVIEW ENGINE
-// ==========================================
-let scene3d, camera3d, renderer3d, controls3d, modelGroup3d;
-let previewDebounceTimer = null;
 
 function init3DPreview() {
   const container = $("canvas3dContainer");
   if (!container) return;
+  scene3d = new THREE.Scene();
+  const isDark = document.documentElement.classList.contains('dark');
+  scene3d.background = new THREE.Color(isDark ? 0x0a0f1d : 0xf8fafc);
 
-  try {
-    scene3d = new THREE.Scene();
-    const isDark = document.documentElement.classList.contains('dark');
-    scene3d.background = new THREE.Color(isDark ? 0x0a0f1d : 0xf8fafc);
+  camera3d = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+  camera3d.position.set(4, 3, 4);
 
-    const width = container.clientWidth > 0 ? container.clientWidth : 320;
-    const height = container.clientHeight > 0 ? container.clientHeight : 192;
+  renderer3d = new THREE.WebGLRenderer({ antialias: true });
+  renderer3d.setSize(container.clientWidth, container.clientHeight);
+  container.appendChild(renderer3d.domElement);
 
-    camera3d = new THREE.PerspectiveCamera(40, width / height, 0.1, 1000);
-    camera3d.position.set(4, 3.5, 4);
+  controls3d = new THREE.OrbitControls(camera3d, renderer3d.domElement);
+  controls3d.enableDamping = true;
 
-    renderer3d = new THREE.WebGLRenderer({ antialias: true });
-    renderer3d.setSize(width, height);
-    renderer3d.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    container.appendChild(renderer3d.domElement);
+  scene3d.add(new THREE.AmbientLight(0xffffff, 0.8));
+  const light = new THREE.DirectionalLight(0xffffff, 1);
+  light.position.set(5, 10, 7);
+  scene3d.add(light);
 
-    controls3d = new THREE.OrbitControls(camera3d, renderer3d.domElement);
-    controls3d.enableDamping = true;
-    controls3d.dampingFactor = 0.05;
-    controls3d.autoRotate = true;
-    controls3d.autoRotateSpeed = 0.8;
+  modelGroup3d = new THREE.Group();
+  scene3d.add(modelGroup3d);
 
-    scene3d.add(new THREE.AmbientLight(0xffffff, 0.7));
-    const keyLight = new THREE.DirectionalLight(0xffffff, 1.2);
-    keyLight.position.set(6, 8, 5);
-    scene3d.add(keyLight);
-    const fillLight = new THREE.DirectionalLight(0x38bdf8, 0.5);
-    fillLight.position.set(-6, 4, -5);
-    scene3d.add(fillLight);
+  window.addEventListener('resize', () => {
+    if (!container || !renderer3d || !camera3d) return;
+    const w = container.clientWidth, h = container.clientHeight;
+    camera3d.aspect = w / h;
+    camera3d.updateProjectionMatrix();
+    renderer3d.setSize(w, h);
+  });
 
-    modelGroup3d = new THREE.Group();
-    scene3d.add(modelGroup3d);
-
-    window.addEventListener('resize', () => {
-      if (!container || !renderer3d || !camera3d) return;
-      const w = container.clientWidth > 0 ? container.clientWidth : 320;
-      const h = container.clientHeight > 0 ? container.clientHeight : 192;
-      camera3d.aspect = w / h;
-      camera3d.updateProjectionMatrix();
-      renderer3d.setSize(w, h);
-    });
-
-    animate3D();
-    setTimeout(() => { build3DModelFromForm(); }, 50);
-  } catch (e) {
-    container.innerHTML = `<div class="p-4 text-xs text-red-400">WebGL ไม่พร้อมใช้งานบนเบราว์เซอร์นี้</div>`;
-  }
+  animate3D();
+  triggerPreview();
 }
 
 function animate3D() {
@@ -1222,1483 +1324,40 @@ function animate3D() {
 }
 
 function triggerPreview() {
-  if (previewDebounceTimer) clearTimeout(previewDebounceTimer);
-  previewDebounceTimer = setTimeout(() => { build3DModelFromForm(); }, 50);
-}
-
-function getPreviewParams() {
-  const type = $("type")?.value || "Footing";
-  const width = readNumber("width", 1.0, 0.001);
-  const length = readNumber("length", 1.0, 0.001);
-  const depth = readNumber("depth", 0.4, 0.001);
-  const rise = readNumber("rise", 0, 0);
-  const stairSteps = Math.floor(readNumber("stairSteps", 0, 0));
-  const precastPanelThickVal = $("precastPanelThick")?.value;
-  const precastPanelThick = (precastPanelThickVal !== "" && precastPanelThickVal !== undefined && Number.isFinite(Number(precastPanelThickVal))) ? Number(precastPanelThickVal) : null;
-
-  const cover = readNumber("cover", 0.04, 0);
-  const hookRatio = readNumber("hookRatio", 10, 0);
-  const barCount = Math.floor(readNumber("barCount", 4, 0));
-  const spacing = readNumber("spacing", 0.15, 0.001); // เพิ่ม spacing ป้องกัน NaN ใน 3D Preview
-
-  const stirrupSize = $("stirrupSize")?.value || "NONE";
-  const extraBarSize = $("extraBarSize")?.value || "NONE";
-  const extraBarCount = Math.floor(readNumber("extraBarCount", 0, 0));
-  const mainSize = $("barSize")?.value || "RB12";
-  const matSpacingX = readNumber("matSpacingX", 0.20, 0.001);
-  const matSpacingY = readNumber("matSpacingY", 0.20, 0.001);
-  const matBottom = $("matBottom")?.checked !== false;
-  const matTop = $("matTop")?.checked === true;
-  const addLean = $("addLean")?.checked !== false;
-
-  const roofMembers = Array.from(document.querySelectorAll(".roof-member-row")).map(row => {
-    const sX = Number(row.querySelector("input[name='mStartX']")?.value);
-    const sY = Number(row.querySelector("input[name='mStartY']")?.value);
-    const sZ = Number(row.querySelector("input[name='mStartZ']")?.value);
-    const eX = Number(row.querySelector("input[name='mEndX']")?.value);
-    const eY = Number(row.querySelector("input[name='mEndY']")?.value);
-    const eZ = Number(row.querySelector("input[name='mEndZ']")?.value);
-
-    const hasNodes = [sX, sY, sZ, eX, eY, eZ].every(v => Number.isFinite(v));
-
-    return {
-      name: row.querySelector("input[name='mName']")?.value.trim() || "สมาชิก",
-      profile: row.querySelector("input[name='mProfile']")?.value.trim() || "เหล็กกล่อง 50x50x2.3mm",
-      qty: Math.max(1, parseInt(row.querySelector("input[name='mQty']")?.value) ?? 1),
-      len: Math.max(0.1, parseFloat(row.querySelector("input[name='mLen']")?.value) ?? 3.0),
-      wpm: Math.max(0.1, parseFloat(row.querySelector("input[name='mWpm']")?.value) ?? 3.33),
-      startX: hasNodes ? sX : "",
-      startY: hasNodes ? sY : "",
-      startZ: hasNodes ? sZ : "",
-      endX: hasNodes ? eX : "",
-      endY: hasNodes ? eY : "",
-      endZ: hasNodes ? eZ : "",
-      hasNodes
-    };
-  });
-
-  return {
-    type, width, length, depth, rise, stairSteps, precastPanelThick,
-    cover, hookRatio, barCount, spacing, stirrupSize, extraBarSize, extraBarCount, mainSize,
-    matSpacingX, matSpacingY, matBottom, matTop, addLean, roofMembers
-  };
-}
-
-function clearModelGroup() {
   if (!modelGroup3d) return;
-  const disposeRecursive = (obj) => {
-    while (obj.children && obj.children.length > 0) {
-      disposeRecursive(obj.children[0]);
-      obj.remove(obj.children[0]);
-    }
+  while (modelGroup3d.children.length > 0) {
+    const obj = modelGroup3d.children[0];
+    modelGroup3d.remove(obj);
     if (obj.geometry) obj.geometry.dispose();
     if (obj.material) {
       if (Array.isArray(obj.material)) obj.material.forEach(m => m.dispose());
       else obj.material.dispose();
     }
-  };
-  disposeRecursive(modelGroup3d);
-}
+  }
 
-function createFootingModel(p, matConc, matWire, matRebar, matLean) {
-  const w = p.width, l = p.length, d = p.depth;
-  const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, d, l), matConc);
+  const w = Number($("width")?.value) || 1.0;
+  const l = Number($("length")?.value) || 1.0;
+  const d = Number($("depth")?.value) || 0.4;
+  const h = Number($("columnHeight")?.value) || 3.0;
+  const type = $("type")?.value || "Footing";
+
+  const geoH = type === "Column" ? h : d;
+  const geo = new THREE.BoxGeometry(w, geoH, l);
+  const mat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, roughness: 0.3, metalness: 0.1 });
+  const mesh = new THREE.Mesh(geo, mat);
   modelGroup3d.add(mesh);
-  const wire = new THREE.Mesh(new THREE.BoxGeometry(w, d, l), matWire);
-  modelGroup3d.add(wire);
 
-  if (p.addLean) {
-    const lean = new THREE.Mesh(new THREE.BoxGeometry(w + 0.1, 0.05, l + 0.1), matLean);
-    lean.position.y = -d/2 - 0.025;
-    modelGroup3d.add(lean);
-  }
-
-  const cover = Math.min(p.cover, w/4, d/4);
-  const radius = 0.012;
-  const maxBars = 25;
-
-  const renderMat = (yPos, isTop) => {
-    let count = 0;
-    for (let x = -w/2 + cover; x <= w/2 - cover; x += Math.max(p.matSpacingX, 0.1)) {
-      if (count++ > maxBars) break;
-      const bar = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, l - 2*cover, 8), matRebar);
-      bar.rotation.x = Math.PI / 2;
-      bar.position.set(x, yPos, 0);
-      modelGroup3d.add(bar);
-    }
-    count = 0;
-    for (let z = -l/2 + cover; z <= l/2 - cover; z += Math.max(p.matSpacingY, 0.1)) {
-      if (count++ > maxBars) break;
-      const bar = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, w - 2*cover, 8), matRebar);
-      bar.rotation.z = Math.PI / 2;
-      bar.position.set(0, yPos + (isTop ? -radius : radius), z);
-      modelGroup3d.add(bar);
-    }
-  };
-
-  if (p.matBottom) renderMat(-d/2 + cover + radius, false);
-  if (p.matTop) renderMat(d/2 - cover - radius, true);
-}
-
-function createBeamModel(p, matConc, matWire, matRebar, matStirrup, matExtra) {
-  const w = p.width, h = p.depth, len = p.length;
-  const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, len), matConc);
-  modelGroup3d.add(mesh);
-  const wire = new THREE.Mesh(new THREE.BoxGeometry(w, h, len), matWire);
-  modelGroup3d.add(wire);
-
-  const cover = Math.min(p.cover, w/3, h/3);
-  const radius = 0.012;
-  const topCount = Math.ceil(p.barCount / 2);
-  const botCount = Math.floor(p.barCount / 2);
-  const innerW = w - 2 * cover;
-
-  for (let i = 0; i < topCount; i++) {
-    const x = topCount === 1 ? 0 : -innerW/2 + i * (innerW / (topCount - 1));
-    const bar = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, len - 2*cover, 8), matRebar);
-    bar.rotation.x = Math.PI / 2;
-    bar.position.set(x, h/2 - cover - radius, 0);
-    modelGroup3d.add(bar);
-  }
-  for (let i = 0; i < botCount; i++) {
-    const x = botCount === 1 ? 0 : -innerW/2 + i * (innerW / (botCount - 1));
-    const bar = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, len - 2*cover, 8), matRebar);
-    bar.rotation.x = Math.PI / 2;
-    bar.position.set(x, -h/2 + cover + radius, 0);
-    modelGroup3d.add(bar);
-  }
-
-  if (p.stirrupSize !== "NONE") {
-    let sCount = 0;
-    const spacing = Math.max(p.spacing, 0.15);
-    for (let z = -len/2 + cover; z <= len/2 - cover; z += spacing) {
-      if (sCount++ > 50) break;
-      const sBox = new THREE.Mesh(new THREE.BoxGeometry(w - 2*cover, h - 2*cover, 0.008), matStirrup);
-      sBox.position.set(0, 0, z);
-      modelGroup3d.add(sBox);
-    }
-  }
-
-  if (p.extraBarSize !== "NONE" && p.extraBarCount > 0) {
-    const step = (h - 2*cover) / (p.extraBarCount + 1);
-    for (let i = 1; i <= Math.min(p.extraBarCount, 10); i++) {
-      const y = -h/2 + cover + i * step;
-      const b1 = new THREE.Mesh(new THREE.CylinderGeometry(radius*0.8, radius*0.8, len - 2*cover, 8), matExtra);
-      b1.rotation.x = Math.PI / 2;
-      b1.position.set(-w/2 + cover, y, 0);
-      modelGroup3d.add(b1);
-      const b2 = new THREE.Mesh(new THREE.CylinderGeometry(radius*0.8, radius*0.8, len - 2*cover, 8), matExtra);
-      b2.rotation.x = Math.PI / 2;
-      b2.position.set(w/2 - cover, y, 0);
-      modelGroup3d.add(b2);
-    }
-  }
-}
-
-function createColumnModel(p, matConc, matWire, matRebar, matStirrup) {
-  const w = p.width, h = p.length, d = p.depth;
-  const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), matConc);
-  modelGroup3d.add(mesh);
-  const wire = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), matWire);
-  modelGroup3d.add(wire);
-
-  const cover = Math.min(p.cover, w/3, d/3);
-  const radius = 0.012;
-  const innerW = w - 2 * cover, innerD = d - 2 * cover;
-  const numBars = p.barCount;
-
-  if (numBars > 0) {
-    let currentDist = 0;
-    const perimeter = 2 * (innerW + innerD);
-    const stepDist = numBars === 1 ? 0 : perimeter / numBars;
-    for (let i = 0; i < numBars; i++) {
-      let bx = 0, bz = 0;
-      if (numBars === 1) { bx = 0; bz = 0; }
-      else if (currentDist <= innerW) { bx = -innerW/2 + currentDist; bz = -innerD/2; }
-      else if (currentDist <= innerW + innerD) { bx = innerW/2; bz = -innerD/2 + (currentDist - innerW); }
-      else if (currentDist <= 2*innerW + innerD) { bx = innerW/2 - (currentDist - (innerW + innerD)); bz = innerD/2; }
-      else { bx = -innerW/2; bz = innerD/2 - (currentDist - (2*innerW + innerD)); }
-      currentDist += stepDist;
-
-      const bar = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, h - 2*cover, 8), matRebar);
-      bar.position.set(bx, 0, bz);
-      modelGroup3d.add(bar);
-    }
-  }
-
-  if (p.stirrupSize !== "NONE") {
-    let sCount = 0;
-    const spacing = Math.max(p.spacing, 0.15);
-    for (let y = -h/2 + cover; y <= h/2 - cover; y += spacing) {
-      if (sCount++ > 50) break;
-      const stirrup = new THREE.Mesh(new THREE.BoxGeometry(w - 2*cover, 0.008, d - 2*cover), matStirrup);
-      stirrup.position.set(0, y, 0);
-      modelGroup3d.add(stirrup);
-    }
-  }
-}
-
-function createSlabModel(p, matConc, matWire, matRebar) {
-  const w = p.width, l = p.length, d = Math.max(0.1, p.depth);
-  const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, d, l), matConc);
-  modelGroup3d.add(mesh);
-  const wire = new THREE.Mesh(new THREE.BoxGeometry(w, d, l), matWire);
-  modelGroup3d.add(wire);
-
-  const cover = Math.min(p.cover, d/3);
-  const radius = 0.01;
-  const maxBars = 20;
-
-  const renderMat = (yPos) => {
-    let cnt = 0;
-    for (let x = -w/2 + cover; x <= w/2 - cover; x += Math.max(p.matSpacingX, 0.15)) {
-      if (cnt++ > maxBars) break;
-      const bar = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, l - 2*cover, 8), matRebar);
-      bar.rotation.x = Math.PI / 2;
-      bar.position.set(x, yPos, 0);
-      modelGroup3d.add(bar);
-    }
-    cnt = 0;
-    for (let z = -l/2 + cover; z <= l/2 - cover; z += Math.max(p.matSpacingY, 0.15)) {
-      if (cnt++ > maxBars) break;
-      const bar = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, w - 2*cover, 8), matRebar);
-      bar.rotation.z = Math.PI / 2;
-      bar.position.set(0, yPos, z);
-      modelGroup3d.add(bar);
-    }
-  };
-
-  if (p.matBottom) renderMat(-d/2 + cover + radius);
-  if (p.matTop) renderMat(d/2 - cover - radius);
-}
-
-function createPrecastSlabModel(p, matConc, matWire, matRebar) {
-  const w = p.width, l = p.length;
-  const toppingThick = Math.max(0.05, p.depth);
-  const panelThick = (p.precastPanelThick && p.precastPanelThick > 0) ? p.precastPanelThick : 0.05;
-
-  const panelMesh = new THREE.Mesh(
-    new THREE.BoxGeometry(w, panelThick, l), 
-    new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.5 })
-  );
-  panelMesh.position.y = -toppingThick / 2 - panelThick / 2;
-  modelGroup3d.add(panelMesh);
-
-  const toppingMesh = new THREE.Mesh(new THREE.BoxGeometry(w, toppingThick, l), matConc);
-  toppingMesh.position.y = toppingThick / 2;
-  modelGroup3d.add(toppingMesh);
-
-  const wire = new THREE.Mesh(new THREE.BoxGeometry(w, panelThick + toppingThick, l), matWire);
-  wire.position.y = (toppingThick - panelThick) / 2;
-  modelGroup3d.add(wire);
-
-  if (p.matTop) {
-    const radius = 0.004;
-    const meshTop = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, w - 0.05, 8), matRebar);
-    meshTop.rotation.z = Math.PI / 2;
-    meshTop.position.set(0, toppingThick - 0.02, 0);
-    modelGroup3d.add(meshTop);
-  }
-}
-
-function createStairModel(p, matConc, matWire) {
-  const w = p.width, l = p.length, rise = p.rise || 0.3;
-  const steps = p.stairSteps;
-
-  if (steps > 0) {
-    const stepH = rise / steps;
-    const stepW = l / steps;
-    const group = new THREE.Group();
-    for (let i = 0; i < steps; i++) {
-      const blockH = (i + 1) * stepH;
-      const blockL = l - i * stepW;
-      const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, stepH, blockL), matConc);
-      mesh.position.set(0, -rise/2 + i * stepH + stepH/2, l/2 - i * stepW - blockL/2);
-      group.add(mesh);
-    }
-    modelGroup3d.add(group);
-  } else {
-    const slopeGeo = new THREE.BoxGeometry(w, Math.max(0.15, p.depth), Math.sqrt(l*l + rise*rise));
-    const mesh = new THREE.Mesh(slopeGeo, matConc);
-    mesh.rotation.x = Math.atan2(rise, l);
-    modelGroup3d.add(mesh);
-  }
-  const wire = new THREE.Mesh(new THREE.BoxGeometry(w, rise, l), matWire);
+  const wire = new THREE.LineSegments(new THREE.WireframeGeometry(geo), new THREE.LineBasicMaterial({ color: 0x0284c7 }));
   modelGroup3d.add(wire);
 }
 
-function createRoofTrussModel(p, matRebar) {
-  const members = p.roofMembers || [];
-  const radius = 0.02;
-
-  if (members.length > 0 && members.some(m => m.hasNodes)) {
-    members.forEach((m) => {
-      if (!m.hasNodes) return;
-      const start = new THREE.Vector3(m.startX, m.startY, m.startZ);
-      const end = new THREE.Vector3(m.endX, m.endY, m.endZ);
-      const dist = start.distanceTo(end) || 1.0;
-      
-      const countToDraw = Math.min(m.qty || 1, 5);
-      for (let c = 0; c < countToDraw; c++) {
-        const offsetZ = (c - countToDraw/2) * 0.2;
-        const geom = new THREE.CylinderGeometry(radius, radius, dist, 8);
-        const mesh = new THREE.Mesh(geom, matRebar);
-        
-        mesh.position.copy(start.clone().add(end).multiplyScalar(0.5));
-        mesh.position.z += offsetZ;
-        mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), end.clone().sub(start).normalize());
-        modelGroup3d.add(mesh);
-      }
-    });
-  } else {
-    const count = Math.min(members.length > 0 ? members.reduce((a,b)=>a+b.qty,0) : 5, 12);
-    for (let i = 0; i < count; i++) {
-      const xOffset = (i - count/2) * 0.3;
-      const geom = new THREE.BoxGeometry(0.1, 0.1, 2.5);
-      const mesh = new THREE.Mesh(geom, matRebar);
-      mesh.position.set(xOffset, 0, 0);
-      modelGroup3d.add(mesh);
-    }
-  }
-}
-
-function build3DModelFromForm() {
-  const container = $("canvas3dContainer");
-  if (!container || !scene3d || !modelGroup3d) return;
-
-  modelGroup3d.position.set(0, 0, 0);
-  modelGroup3d.scale.set(1, 1, 1);
-  clearModelGroup();
-
-  const p = getPreviewParams();
-
-  const matConc = new THREE.MeshPhysicalMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.3, roughness: 0.2, transmission: 0.6, ior: 1.5 });
-  const matWire = new THREE.MeshBasicMaterial({ color: 0x64748b, wireframe: true });
-  const matRebar = new THREE.MeshStandardMaterial({ color: 0xfacc15, metalness: 0.9, roughness: 0.15 });
-  const matStirrup = new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.7, roughness: 0.2 });
-  const matExtra = new THREE.MeshStandardMaterial({ color: 0xf43f5e, metalness: 0.9, roughness: 0.15 });
-  const matLean = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.8 });
-
-  let warningText = "";
-  let infoTitle = `${p.type} (${p.width}m × ${p.length}m × ${p.depth}m)`;
-
-  switch (p.type) {
-    case "Footing":
-      createFootingModel(p, matConc, matWire, matRebar, matLean);
-      break;
-    case "Ground Beam":
-    case "Beam":
-      createBeamModel(p, matConc, matWire, matRebar, matStirrup, matExtra);
-      break;
-    case "Column":
-    case "Stub Column":
-      createColumnModel(p, matConc, matWire, matRebar, matStirrup);
-      break;
-    case "Slab on Ground":
-    case "Elevated Slab":
-      createSlabModel(p, matConc, matWire, matRebar);
-      break;
-    case "Precast Slab":
-      createPrecastSlabModel(p, matConc, matWire, matRebar);
-      if (!p.precastPanelThick) warningText = "⚠️ ความหนาแผ่นสำเร็จรูปไม่ได้ระบุ แสดงผลแบบ 5 ซม. เป็น Schematic";
-      break;
-    case "Ground Stair":
-      createStairModel(p, matConc, matWire);
-      if (p.stairSteps === 0) warningText = "⚠️ ไม่มีข้อมูลจำนวนขั้น แสดงเป็นแผ่นเอียง Schematic";
-      break;
-    case "Roof Truss":
-      createRoofTrussModel(p, matRebar);
-      break;
-  }
-
-  const box = new THREE.Box3().setFromObject(modelGroup3d);
-  const center = box.getCenter(new THREE.Vector3());
-  const size = box.getSize(new THREE.Vector3());
-  modelGroup3d.position.sub(center);
-
-  const maxDim = Math.max(size.x, size.y, size.z);
-  if (maxDim > 0 && camera3d && controls3d) {
-    const targetScale = 2.5 / maxDim;
-    modelGroup3d.scale.set(targetScale, targetScale, targetScale);
-    camera3d.position.set(4, 3, 4);
-    controls3d.target.set(0, 0, 0);
-    controls3d.update();
-  }
-
-  if ($("previewInfo")) $("previewInfo").textContent = infoTitle;
-  const warnEl = $("previewWarning");
-  if (warnEl) {
-    if (warningText) {
-      warnEl.textContent = warningText;
-      warnEl.classList.remove("hidden");
-    } else {
-      warnEl.classList.add("hidden");
-    }
-  }
-}
-
-// ==========================================
-// STEEL PROFILES SELECTOR FOR ROOF TRUSS
-// ==========================================
-function addRoofMemberRow(data = {}) {
-  const container = $("roofMembersContainer");
-  if (!container) return;
-  const rowId = "rm_" + Date.now() + Math.random().toString(36).substr(2, 5);
-  
-  const optionsHtml = Object.keys(steelProfilePresets).map(k => {
-    const p = steelProfilePresets[k];
-    const selected = (data.profile === p.profile || data.profile === k) ? "selected" : "";
-    return `<option value="${safe(k)}" ${selected}>${safe(p.profile)} (${p.wpm} kg/m)</option>`;
-  }).join("");
-
-  const div = document.createElement("div");
-  div.className = "p-2 bg-slate-50 dark:bg-slate-800/60 rounded-xl border dark:border-slate-700 text-xs space-y-1 roof-member-row";
-  div.id = rowId;
-  div.innerHTML = `
-    <div class="grid grid-cols-12 gap-1 items-center">
-      <div class="col-span-3">
-        <input type="text" name="mName" value="${safe(data.name || 'จันทัน')}" placeholder="ชื่อสมาชิก" class="w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded p-1 text-xs">
-      </div>
-      <div class="col-span-4">
-        <select name="mProfileSelect" class="w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded p-1 text-xs" onchange="onProfileSelectChange(this)">
-          <option value="">-- เลือกหน้าตัดเหล็กมาตรฐาน --</option>
-          ${optionsHtml}
-        </select>
-        <input type="hidden" name="mProfile" value="${safe(data.profile || 'เหล็กกล่อง 50x50x2.3mm')}">
-      </div>
-      <div class="col-span-1">
-        <input type="number" name="mQty" min="1" value="${data.qty ?? 10}" class="w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded p-1 text-xs" title="จำนวน">
-      </div>
-      <div class="col-span-2">
-        <input type="number" name="mLen" min="0.1" step="0.1" value="${data.len ?? 4.0}" class="w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded p-1 text-xs" title="ยาว (m)">
-      </div>
-      <div class="col-span-2 flex items-center justify-between">
-        <input type="number" name="mWpm" min="0.1" step="0.01" value="${data.wpm ?? 3.33}" class="w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded p-1 text-xs" title="นน. (kg/m)">
-        <button type="button" onclick="this.closest('.roof-member-row').remove(); triggerPreview();" class="text-red-500 font-bold ml-1">✕</button>
-      </div>
-    </div>
-    <div class="grid grid-cols-6 gap-1 text-[10px] text-slate-400">
-      <input type="number" name="mStartX" value="${data.startX !== undefined && data.startX !== '' ? data.startX : ''}" placeholder="Start X" class="border rounded p-0.5" oninput="triggerPreview()">
-      <input type="number" name="mStartY" value="${data.startY !== undefined && data.startY !== '' ? data.startY : ''}" placeholder="Start Y" class="border rounded p-0.5" oninput="triggerPreview()">
-      <input type="number" name="mStartZ" value="${data.startZ !== undefined && data.startZ !== '' ? data.startZ : ''}" placeholder="Start Z" class="border rounded p-0.5" oninput="triggerPreview()">
-      <input type="number" name="mEndX" value="${data.endX !== undefined && data.endX !== '' ? data.endX : ''}" placeholder="End X" class="border rounded p-0.5" oninput="triggerPreview()">
-      <input type="number" name="mEndY" value="${data.endY !== undefined && data.endY !== '' ? data.endY : ''}" placeholder="End Y" class="border rounded p-0.5" oninput="triggerPreview()">
-      <input type="number" name="mEndZ" value="${data.endZ !== undefined && data.endZ !== '' ? data.endZ : ''}" placeholder="End Z" class="border rounded p-0.5" oninput="triggerPreview()">
-    </div>
-  `;
-  container.appendChild(div);
-}
-
-function onProfileSelectChange(selectEl) {
-  const key = selectEl.value;
-  const row = selectEl.closest('.roof-member-row');
-  if (!row || !steelProfilePresets[key]) return;
-  const item = steelProfilePresets[key];
-  row.querySelector("input[name='mProfile']").value = item.profile;
-  row.querySelector("input[name='mWpm']").value = item.wpm;
-  triggerPreview();
-}
-
-if ($("roofMembersContainer") && $("roofMembersContainer").children.length === 0) {
-  addRoofMemberRow({name: "จันทัน", profile: "เหล็กกล่อง 50x50x2.3mm", qty: 10, len: 4.0, wpm: 3.33});
-}
-
-function updateRebarFields() {
-  const type = $("type").value;
-  const isTruss = type === "Roof Truss";
-
-  $("rcRebarFields").classList.toggle("hidden", isTruss);
-  $("roofTrussFields").classList.toggle("hidden", !isTruss);
-  $("matFields").classList.toggle("hidden", !isMatType(type) || isTruss);
-  $("stirrupFields").classList.toggle("hidden", !isStirrupType(type) || isTruss);
-  $("longitudinalFields").classList.toggle("hidden", isMatType(type) || isTruss);
-  $("stairFieldsContainer").classList.toggle("hidden", type !== "Ground Stair");
-  $("precastFieldsContainer").classList.toggle("hidden", type !== "Precast Slab");
-
-  const noteEl = $("earthworkNote");
-  if (noteEl) {
-    if (type === "Footing") noteEl.textContent = "*สมมติฐานงานดิน: ฐานรากคิดขุดรอบตัวด้วยระยะเผื่อขุด และเทคอนกรีตหยาบใต้ฐานราก";
-    else if (type === "Ground Beam") noteEl.textContent = "*สมมติฐานงานดิน: คานคอดินคิดขุดตามแนวความยาว และเผื่อขุดด้านข้าง";
-    else if (type === "Stub Column") noteEl.textContent = "*สมมติฐานงานดิน: เสาตอม่อคิดขุดรอบตัวตอม่อ";
-    else noteEl.textContent = "*สมมติฐานงานดิน: คำนวณตามพื้นที่หน้าตัดและชั้นทรายรองพื้น";
-  }
-
-  if (type === "Precast Slab") {
-    $("depthLabelText").textContent = "ความหนา Topping (m) *";
-  } else if (isColumnType(type)) {
-    $("lengthLabelText").textContent = "ความสูงเสา Length (m) *";
-  } else {
-    $("lengthLabelText").textContent = "ยาว / ช่วง Length (m) *";
-  }
-
-  triggerPreview();
-}
-
-function applyPreset(type, w, l, d, defaultName) {
-  $("type").value = type;
-  updateRebarFields();
-  $("width").value = w;
-  $("length").value = l;
-  $("depth").value = d;
-  $("name").value = defaultName;
-  triggerPreview();
-}
-
-function getState() {
-  return {
-    projectInfo:{
-      projectName:$("projectName").value,
-      ownerName:$("ownerName").value,
-      estimatorName:$("estimatorName").value,
-      reportDate:$("reportDate").value
-    },
-    items, rates,
-    overhead:$("overhead").value,
-    profit:$("profit").value,
-    vat:$("vat").value,
-    wht:$("wht").value
-  };
-}
-
-function persistCurrent() {
-  try { localStorage.setItem("qtoCurrent_v15_9", JSON.stringify(getState())); } catch(e) {}
-}
-
-function calculateRebarNetLength(netRequiredLength, stock, lapLength) {
-  if (netRequiredLength <= 0) return { netLength: 0, laps: 0 };
-  if (stock <= lapLength) throw new Error(`ความยาวเหล็กสต็อก (${stock}m) ต้องมากกว่าระยะทาบ (${lapLength.toFixed(2)}m)`);
-  const effectiveStockPerBar = stock - lapLength;
-  const barsNeeded = Math.max(1, Math.ceil((netRequiredLength - lapLength) / effectiveStockPerBar));
-  const actualNetLength = netRequiredLength + (barsNeeded - 1) * lapLength;
-  return { netLength: actualNetLength, laps: Math.max(0, barsNeeded - 1) };
-}
-
-function computeItemMetrics(p) {
-  const type = p.type, qty = p.qty;
-  const w = p.width, L = p.length, d = p.depth, rise = p.rise ?? 0;
-  const excClearVal = p.excClear ?? 0.3;
-  const excDepthVal = p.excDepth ?? 0.8;
-  const sandBedVal = p.sandBed ?? 0.05;
-  const coverVal = p.cover ?? 0.04;
-
-  if (isColumnType(type) || isStirrupType(type)) {
-    if (coverVal * 2 >= w || coverVal * 2 >= d) {
-      throw new Error(`ระยะหุ้ม Cover (${coverVal}m) มากเกินไปสำหรับหน้าตัด กว้าง ${w}m หรือ ลึก ${d}m`);
-    }
-  }
-
-  let concrete=0, leanConc=0, form=0, excavation=0, backfill=0, precastArea=0, sandVolume=0;
-
-  if (type === "Footing") {
-    concrete = w * L * d * qty;
-    form = 2 * (w + L) * d * qty;
-    if (p.addLean !== false) leanConc = (w + 0.1) * (L + 0.1) * 0.05 * qty;
-    const excW = w + 2 * excClearVal;
-    const excL = L + 2 * excClearVal;
-    excavation = excW * excL * excDepthVal * qty;
-    sandVolume = excW * excL * sandBedVal * qty;
-  } else if (type === "Ground Beam") {
-    concrete = w * L * d * qty;
-    form = (2 * d + w) * L * qty;
-    if (p.addLean !== false) leanConc = w * L * 0.05 * qty;
-    const excW = w + 2 * excClearVal;
-    excavation = excW * L * excDepthVal * qty;
-    sandVolume = excW * L * sandBedVal * qty;
-  } else if (type === "Stub Column" || type === "Column") {
-    concrete = w * d * L * qty;
-    form = 2 * (w + d) * L * qty;
-    if (type === "Stub Column") {
-      const excW = w + 2 * excClearVal;
-      const excD = d + 2 * excClearVal;
-      excavation = excW * excD * excDepthVal * qty;
-      sandVolume = excW * excD * sandBedVal * qty;
-    }
-  } else if (type === "Beam") {
-    concrete = w * d * L * qty;
-    form = (2 * d + w) * L * qty;
-  } else if (type === "Slab on Ground") {
-    concrete = w * L * d * qty;
-    form = 2 * (w + L) * d * qty;
-    if (p.addLean !== false) leanConc = w * L * 0.05 * qty;
-    sandVolume = w * L * sandBedVal * qty;
-  } else if (type === "Elevated Slab") {
-    concrete = w * L * d * qty;
-    form = (w * L + 2 * (w + L) * d) * qty;
-  } else if (type === "Precast Slab") {
-    precastArea = w * L * qty;
-    concrete = w * L * d * qty;
-    form = 2 * (w + L) * d * qty;
-  } else if (type === "Ground Stair") {
-    const slope = Math.sqrt(L*L + rise*rise);
-    concrete = (w * slope * d + 0.5 * w * L * rise) * qty;
-    form = (w * slope + L * rise) * qty;
-    sandVolume = w * L * sandBedVal * qty;
-  }
-
-  let mainKg = 0, stirrupKg = 0, extraKg = 0;
-  if (type === "Roof Truss") {
-    let trussWeight = 0;
-    (p.roofMembers || []).forEach(m => {
-      trussWeight += (m.qty ?? 1) * (m.len ?? 1) * (m.wpm ?? 3.33);
-    });
-    mainKg = trussWeight * qty;
-  } else {
-    const mainSize = p.mainSize || "RB12";
-    const diaM = parseInt(mainSize.replace(/\D/g,""),10)/1000;
-    const stock = p.stockLength ?? 10;
-    const lapRatio = p.lapRatio ?? 60;
-    const lapLength = lapRatio * diaM;
-
-    let effectiveLength = L;
-    if (type === "Ground Stair") {
-      const slope = Math.sqrt(L*L + rise*rise);
-      effectiveLength = Math.max(0, slope - 2 * coverVal);
-    } else if (type === "Column" || type === "Stub Column" || type === "Beam" || type === "Ground Beam") {
-      effectiveLength = Math.max(0, L - 2 * coverVal);
-    }
-
-    if (isMatType(type)) {
-      const netW = Math.max(0, w - 2 * coverVal);
-      const netL = Math.max(0, effectiveLength - 2 * coverVal);
-      const sx = p.matSpacingX ?? 0.2;
-      const sy = p.matSpacingY ?? 0.2;
-      const layers = (p.matBottom !== false ? 1 : 0) + (p.matTop === true ? 1 : 0);
-      const barsAlongL = Math.ceil(netW / sx) + 1;
-      const barsAlongW = Math.ceil(netL / sy) + 1;
-      
-      const runL = calculateRebarNetLength(netL, stock, lapLength);
-      const runW = calculateRebarNetLength(netW, stock, lapLength);
-      const totalLength = (barsAlongL * runL.netLength + barsAlongW * runW.netLength) * layers * qty;
-      mainKg = totalLength * unitWeight[mainSize];
-    } else {
-      const barCountInput = p.barCount ?? 4;
-      const run = calculateRebarNetLength(effectiveLength, stock, lapLength);
-      mainKg = barCountInput * run.netLength * unitWeight[mainSize] * qty;
-    }
-
-    if (isStirrupType(type) && p.stirrupSize && p.stirrupSize !== "NONE" && unitWeight[p.stirrupSize]) {
-      const stirrupSize = p.stirrupSize;
-      const stirrupDia = parseInt(stirrupSize.replace(/\D/g,""),10)/1000;
-      const n = (Math.ceil(L / (p.spacing ?? 0.15)) + 1) * qty;
-      const innerW = Math.max(0, w - 2*coverVal);
-      const innerD = Math.max(0, d - 2*coverVal);
-      const hookRatioVal = p.hookRatio ?? 10;
-      const hookLength = 2 * hookRatioVal * stirrupDia;
-      stirrupKg = n * (2 * (innerW + innerD) + hookLength) * unitWeight[stirrupSize];
-    }
-
-    if (p.extraBarSize && p.extraBarSize !== "NONE" && unitWeight[p.extraBarSize] && (p.extraBarCount ?? 0) > 0) {
-      const extraCount = Number(p.extraBarCount);
-      const extraDia = parseInt(p.extraBarSize.replace(/\D/g,""), 10) / 1000;
-      const extraLapLength = lapRatio * extraDia;
-      const runExtra = calculateRebarNetLength(effectiveLength, stock, extraLapLength);
-      extraKg = (extraCount * 2) * runExtra.netLength * unitWeight[p.extraBarSize] * qty;
-    }
-  }
-
-  const wastePct = p.wastePct ?? 5;
-  const rebarNoWaste = mainKg + stirrupKg + extraKg;
-  const rebarTotal = rebarNoWaste * (1 + wastePct / 100);
-
-  if (excavation > 0) backfill = Math.max(0, excavation - concrete - leanConc - sandVolume);
-
-  return {
-    concrete, leanConc, form, precastArea, excavation, backfill, sandVolume,
-    mainKg, stirrupKg, extraKg, rebar: rebarTotal, rebarNoWaste
-  };
-}
-
-$("qtoForm").addEventListener("submit", e => {
-  e.preventDefault();
-  try {
-    const type = $("type").value;
-    const name = $("name").value.trim();
-    if (!name) throw new Error("กรุณากรอกชื่อองค์อาคาร");
-
-    const barCountRaw = $("barCount").value;
-    const parsedBarCount = Number.parseInt(barCountRaw, 10);
-    const barCount = Number.isFinite(parsedBarCount) ? Math.max(0, parsedBarCount) : 4;
-
-    const formData = {
-      type,
-      qty: sanitizeInteger($("qty").value, 1, 100000, 1, true, "จำนวน"),
-      width: sanitizeNumber($("width").value, 0.001, 100, 1.0, true, "กว้าง"),
-      length: sanitizeNumber($("length").value, 0.001, 1000, 1.0, true, "ยาว"),
-      depth: sanitizeNumber($("depth").value, 0.001, 10, 0.4, true, "ลึก/หนา"),
-      rise: sanitizeNumber($("rise")?.value, 0, 50, 0),
-      stairSteps: sanitizeInteger($("stairSteps")?.value, 0, 100, 0, false, "จำนวนขั้นบันได"),
-      precastPanelThick: parseFloat($("precastPanelThick")?.value) || null,
-      excClear: sanitizeNumber($("excClear").value, 0, 10, 0.3),
-      excDepth: sanitizeNumber($("excDepth").value, 0, 50, 0.8),
-      sandBed: sanitizeNumber($("sandBed").value, 0, 5, 0.05),
-      addLean: $("addLean").checked,
-      grade: type === "Roof Truss" ? "-" : $("grade").value,
-      stirrupGrade: type === "Roof Truss" ? "-" : $("stirrupGrade").value,
-      mainSize: type === "Roof Truss" ? "-" : $("barSize").value,
-      barCount,
-      extraBarSize: $("extraBarSize").value,
-      extraBarCount: sanitizeInteger($("extraBarCount").value, 0, 20, 0, true, "จำนวนเหล็กพิเศษ"),
-      matSpacingX: sanitizeNumber($("matSpacingX").value, 0.001, 10, 0.20),
-      matSpacingY: sanitizeNumber($("matSpacingY").value, 0.001, 10, 0.20),
-      matBottom: $("matBottom").checked,
-      matTop: $("matTop").checked,
-      stockLength: sanitizeNumber($("stockLength").value, 1, 50, 10),
-      lapRatio: sanitizeNumber($("lapRatio").value, 1, 200, 60),
-      stirrupSize: isStirrupType(type) ? $("stirrupSize").value : "NONE",
-      spacing: sanitizeNumber($("spacing").value, 0.001, 10, 0.15),
-      cover: sanitizeNumber($("cover").value, 0, 1, 0.04),
-      hookRatio: sanitizeNumber($("hookRatio")?.value, 0, 100, 10),
-      roofMembers: type === "Roof Truss" ? Array.from(document.querySelectorAll(".roof-member-row")).map(row => {
-        const sX = Number(row.querySelector("input[name='mStartX']").value);
-        const sY = Number(row.querySelector("input[name='mStartY']").value);
-        const sZ = Number(row.querySelector("input[name='mStartZ']").value);
-        const eX = Number(row.querySelector("input[name='mEndX']").value);
-        const eY = Number(row.querySelector("input[name='mEndY']").value);
-        const eZ = Number(row.querySelector("input[name='mEndZ']").value);
-        
-        const hasNodes = [sX, sY, sZ, eX, eY, eZ].every(v => Number.isFinite(v));
-
-        return {
-          name: row.querySelector("input[name='mName']").value.trim(),
-          profile: row.querySelector("input[name='mProfile']").value.trim(),
-          qty: sanitizeInteger(row.querySelector("input[name='mQty']").value, 1, 100000, 1, true, "จำนวนสมาชิก"),
-          len: sanitizeNumber(row.querySelector("input[name='mLen']").value, 0.1, 1000, 4, true, "ความยาวสมาชิก"),
-          wpm: sanitizeNumber(row.querySelector("input[name='mWpm']").value, 0.1, 10000, 3.33, true, "น้ำหนักต่อเมตร"),
-          startX: hasNodes ? sX : "",
-          startY: hasNodes ? sY : "",
-          startZ: hasNodes ? sZ : "",
-          endX: hasNodes ? eX : "",
-          endY: hasNodes ? eY : "",
-          endZ: hasNodes ? eZ : "",
-          hasNodes
-        };
-      }) : [],
-      wastePct: sanitizeNumber($("waste").value, 0, 100, 5)
-    };
-
-    const computed = computeItemMetrics(formData);
-    const editId = $("editId").value;
-    const itemData = {
-      id: editId ? String(editId) : ("item_" + Date.now() + "_" + Math.random().toString(36).substr(2, 6)),
-      name, ...formData, ...computed,
-      extraCost: sanitizeNumber($("extraCost").value, 0, 1000000000, 0) * formData.qty,
-      remark: $("remark").value.trim()
-    };
-
-    if (editId) {
-      const idx = items.findIndex(i => String(i.id) === String(editId));
-      if (idx >= 0) items[idx] = itemData;
-      resetForm();
-    } else {
-      items.push(itemData);
-    }
-    render();
-  } catch (err) {
-    alert("⚠️ " + err.message);
-  }
-});
-
-function getItemDirectCost(i) {
-  const isTruss = i.type === "Roof Truss";
-  const mainGradeKey = "rebar" + (i.grade && i.grade !== "-" ? i.grade : "SR24");
-  const mainRate = rates[mainGradeKey] ?? rates.rebarSR24 ?? 28;
-  const stirrupGradeKey = "rebar" + (i.stirrupGrade && i.stirrupGrade !== "-" ? i.stirrupGrade : (i.grade || "SR24"));
-  const stirrupRate = rates[stirrupGradeKey] ?? rates.rebarSR24 ?? 28;
-  const factor = 1 + (i.wastePct ?? 5)/100;
-
-  const rebarMatCost = isTruss ? (i.rebar || 0) * (rates.roofTrussSteel ?? 45) :
-    (((i.mainKg || 0) + (i.extraKg || 0)) * mainRate + (i.stirrupKg || 0) * stirrupRate) * factor;
-
-  const lRebarCost = isTruss ? (rates.laborRoofTruss ?? 12) : (rates.laborRebar ?? 5);
-  const installedKg = isTruss ? (i.mainKg || 0) : ((i.mainKg || 0) + (i.stirrupKg || 0) + (i.extraKg || 0));
-  const sVol = i.sandVolume || 0;
-
-  const concRate = rates.concrete ?? 2500;
-  const leanRate = rates.leanConc ?? 1800;
-  const formRate = rates.formwork ?? 350;
-  const precastRate = rates.precastSlab ?? 240;
-  const excRate = rates.excavation ?? 150;
-  const fillRate = rates.backfill ?? 200;
-
-  const lConcRate = rates.laborConc ?? 500;
-  const lLeanRate = rates.laborLeanConc ?? 150;
-  const lFormRate = rates.laborForm ?? 150;
-  const lPrecastRate = rates.laborPrecast ?? 50;
-  const lExcRate = rates.laborExc ?? 0;
-  const lFillRate = rates.laborFill ?? 0;
-
-  return (i.concrete||0)*concRate + (i.leanConc||0)*leanRate +
-    rebarMatCost + (i.form||0)*formRate + (i.precastArea||0)*precastRate +
-    (i.excavation||0)*excRate + ((i.backfill||0) + sVol)*fillRate + (i.extraCost||0) +
-    (i.concrete||0)*lConcRate + (i.leanConc||0)*lLeanRate + installedKg*lRebarCost +
-    (i.form||0)*lFormRate + (i.precastArea||0)*lPrecastRate + (i.excavation||0)*lExcRate +
-    ((i.backfill||0) + sVol)*lFillRate;
-}
-
-function calcTotals() {
-  const t = items.reduce((a,i) => {
-    a.concrete += i.concrete||0; a.leanConc += i.leanConc||0; a.form += i.form||0;
-    a.exc += i.excavation||0; a.fill += i.backfill||0; a.sand += i.sandVolume||0;
-    if (i.type === "Roof Truss") a.roofTrussSteel += (i.rebar || 0);
-    else a.rebar += (i.rebar || 0);
-    a.extra += i.extraCost||0; a.precast += i.precastArea||0;
-    return a;
-  }, {concrete:0,leanConc:0,form:0,exc:0,fill:0,sand:0,rebar:0,roofTrussSteel:0,extra:0,precast:0});
-
-  let costRebarTotal = 0;
-  items.forEach(i => {
-    if (i.type === "Roof Truss") return;
-    const mainGradeKey = "rebar" + (i.grade && i.grade !== "-" ? i.grade : "SR24");
-    const mainRate = rates[mainGradeKey] ?? rates.rebarSR24 ?? 28;
-    const stirrupGradeKey = "rebar" + (i.stirrupGrade && i.stirrupGrade !== "-" ? i.stirrupGrade : (i.grade || "SR24"));
-    const stirrupRate = rates[stirrupGradeKey] ?? rates.rebarSR24 ?? 28;
-    const factor = 1 + (i.wastePct ?? 5)/100;
-    costRebarTotal += (((i.mainKg || 0) + (i.extraKg || 0)) * mainRate + (i.stirrupKg || 0) * stirrupRate) * factor;
-  });
-
-  const concRate = rates.concrete ?? 2500;
-  const leanRate = rates.leanConc ?? 1800;
-  const trussRate = rates.roofTrussSteel ?? 45;
-  const formRate = rates.formwork ?? 350;
-  const precastRate = rates.precastSlab ?? 240;
-  const excRate = rates.excavation ?? 150;
-  const fillRate = rates.backfill ?? 200;
-
-  const costConcrete = t.concrete * concRate;
-  const costLean = t.leanConc * leanRate;
-  const costRoofTruss = t.roofTrussSteel * trussRate;
-  const costForm = t.form * formRate;
-  const costPrecast = t.precast * precastRate;
-  const costExc = t.exc * excRate;
-  const costFill = (t.fill + t.sand) * fillRate;
-
-  const material = costConcrete + costLean + costRebarTotal + costRoofTruss + costForm + costPrecast + costExc + costFill;
-
-  const laborRebarTotal = items.reduce((sum, i) => {
-    const installedKg = i.type === "Roof Truss" ? (i.mainKg || 0) : ((i.mainKg || 0) + (i.stirrupKg || 0) + (i.extraKg || 0));
-    return sum + installedKg * (i.type === "Roof Truss" ? (rates.laborRoofTruss ?? 12) : (rates.laborRebar ?? 5));
-  }, 0);
-
-  const lConcRate = rates.laborConc ?? 500;
-  const lLeanRate = rates.laborLeanConc ?? 150;
-  const lFormRate = rates.laborForm ?? 150;
-  const lPrecastRate = rates.laborPrecast ?? 50;
-  const lExcRate = rates.laborExc ?? 0;
-  const lFillRate = rates.laborFill ?? 0;
-
-  const labor = t.concrete*lConcRate + t.leanConc*lLeanRate + laborRebarTotal +
-    t.form*lFormRate + t.precast*lPrecastRate + t.exc*lExcRate + (t.fill+t.sand)*lFillRate;
-
-  const direct = material + labor + t.extra;
-  const vatPct = sanitizeNumber($("vat")?.value, 0, 100, 7);
-  const overhead = direct * sanitizeNumber($("overhead")?.value, 0, 100, 10) / 100;
-  const profit = (direct + overhead) * sanitizeNumber($("profit")?.value, 0, 100, 10) / 100;
-  const preVat = direct + overhead + profit;
-  const vat = preVat * vatPct / 100;
-  const wht = preVat * sanitizeNumber($("wht")?.value, 0, 100, 3) / 100;
-
-  return {
-    ...t, costConcrete, costLean, costRebar: costRebarTotal, costRoofTruss, costForm, costPrecast, costExc, costFill,
-    material, labor, direct, overhead, profit, preVat, vat, wht, net: preVat + vat - wht, vatPct, laborRebarTotal
-  };
-}
-
-function renderRates() {
-  const container = $("rateInputs");
-  if (!container) return;
-  container.innerHTML = Object.entries(rateDefaults).map(([key,def]) => `
-    <label class="text-xs">${def.label}
-      <input type="number" min="0" step="0.01" value="${rates[key] ?? def.value}"
-        data-rate="${key}" class="rate-input mt-1 w-full border dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg p-2">
-    </label>`).join("");
-
-  document.querySelectorAll(".rate-input").forEach(el => {
-    el.addEventListener("change", () => {
-      const key = el.dataset.rate;
-      if (el.value === "") return;
-      try {
-        const valNum = sanitizeNumber(el.value, 0, 1000000, rates[key] ?? rateDefaults[key].value, true, rateDefaults[key].label);
-        el.value = valNum;
-        rates[key] = valNum;
-        try { localStorage.setItem("qtoRates_v15_9", JSON.stringify(rates)); } catch(e) {}
-        render();
-      } catch (err) {
-        alert("⚠️ " + err.message);
-        el.value = rates[key] ?? rateDefaults[key].value;
-        render();
-      }
-    });
-  });
-}
-
-window.editItem = id => {
-  const target = items.find(i => String(i.id) === String(id));
-  if (!target) return;
-  $("editId").value = target.id;
-  $("type").value = target.type;
-  updateRebarFields();
-  $("name").value = target.name;
-  $("qty").value = target.qty;
-  $("width").value = target.width;
-  $("length").value = target.length;
-  $("depth").value = target.depth;
-  $("rise").value = target.rise ?? 0;
-  $("stairSteps").value = target.stairSteps ?? 0;
-  if ($("precastPanelThick")) $("precastPanelThick").value = target.precastPanelThick || "";
-  $("excClear").value = target.excClear ?? 0.3;
-  $("excDepth").value = target.excDepth ?? 0.8;
-  $("sandBed").value = target.sandBed ?? 0.05;
-  $("addLean").checked = target.addLean !== false;
-  $("remark").value = target.remark || "";
-  $("extraCost").value = target.qty > 0 ? (target.extraCost || 0) / target.qty : 0;
-  if (target.grade && target.grade !== "-") $("grade").value = target.grade;
-  if (target.stirrupGrade && target.stirrupGrade !== "-") $("stirrupGrade").value = target.stirrupGrade;
-  if (target.mainSize && target.mainSize !== "-") $("barSize").value = target.mainSize;
-  $("waste").value = target.wastePct ?? 5;
-  if (target.barCount !== undefined) $("barCount").value = target.barCount;
-  if (target.extraBarSize) $("extraBarSize").value = target.extraBarSize;
-  if (target.extraBarCount !== undefined) $("extraBarCount").value = target.extraBarCount;
-  if (target.matSpacingX !== undefined) $("matSpacingX").value = target.matSpacingX;
-  if (target.matSpacingY !== undefined) $("matSpacingY").value = target.matSpacingY;
-  if (target.matBottom !== undefined) $("matBottom").checked = target.matBottom;
-  if (target.matTop !== undefined) $("matTop").checked = target.matTop;
-  if (target.stockLength !== undefined) $("stockLength").value = target.stockLength;
-  if (target.lapRatio !== undefined) $("lapRatio").value = target.lapRatio;
-  if (target.stirrupSize) $("stirrupSize").value = target.stirrupSize;
-  if (target.spacing !== undefined) $("spacing").value = target.spacing;
-  if (target.cover !== undefined) $("cover").value = target.cover;
-  if (target.hookRatio !== undefined) $("hookRatio").value = target.hookRatio ?? 10;
-
-  if (target.type === "Roof Truss") {
-    const container = $("roofMembersContainer");
-    if (container) {
-      container.innerHTML = "";
-      (target.roofMembers || []).forEach(m => addRoofMemberRow(m));
-    }
-  }
-
-  $("formTitle").textContent = "✏️ แก้ไข: " + target.name;
-  $("submitBtn").textContent = "💾 บันทึกการแก้ไข";
-  $("cancelEditBtn").classList.remove("hidden");
-  window.scrollTo({top: 0, behavior: 'smooth'});
-  triggerPreview();
-};
-
-function resetForm() {
-  $("editId").value = "";
-  $("formTitle").textContent = "➕ เพิ่มองค์อาคารใหม่";
-  $("submitBtn").textContent = "+ คำนวณและเพิ่มรายการ";
-  $("cancelEditBtn").classList.add("hidden");
-  $("qtoForm").reset();
-  $("type").value = "Footing";
-  const container = $("roofMembersContainer");
-  if (container) {
-    container.innerHTML = "";
-    addRoofMemberRow({name: "จันทัน", profile: "เหล็กกล่อง 50x50x2.3mm", qty: 10, len: 4.0, wpm: 3.33});
-  }
-  updateRebarFields();
-}
-
-window.cancelEdit = () => resetForm();
-window.removeItem = id => {
-  if ($("editId").value === String(id)) resetForm();
-  items = items.filter(i => String(i.id) !== String(id));
-  render();
-};
-
-document.addEventListener("click", e => {
-  const btn = e.target.closest("button[data-action]");
-  if (!btn) return;
-  if (btn.dataset.action === "edit") editItem(btn.dataset.id);
-  if (btn.dataset.action === "remove") removeItem(btn.dataset.id);
-});
-
-function render() {
-  const query = ($("searchQuery")?.value || "").toLowerCase();
-  const filter = $("filterType")?.value || "";
-  const filtered = items.filter(i => (i.name.toLowerCase().includes(query)) && (!filter || i.type === filter));
-
-  $("rows").innerHTML = filtered.map(i => {
-    const direct = getItemDirectCost(i);
-    const netRebarKg = i.type === "Roof Truss" ? (i.mainKg||0) : ((i.mainKg||0) + (i.stirrupKg||0) + (i.extraKg||0));
-    return `<tr class="border-b dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/40">
-      <td class="p-2"><b>${safe(i.name)}</b><div class="text-xs text-slate-500">${safe(i.type)}</div></td>
-      <td class="p-2">${i.qty}</td>
-      <td class="p-2">${(i.concrete||0).toFixed(2)} <span class="text-xs text-slate-400">/ ${(i.leanConc||0).toFixed(2)}</span></td>
-      <td class="p-2">${(i.form||0).toFixed(2)} <span class="text-xs text-slate-400">/ ${(i.precastArea||0).toFixed(2)}</span></td>
-      <td class="p-2">${(i.excavation||0).toFixed(2)} <span class="text-xs text-slate-400">/ ${((i.backfill||0)+(i.sandVolume||0)).toFixed(2)}</span></td>
-      <td class="p-2">${netRebarKg.toFixed(2)}</td>
-      <td class="p-2 font-semibold text-blue-600">${(i.rebar||0).toFixed(2)}</td>
-      <td class="p-2 font-medium">${money(direct)}</td>
-      <td class="p-2 no-print flex gap-2">
-        <button type="button" data-action="edit" data-id="${safe(i.id)}" class="text-amber-500 hover:underline">แก้ไข</button>
-        <button type="button" data-action="remove" data-id="${safe(i.id)}" class="text-red-500 hover:underline">ลบ</button>
-      </td>
-    </tr>`;
-  }).join("") || `<tr><td colspan="9" class="p-4 text-center text-slate-400">ยังไม่มีรายการองค์อาคาร</td></tr>`;
-
-  const t = calcTotals();
-
-  const categories = [
-    { label: "คอนกรีตโครงสร้าง", val: t.costConcrete, color: "bg-blue-500" },
-    { label: "เหล็กเสริม ค.ส.ล.", val: t.costRebar, color: "bg-amber-500" },
-    { label: "เหล็กโครงสร้างรูปพรรณ", val: t.costRoofTruss, color: "bg-yellow-600" },
-    { label: "ไม้แบบ / ค้ำยัน", val: t.costForm, color: "bg-emerald-500" },
-    { label: "แผ่นพื้นสำเร็จรูป", val: t.costPrecast, color: "bg-teal-500" },
-    { label: "งานขุด/ถม/ทราย", val: t.costExc + t.costFill, color: "bg-purple-500" },
-    { label: "คอนกรีตหยาบ", val: t.costLean, color: "bg-cyan-500" },
-    { label: "ต้นทุนเพิ่มเติม", val: t.extra, color: "bg-slate-500" },
-    { label: "ค่าแรงรวม", val: t.labor, color: "bg-rose-500" }
-  ];
-
-  $("costChartContainer").innerHTML = categories.map(c => {
-    const pct = t.direct > 0 ? ((c.val / t.direct) * 100).toFixed(1) : 0;
-    return `<div>
-      <div class="flex justify-between text-xs mb-1">
-        <span class="font-medium">${c.label}</span>
-        <span class="text-slate-500">${money(c.val)} บาท (${pct}%)</span>
-      </div>
-      <div class="w-full bg-slate-100 dark:bg-slate-800 h-3 rounded-full overflow-hidden">
-        <div class="${c.color} h-full rounded-full transition-all duration-500" style="width: ${Math.min(100, Math.max(2, pct))}%"></div>
-      </div>
-    </div>`;
-  }).join("");
-
-  renderRates();
-
-  $("summary").innerHTML = [
-    ["ค่าวัสดุรวม",t.material], ["ค่าแรงรวม",t.labor], ["ต้นทุนเพิ่มเติม",t.extra], ["ต้นทุนตรง",t.direct],
-    ["Overhead",t.overhead], ["กำไร Profit",t.profit], ["ก่อน VAT",t.preVat], ["ยอดรับสุทธิ",t.net]
-  ].map(([l,v]) => `<div class="bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border dark:border-slate-700"><div class="text-xs text-slate-400">${l}</div><div class="font-semibold text-base">${money(v)} บาท</div></div>`).join("");
-
-  const groups={}, trussGroups={};
-  items.forEach(i => {
-    const factor = 1 + (i.wastePct ?? 5)/100;
-    if (i.type === "Roof Truss") {
-      (i.roofMembers || []).forEach(m => {
-        const key = JSON.stringify({ name: m.name, profile: m.profile });
-        if (!trussGroups[key]) trussGroups[key] = { name: m.name, profile: m.profile, length: 0, net: 0, purchase: 0 };
-        const mLen = (Number(m.qty)||0) * (Number(m.len)||0) * (i.qty||1);
-        const mNet = mLen * (Number(m.wpm)||0);
-        trussGroups[key].length += mLen;
-        trussGroups[key].net += mNet;
-        trussGroups[key].purchase += mNet * factor;
-      });
-    } else {
-      const mainKey=`เหล็กเสริม ค.ส.ล.|${i.grade} ${i.mainSize}`;
-      if (!groups[mainKey]) groups[mainKey] = { net: 0, purchase: 0 };
-      groups[mainKey].net += (i.mainKg || 0);
-      groups[mainKey].purchase += (i.mainKg || 0) * factor;
-
-      if (i.stirrupSize && i.stirrupSize!=="NONE" && i.stirrupKg) {
-        const sKey=`เหล็กเสริม ค.ส.ล.|${i.stirrupGrade||i.grade} ${i.stirrupSize} (ปลอก)`;
-        if (!groups[sKey]) groups[sKey] = { net: 0, purchase: 0 };
-        groups[sKey].net += (i.stirrupKg || 0);
-        groups[sKey].purchase += (i.stirrupKg || 0) * factor;
-      }
-
-      if (i.extraBarSize && i.extraBarSize !== "NONE" && (i.extraKg || 0) > 0) {
-        const extraKey = `เหล็กเสริมพิเศษ (อิงเกรด ${i.grade})|${i.extraBarSize}`;
-        if (!groups[extraKey]) groups[extraKey] = { net: 0, purchase: 0 };
-        groups[extraKey].net += (i.extraKg || 0);
-        groups[extraKey].purchase += (i.extraKg || 0) * factor;
-      }
-    }
-  });
-
-  $("rebarRows").innerHTML = [
-    ...Object.entries(groups).map(([k, d]) => {
-      const [cat, s] = k.split("|");
-      return `<tr class="border-b dark:border-slate-800"><td class="p-2 font-medium">${safe(cat)}</td><td class="p-2">${safe(s)}</td><td class="p-2 text-slate-400">-</td><td class="p-2">${d.net.toFixed(2)}</td><td class="p-2 font-semibold text-blue-600">${d.purchase.toFixed(2)}</td><td class="p-2">${(d.purchase/1000).toFixed(3)}</td></tr>`;
-    }),
-    ...Object.values(trussGroups).map(d => `<tr class="border-b dark:border-slate-800 bg-yellow-50/50 dark:bg-yellow-900/10"><td class="p-2 font-medium text-yellow-600">เหล็กรูปพรรณ</td><td class="p-2">${safe(d.name)} (${safe(d.profile)})</td><td class="p-2 font-medium text-amber-600">${d.length.toFixed(2)} m</td><td class="p-2">${d.net.toFixed(2)}</td><td class="p-2 font-semibold text-blue-600">${d.purchase.toFixed(2)}</td><td class="p-2">${(d.purchase/1000).toFixed(3)}</td></tr>`)
-  ].join("") || `<tr><td colspan="6" class="p-3 text-slate-400 text-center">ยังไม่มีข้อมูลเหล็กเสริม</td></tr>`;
-
-  persistCurrent();
-  triggerPreview();
-}
-
-function exportJSON() {
-  const blob = new Blob([JSON.stringify(getState(), null, 2)], { type: "application/json;charset=utf-8" });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `BOQ_${($("projectName").value || "Project").replace(/[/\\?%*:|"<>]/g, "_")}_v15.9.1.json`;
-  a.click();
-}
-
-function importJSON(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const state = JSON.parse(e.target.result);
-      loadState(state);
-      persistCurrent();
-      showImportReport(["นำเข้าไฟล์ JSON สำเร็จเรียบร้อย"], true);
-    } catch(err) { alert("⚠️ นำเข้าไฟล์ไม่สำเร็จ (True Strict): " + err.message); }
-    finally { event.target.value = ""; }
-  };
-  reader.readAsText(file);
-}
-
-function showImportReport(reports, isSuccess = true, isError = false) {
-  const content = $("importReportContent");
-  const title = $("importModalTitle");
-  if (!content) return;
-
-  if (isError) {
-    title.textContent = "❌ รายงานข้อผิดพลาดในการนำเข้า (Import Failed)";
-    title.className = "text-lg font-bold mb-2 text-red-600";
-  } else {
-    title.textContent = "📥 รายงานผลการนำเข้าข้อมูล (True Strict Mode)";
-    title.className = "text-lg font-bold mb-2 text-blue-600";
-  }
-
-  content.innerHTML = reports.map(r => `<div class="p-1 border-b dark:border-slate-700 ${isError ? 'text-red-500 font-medium' : ''}">${safe(r)}</div>`).join("");
-  $("importReportModal").classList.remove("hidden");
-}
-
-function exportExcel() {
-  if (!items.length) return alert("ไม่มีข้อมูลสำหรับ Export");
-  
-  const wb = XLSX.utils.book_new();
-
-  const projMeta = [{
-    "ชื่อโครงการ": $("projectName").value,
-    "เจ้าของงาน": $("ownerName").value,
-    "ผู้ถอดแบบ": $("estimatorName").value,
-    "วันที่": $("reportDate").value,
-    "Overhead_pct": sanitizeNumber($("overhead")?.value, 0, 100, 10),
-    "Profit_pct": sanitizeNumber($("profit")?.value, 0, 100, 10),
-    "VAT_pct": sanitizeNumber($("vat")?.value, 0, 100, 7),
-    "WHT_pct": sanitizeNumber($("wht")?.value, 0, 100, 3)
-  }];
-  Object.entries(rates).forEach(([k, v]) => { projMeta[0][`rate_${k}`] = v; });
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(projMeta), "ข้อมูลโครงการและเรตราคา");
-
-  const importRows = items.map(i => ({
-    "ItemID": i.id,
-    "ชื่อ": i.name,
-    "ประเภท": i.type,
-    "จำนวน": i.qty,
-    "กว้าง_m": i.width,
-    "ยาว_m": i.length,
-    "ลึกหนา_m": i.depth,
-    "ระยะยกบันได_m": i.rise || 0,
-    "จำนวนขั้นบันได": i.stairSteps || 0,
-    "ความหนาแผ่นสำเร็จรูป_m": i.precastPanelThick ?? "",
-    "ความยาวเหล็กสต็อก_m": i.stockLength ?? 10,
-    "ระยะทาบเท่าของ d": i.lapRatio ?? 60,
-    "เกรดเหล็กหลัก": i.grade,
-    "เกรดเหล็กปลอก": i.stirrupGrade || i.grade,
-    "เหล็กหลัก": i.mainSize,
-    "เหล็กปลอก": i.stirrupSize,
-    "ระยะเรียงปลอก_m": i.spacing,
-    "เหล็กพิเศษ": i.extraBarSize,
-    "จำนวนเหล็กพิเศษ": i.extraBarCount,
-    "จำนวนเส้น": i.barCount,
-    "ระยะหุ้ม_m": i.cover,
-    "อัตราขอเกี่ยว": i.hookRatio,
-    "ระยะเผื่อขุด_m": i.excClear,
-    "ความลึกขุด_m": i.excDepth,
-    "ทรายรองพื้น_m": i.sandBed,
-    "เทคอนกรีตหยาบ": i.addLean,
-    "ระยะเรียง X_m": i.matSpacingX,
-    "ระยะเรียง Y_m": i.matSpacingY,
-    "ตะแกรงล่าง": i.matBottom,
-    "ตะแกรงบน": i.matTop,
-    "เผื่อเศษเหล็ก_pct": i.wastePct,
-    "ต้นทุนเพิ่มเติมต่อชิ้น_บาท": i.qty > 0 ? (i.extraCost / i.qty) : 0,
-    "หมายเหตุ": i.remark || "",
-    "สมาชิกโครงหลังคา_JSON": JSON.stringify(i.roofMembers || [])
-  }));
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(importRows), "ข้อมูลนำเข้า");
-  
-  const detailedRows = items.map((i, idx) => {
-    const isTruss = i.type === "Roof Truss";
-    const mainGradeKey = "rebar" + (i.grade && i.grade !== "-" ? i.grade : "SR24");
-    const mainRate = rates[mainGradeKey] ?? rates.rebarSR24 ?? 28;
-    const stirrupGradeKey = "rebar" + (i.stirrupGrade && i.stirrupGrade !== "-" ? i.stirrupGrade : (i.grade || "SR24"));
-    const stirrupRate = rates[stirrupGradeKey] ?? rates.rebarSR24 ?? 28;
-    const factor = 1 + (i.wastePct ?? 5)/100;
-    
-    const concRate = rates.concrete ?? 2500;
-    const leanRate = rates.leanConc ?? 1800;
-    const formRate = rates.formwork ?? 350;
-    const precastRate = rates.precastSlab ?? 240;
-    const excRate = rates.excavation ?? 150;
-    const fillRate = rates.backfill ?? 200;
-
-    const lConcRate = rates.laborConc ?? 500;
-    const lLeanRate = rates.laborLeanConc ?? 150;
-    const lFormRate = rates.laborForm ?? 150;
-    const lPrecastRate = rates.laborPrecast ?? 50;
-    const lExcRate = rates.laborExc ?? 0;
-    const lFillRate = rates.laborFill ?? 0;
-    const lRebarRate = rates.laborRebar ?? 5;
-    const lRoofRate = rates.laborRoofTruss ?? 12;
-
-    const matConc = (i.concrete||0)*concRate + (i.leanConc||0)*leanRate;
-    const laborConc = (i.concrete||0)*lConcRate + (i.leanConc||0)*lLeanRate;
-    
-    const matRebar = isTruss ? (i.rebar || 0)*(rates.roofTrussSteel ?? 45) : (((i.mainKg||0)+(i.extraKg||0))*mainRate + (i.stirrupKg||0)*stirrupRate)*factor;
-    const laborRebar = isTruss ? (i.mainKg||0)*lRoofRate : ((i.mainKg||0)+(i.stirrupKg||0)+(i.extraKg||0))*lRebarRate;
-    
-    const matForm = (i.form||0)*formRate + (i.precastArea||0)*precastRate;
-    const laborForm = (i.form||0)*lFormRate + (i.precastArea||0)*lPrecastRate;
-
-    const sVol = i.sandVolume || 0;
-    const matEarth = (i.excavation||0)*excRate + ((i.backfill||0)+sVol)*fillRate;
-    const laborEarth = (i.excavation||0)*lExcRate + ((i.backfill||0)+sVol)*lFillRate;
-
-    const totalMat = matConc + matRebar + matForm + matEarth;
-    const totalLabor = laborConc + laborRebar + laborForm + laborEarth;
-
-    return {
-      "ลำดับ": idx + 1,
-      "ชื่อองค์อาคาร": i.name,
-      "หมวดหมู่": i.type,
-      "จำนวน (ชุด)": i.qty,
-      "คอนกรีต (m³)": i.concrete || 0,
-      "ไม้แบบ (m²)": i.form || 0,
-      "เหล็กจัดซื้อ (kg)": i.rebar || 0,
-      "ค่าวัสดุรวม (บาท)": totalMat,
-      "ค่าแรงงานรวม (บาท)": totalLabor,
-      "ต้นทุนเพิ่มเติม (บาท)": i.extraCost || 0,
-      "ต้นทุนรวมสุทธิ (บาท)": totalMat + totalLabor + (i.extraCost || 0),
-      "หมายเหตุ": i.remark || ""
-    };
-  });
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(detailedRows), "รายการถอดแบบละเอียด");
-
-  const totals = calcTotals();
-  const laborEarthTotal = totals.exc * (rates.laborExc ?? 0) + (totals.fill + totals.sand) * (rates.laborFill ?? 0);
-  const laborConcTotal = totals.concrete * (rates.laborConc ?? 500) + totals.leanConc * (rates.laborLeanConc ?? 150);
-  const laborFormTotal = totals.form * (rates.laborForm ?? 150) + totals.precast * (rates.laborPrecast ?? 50);
-
-  const summaryRows = [
-    { "รายการ": "1. งานคอนกรีตโครงสร้างและคอนกรีตหยาบ", "ค่าวัสดุ (บาท)": totals.costConcrete + totals.costLean, "ค่าแรงงาน (บาท)": laborConcTotal, "รวมเงิน (บาท)": (totals.costConcrete + totals.costLean) + laborConcTotal },
-    { "รายการ": "2. งานเหล็กเสริม ค.ส.ล. และเหล็กรูปพรรณ", "ค่าวัสดุ (บาท)": totals.costRebar + totals.costRoofTruss, "ค่าแรงงาน (บาท)": totals.laborRebarTotal || 0, "รวมเงิน (บาท)": (totals.costRebar + totals.costRoofTruss) + (totals.laborRebarTotal || 0) },
-    { "รายการ": "3. งานไม้แบบและแผ่นพื้นสำเร็จรูป", "ค่าวัสดุ (บาท)": totals.costForm + totals.costPrecast, "ค่าแรงงาน (บาท)": laborFormTotal, "รวมเงิน (บาท)": (totals.costForm + totals.costPrecast) + laborFormTotal },
-    { "รายการ": "4. งานดินขุด/ดินถม/ทรายรองพื้น", "ค่าวัสดุ (บาท)": totals.costExc + totals.costFill, "ค่าแรงงาน (บาท)": laborEarthTotal, "รวมเงิน (บาท)": (totals.costExc + totals.costFill) + laborEarthTotal },
-    { "รายการ": "5. ต้นทุนเพิ่มเติม", "ค่าวัสดุ (บาท)": "-", "ค่าแรงงาน (บาท)": "-", "ต้นทุนเพิ่มเติม (บาท)": totals.extra, "รวมเงิน (บาท)": totals.extra },
-    { "รายการ": "รวมต้นทุนตรง (Direct Cost)", "ค่าวัสดุ (บาท)": totals.material, "ค่าแรงงาน (บาท)": totals.labor, "ต้นทุนเพิ่มเติม (บาท)": totals.extra, "รวมเงิน (บาท)": totals.direct },
-    { "รายการ": "ค่าดำเนินการ (Overhead)", "ค่าวัสดุ (บาท)": "-", "ค่าแรงงาน (บาท)": "-", "รวมเงิน (บาท)": totals.overhead },
-    { "รายการ": "กำไรสุทธิ (Profit)", "ค่าวัสดุ (บาท)": "-", "ค่าแรงงาน (บาท)": "-", "รวมเงิน (บาท)": totals.profit },
-    { "รายการ": "ภาษีมูลค่าเพิ่ม VAT (" + totals.vatPct + "%)", "ค่าวัสดุ (บาท)": "-", "ค่าแรงงาน (บาท)": "-", "รวมเงิน (บาท)": totals.vat },
-    { "รายการ": "หัก ณ ที่จ่าย (Withholding Tax)", "ค่าวัสดุ (บาท)": "-", "ค่าแรงงาน (บาท)": "-", "รวมเงิน (บาท)": totals.wht },
-    { "รายการ": "รวมเป็นเงินสุทธิทั้งสิ้น", "ค่าวัสดุ (บาท)": "-", "ค่าแรงงาน (บาท)": "-", "รวมเงิน (บาท)": totals.net }
-  ];
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(summaryRows), "สรุป BOQ รวม");
-
-  const projName = ($("projectName")?.value || "Project").replace(/[/\\?%*:|"<>]/g, "_");
-  XLSX.writeFile(wb, `BOQ_Roundtrip_${projName}_v15.9.1.xlsx`);
-}
-
-function downloadExcelTemplate() {
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet([{
-    "ชื่อโครงการ": "โครงการตัวอย่าง", "เจ้าของงาน": "บริษัท ตัวอย่าง จำกัด", "ผู้ถอดแบบ": "วศ. โครงสร้าง", "วันที่": todayLocal(),
-    "Overhead_pct": 10, "Profit_pct": 10, "VAT_pct": 7, "WHT_pct": 3
-  }]), "ข้อมูลโครงการและเรตราคา");
-
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet([{
-    "ItemID": "sample_1", "ชื่อ": "F1", "ประเภท": "Footing", "จำนวน": 1,
-    "กว้าง_m": 1.0, "ยาว_m": 1.0, "ลึกหนา_m": 0.4, "ระยะยกบันได_m": 0, "จำนวนขั้นบันได": 0,
-    "ความหนาแผ่นสำเร็จรูป_m": "", "ความยาวเหล็กสต็อก_m": 10, "ระยะทาบเท่าของ d": 60,
-    "เกรดเหล็กหลัก": "SR24", "เกรดเหล็กปลอก": "SR24", "เหล็กหลัก": "RB12", "เหล็กปลอก": "NONE",
-    "ระยะเรียงปลอก_m": 0.15, "เหล็กพิเศษ": "NONE", "จำนวนเหล็กพิเศษ": 0,
-    "จำนวนเส้น": 4, "ระยะหุ้ม_m": 0.04, "อัตราขอเกี่ยว": 10, "ระยะเผื่อขุด_m": 0.3, "ความลึกขุด_m": 0.8,
-    "ทรายรองพื้น_m": 0.05, "เทคอนกรีตหยาบ": true, "ระยะเรียง X_m": 0.2, "ระยะเรียง Y_m": 0.2,
-    "ตะแกรงล่าง": true, "ตะแกรงบน": false, "เผื่อเศษเหล็ก_pct": 5, "ต้นทุนเพิ่มเติมต่อชิ้น_บาท": 0, "หมายเหตุ": "", "สมาชิกโครงหลังคา_JSON": "[]"
-  }]), "ข้อมูลนำเข้า");
-  XLSX.writeFile(wb, "BOQ_Template_v15.9.1.xlsx");
-}
-
-function importExcel(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const data = new Uint8Array(e.target.result);
-      const wb = XLSX.read(data, { type: 'array' });
-      
-      let tempProjectName = $("projectName").value;
-      let tempOwnerName = $("ownerName").value;
-      let tempEstimatorName = $("estimatorName").value;
-      let tempReportDate = $("reportDate").value;
-      let tempOverhead = $("overhead").value;
-      let tempProfit = $("profit").value;
-      let tempVat = $("vat").value;
-      let tempWht = $("wht").value;
-      let tempRates = JSON.parse(JSON.stringify(rates));
-      let reportLogs = [];
-
-      if (wb.SheetNames.includes("ข้อมูลโครงการและเรตราคา")) {
-        const metaJson = XLSX.utils.sheet_to_json(wb.Sheets["ข้อมูลโครงการและเรตราคา"]);
-        if (metaJson.length > 0) {
-          const m = metaJson[0];
-          if (m["ชื่อโครงการ"] !== undefined) tempProjectName = String(m["ชื่อโครงการ"]);
-          if (m["เจ้าของงาน"] !== undefined) tempOwnerName = String(m["เจ้าของงาน"]);
-          if (m["ผู้ถอดแบบ"] !== undefined) tempEstimatorName = String(m["ผู้ถอดแบบ"]);
-          if (m["วันที่"] !== undefined) tempReportDate = parseExcelDate(m["วันที่"]);
-          if (m["Overhead_pct"] !== undefined) tempOverhead = sanitizeNumber(m["Overhead_pct"], 0, 100, 10, true, "Overhead_pct");
-          if (m["Profit_pct"] !== undefined) tempProfit = sanitizeNumber(m["Profit_pct"], 0, 100, 10, true, "Profit_pct");
-          if (m["VAT_pct"] !== undefined) tempVat = sanitizeNumber(m["VAT_pct"], 0, 100, 7, true, "VAT_pct");
-          if (m["WHT_pct"] !== undefined) tempWht = sanitizeNumber(m["WHT_pct"], 0, 100, 3, true, "WHT_pct");
-
-          Object.keys(rateDefaults).forEach(k => {
-            if (m[`rate_${k}`] !== undefined) {
-              tempRates[k] = sanitizeNumber(m[`rate_${k}`], 0, 1000000, rateDefaults[k].value, true, rateDefaults[k].label);
-            }
-          });
-          reportLogs.push("✅ ตรวจสอบข้อมูลโครงการและเรตราคาผ่าน");
-        }
-      }
-
-      const sheetName = wb.SheetNames.includes("ข้อมูลนำเข้า") ? "ข้อมูลนำเข้า" : wb.SheetNames[0];
-      const json = XLSX.utils.sheet_to_json(wb.Sheets[sheetName]);
-      if (!json.length) throw new Error("ไม่พบข้อมูลแถวในชีตนำเข้า");
-
-      const tempItems = json.map((row, idx) => {
-        const rowLabel = `แถวที่ ${idx+1}`;
-        
-        const name = String(row["ชื่อ"] || "").trim();
-        if (!name) throw new Error(`${rowLabel}: ช่อง "ชื่อ" ห้ามว่าง`);
-
-        const rawType = String(row["ประเภท"] || "").trim();
-        if (!supportedTypes.includes(rawType)) throw new Error(`${rowLabel}: ประเภท "${rawType}" ไม่ถูกต้อง (รองรับ: ${supportedTypes.join(", ")})`);
-
-        const rawGrade = String(row["เกรดเหล็กหลัก"] || "").trim();
-        if (rawType !== "Roof Truss" && !supportedGrades.includes(rawGrade)) throw new Error(`${rowLabel}: เกรดเหล็กหลัก "${rawGrade}" ไม่ถูกต้อง`);
-
-        const rawStirrupGrade = String(row["เกรดเหล็กปลอก"] || rawGrade).trim();
-        if (rawType !== "Roof Truss" && !supportedGrades.includes(rawStirrupGrade)) throw new Error(`${rowLabel}: เกรดเหล็กปลอก "${rawStirrupGrade}" ไม่ถูกต้อง`);
-
-        const rawMainSize = String(row["เหล็กหลัก"] || "").trim();
-        if (rawType !== "Roof Truss" && !supportedBarSizes.includes(rawMainSize)) throw new Error(`${rowLabel}: เหล็กหลัก "${rawMainSize}" ไม่ถูกต้อง`);
-
-        const rawStirrupSize = String(row["เหล็กปลอก"] || "NONE").trim();
-        if (!supportedStirrupSizes.includes(rawStirrupSize)) throw new Error(`${rowLabel}: เหล็กปลอก "${rawStirrupSize}" ไม่ถูกต้อง`);
-
-        const rawExtraBar = String(row["เหล็กพิเศษ"] || "NONE").trim();
-        if (!supportedExtraBarSizes.includes(rawExtraBar)) throw new Error(`${rowLabel}: เหล็กพิเศษ "${rawExtraBar}" ไม่ถูกต้อง`);
-
-        let parsedRoofMembers = [];
-        const roofJsonStr = row["สมาชิกโครงหลังคา_JSON"];
-        if (roofJsonStr) {
-          try {
-            const parsed = JSON.parse(roofJsonStr);
-            if (!Array.isArray(parsed)) throw new Error("โครงสร้าง JSON ต้องเป็น Array");
-            parsedRoofMembers = parsed.map((m, mIdx) => {
-              const sX = Number(m.startX), sY = Number(m.startY), sZ = Number(m.startZ);
-              const eX = Number(m.endX), eY = Number(m.endY), eZ = Number(m.endZ);
-              const hasNodes = [sX, sY, sZ, eX, eY, eZ].every(v => Number.isFinite(v));
-              return {
-                name: String(m.name || "สมาชิก"),
-                profile: String(m.profile || "เหล็กกล่อง 50x50x2.3mm"),
-                qty: sanitizeInteger(m.qty, 1, 100000, 1, true, `${rowLabel} สมาชิก ${mIdx+1} qty`),
-                len: sanitizeNumber(m.len, 0.1, 1000, 4, true, `${rowLabel} สมาชิก ${mIdx+1} len`),
-                wpm: sanitizeNumber(m.wpm, 0.1, 10000, 3.33, true, `${rowLabel} สมาชิก ${mIdx+1} wpm`),
-                startX: hasNodes ? sX : "",
-                startY: hasNodes ? sY : "",
-                startZ: hasNodes ? sZ : "",
-                endX: hasNodes ? eX : "",
-                endY: hasNodes ? eY : "",
-                endZ: hasNodes ? eZ : "",
-                hasNodes
-              };
-            });
-          } catch(err) {
-            throw new Error(`${rowLabel}: JSON สมาชิกโครงหลังคาไม่ถูกต้อง (${err.message})`);
-          }
-        }
-
-        const precastThickVal = row["ความหนาแผ่นสำเร็จรูป_m"];
-        const precastPanelThick = (precastThickVal === "" || precastThickVal === undefined || precastThickVal === null)
-          ? null
-          : sanitizeNumber(precastThickVal, 0, 1, 0.05, true, `${rowLabel} ความหนาแผ่นสำเร็จรูป`);
-
-        const itemParams = {
-          type: rawType,
-          qty: sanitizeInteger(row["จำนวน"], 1, 100000, 1, true, `${rowLabel} จำนวน`),
-          width: sanitizeNumber(row["กว้าง_m"], 0.001, 100, 1.0, true, `${rowLabel} กว้าง`),
-          length: sanitizeNumber(row["ยาว_m"], 0.001, 1000, 1.0, true, `${rowLabel} ยาว`),
-          depth: sanitizeNumber(row["ลึกหนา_m"], 0.001, 10, 0.4, true, `${rowLabel} ลึกหนา`),
-          rise: sanitizeNumber(row["ระยะยกบันได_m"], 0, 50, 0, true, `${rowLabel} ระยะยกบันได`),
-          stairSteps: sanitizeInteger(row["จำนวนขั้นบันได"], 0, 100, 0, true, `${rowLabel} จำนวนขั้นบันได`),
-          precastPanelThick,
-          stockLength: sanitizeNumber(row["ความยาวเหล็กสต็อก_m"], 1, 50, 10, true, `${rowLabel} ความยาวเหล็กสต็อก`),
-          lapRatio: sanitizeNumber(row["ระยะทาบเท่าของ d"], 1, 200, 60, true, `${rowLabel} ระยะทาบ`),
-          grade: rawType === "Roof Truss" ? "-" : rawGrade,
-          stirrupGrade: rawType === "Roof Truss" ? "-" : rawStirrupGrade,
-          mainSize: rawType === "Roof Truss" ? "-" : rawMainSize,
-          barCount: sanitizeInteger(row["จำนวนเส้น"], 0, 100, 4, true, `${rowLabel} จำนวนเส้น`),
-          cover: sanitizeNumber(row["ระยะหุ้ม_m"], 0, 1, 0.04, true, `${rowLabel} ระยะหุ้ม`),
-          hookRatio: sanitizeNumber(row["อัตราขอเกี่ยว"], 0, 100, 10, true, `${rowLabel} อัตราขอเกี่ยว`),
-          addLean: parseBooleanStrict(row["เทคอนกรีตหยาบ"], `${rowLabel} เทคอนกรีตหยาบ`),
-          excClear: sanitizeNumber(row["ระยะเผื่อขุด_m"], 0, 10, 0.3, true, `${rowLabel} ระยะเผื่อขุด`),
-          excDepth: sanitizeNumber(row["ความลึกขุด_m"], 0, 50, 0.8, true, `${rowLabel} ความลึกขุด`),
-          sandBed: sanitizeNumber(row["ทรายรองพื้น_m"], 0, 5, 0.05, true, `${rowLabel} ทรายรองพื้น`),
-          matSpacingX: sanitizeNumber(row["ระยะเรียง X_m"], 0.001, 10, 0.2, true, `${rowLabel} ระยะเรียง X`),
-          matSpacingY: sanitizeNumber(row["ระยะเรียง Y_m"], 0.001, 10, 0.2, true, `${rowLabel} ระยะเรียง Y`),
-          matBottom: parseBooleanStrict(row["ตะแกรงล่าง"], `${rowLabel} ตะแกรงล่าง`),
-          matTop: parseBooleanStrict(row["ตะแกรงบน"], `${rowLabel} ตะแกรงบน`),
-          wastePct: sanitizeNumber(row["เผื่อเศษเหล็ก_pct"], 0, 100, 5, true, `${rowLabel} เผื่อเศษเหล็ก`),
-          stirrupSize: rawStirrupSize,
-          spacing: sanitizeNumber(row["ระยะเรียงปลอก_m"], 0.001, 10, 0.15, true, `${rowLabel} ระยะเรียงปลอก`),
-          extraBarSize: rawExtraBar,
-          extraBarCount: sanitizeInteger(row["จำนวนเหล็กพิเศษ"], 0, 20, 0, true, `${rowLabel} จำนวนเหล็กพิเศษ`),
-          roofMembers: parsedRoofMembers
-        };
-
-        const computed = computeItemMetrics(itemParams);
-        return {
-          id: String(row["ItemID"] || "item_" + idx),
-          name, ...itemParams, ...computed,
-          extraCost: sanitizeNumber(row["ต้นทุนเพิ่มเติมต่อชิ้น_บาท"], 0, 1000000000, 0, true, `${rowLabel} ต้นทุนเพิ่มเติมต่อชิ้น`) * itemParams.qty,
-          remark: String(row["หมายเหตุ"] || "")
-        };
-      });
-
-      $("projectName").value = tempProjectName;
-      $("ownerName").value = tempOwnerName;
-      $("estimatorName").value = tempEstimatorName;
-      $("reportDate").value = tempReportDate;
-      $("overhead").value = tempOverhead;
-      $("profit").value = tempProfit;
-      $("vat").value = tempVat;
-      $("wht").value = tempWht;
-      rates = tempRates;
-      try { localStorage.setItem("qtoRates_v15_9", JSON.stringify(rates)); } catch(e) {}
-
-      items = tempItems;
-      render();
-      persistCurrent();
-
-      reportLogs.push(`✅ ตรวจสอบผ่าน True Strict Mode และนำเข้าสำเร็จรวม ${items.length} รายการ`);
-      showImportReport(reportLogs, true, false);
-    } catch(err) {
-      showImportReport([`❌ ข้อผิดพลาด: ${err.message}`, "⚠️ ยกเลิกการนำเข้าทั้งหมด (All-or-Nothing Rollback) ไม่มีข้อมูลถูกเปลี่ยนแปลง"], false, true);
-    } finally {
-      event.target.value = "";
-    }
-  };
-  reader.readAsArrayBuffer(file);
-}
-
-// Global Initialization
-updateRebarFields();
-refreshProjectList();
+if (!$("reportDate").value) { $("reportDate").value = getLocalTodayDate(); }
+updateFormFields();
+renderRates();
+loadDraftFromLocalStorage();
+render();
+refreshProjects();
 init3DPreview();
-
-try {
-  const savedCurrent = localStorage.getItem("qtoCurrent_v15_9");
-  if (savedCurrent) loadState(JSON.parse(savedCurrent));
-  else render();
-} catch (e) { render(); }
 </script>
 </body>
 </html>
